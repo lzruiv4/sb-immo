@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
-import { CreateContactDto } from './dto/create.contact.dto';
-import { UpdateContactDto } from './dto/update.contact.dto';
+import { CreateContactDto } from './dto/create-contact.dto';
+import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Controller('contacts')
 export class ContactController {
@@ -21,7 +21,7 @@ export class ContactController {
   }
 
   @Get()
-  testConnection() {
+  findAllUsers() {
     return this.contactService.findAll();
   }
 
@@ -31,12 +31,12 @@ export class ContactController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateContactDto) {
+  updateUser(@Param('id') id: string, @Body() dto: UpdateContactDto) {
     return this.contactService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  removeUser(@Param('id') id: string) {
     return this.contactService.remove(id);
   }
 }

@@ -8,34 +8,34 @@ import {
   Put,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
-import { AddressDto } from './address.dto';
+import { AddressDto } from './dto/address.dto';
 
 @Controller('addresses')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Post()
-  createUser(@Body() dto: AddressDto) {
+  createAddress(@Body() dto: AddressDto) {
     return this.addressService.create(dto);
   }
 
   @Get()
-  testConnection() {
+  findAllAddresses() {
     return this.addressService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.addressService.findOne(id);
-  }
+  // @Get()
+  // findOne(@Body() dto: BasisAddressDto) {
+  //   return this.addressService.findOne(dto);
+  // }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() dto: AddressDto) {
+  updateAddress(@Param('id') id: number, @Body() dto: AddressDto) {
     return this.addressService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  removeAddress(@Param('id') id: string) {
     return this.addressService.remove(id);
   }
 }

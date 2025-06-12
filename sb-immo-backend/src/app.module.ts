@@ -7,6 +7,8 @@ import { KontakteModule as ContactModule } from './modules/contact/contact.modul
 import { ContactEntity } from './modules/contact/contact.entity';
 import { AddressEntity } from './modules/address/address.entity';
 import { AddressModule } from './modules/address/address.module';
+import { PropertyEntity } from './modules/property/property.entity';
+import { PropertyModule } from './modules/property/property.module';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { AddressModule } from './modules/address/address.module';
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          entities: [ContactEntity, AddressEntity],
+          entities: [ContactEntity, AddressEntity, PropertyEntity],
           synchronize: true,
           logging: isDev,
           autoLoadEntities: true,
@@ -35,6 +37,7 @@ import { AddressModule } from './modules/address/address.module';
     }),
     ContactModule,
     AddressModule,
+    PropertyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

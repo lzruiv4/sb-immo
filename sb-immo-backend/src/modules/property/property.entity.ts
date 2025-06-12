@@ -10,7 +10,7 @@ import { AddressEntity } from '../address/address.entity';
 import { ContactEntity } from '../contact/contact.entity';
 import { PropertyStatusType } from '../enums/property-statue.enum';
 
-@Entity()
+@Entity('sb_property')
 export class PropertyEntity {
   @PrimaryGeneratedColumn({ name: 'property_id' })
   propertyId: string;
@@ -22,10 +22,10 @@ export class PropertyEntity {
   @JoinColumn({ name: 'address_id' })
   address: AddressEntity;
 
-  @Column({ nullable: true })
+  @Column()
   unit: string; // maybe with multiple tenants  e.g. 1.O.G.
 
-  @ManyToOne(() => ContactEntity)
+  @ManyToOne(() => ContactEntity, { eager: true })
   @JoinColumn({ name: 'owner_id' })
   owner: ContactEntity;
 
@@ -35,6 +35,10 @@ export class PropertyEntity {
   @Column({ name: 'build_year' })
   buildYear: number;
 
-  @Column({ type: 'enum', enum: PropertyStatusType })
+  @Column({
+    type: 'enum',
+    enum: PropertyStatusType,
+    default: PropertyStatusType.AVAILABLE,
+  })
   status: PropertyStatusType;
 }

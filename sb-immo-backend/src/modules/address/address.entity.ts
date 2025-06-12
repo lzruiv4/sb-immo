@@ -1,6 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
-@Entity()
+@Entity('sb-immo_address')
+@Unique([
+  'street',
+  'houseNumber',
+  'postcode',
+  'city',
+  'district',
+  'state',
+  'country',
+])
 export class AddressEntity {
   @PrimaryGeneratedColumn({ name: 'address_id' })
   addressId: number;
