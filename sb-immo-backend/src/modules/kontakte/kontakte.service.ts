@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { KontakteEntity } from './kontakte.entity';
-import { CreateKontakteDto } from './dto/kontakte.dto';
+import { CreateKontakteDto } from './dto/create.kontakte.dto';
+import { UpdateKontakteDto } from './dto/update.kontakte.dto';
 
 @Injectable()
 export class KontakteService {
@@ -23,21 +24,25 @@ export class KontakteService {
     return this.kontakteRepository.find();
   }
 
-  //   async findOne(id: string): Promise<User> {
-  //     const user = await this.userRepo.findOne({ where: { id } });
-  //     if (!user) throw new NotFoundException('User not found');
-  //     return user;
-  //   }
+  async findOne(kontakteId: string): Promise<KontakteEntity> {
+    const kontakteEntity = await this.kontakteRepository.findOne({
+      where: { kontakteId },
+    });
+    if (!kontakteEntity)
+      throw new NotFoundException('Kontakte ist nicht gefunden');
+    return kontakteEntity;
+  }
 
-  //   async update(id: string, dto: UpdateUserDto): Promise<User> {
-  //     await this.userRepo.update(id, dto);
-  //     return this.findOne(id);
-  //   }
+  async update(id: string, dto: UpdateKontakteDto): Promise<KontakteEntity> {
+    await this.kontakteRepository.update(id, dto);
+    return this.findOne(id);
+  }
 
-  //   async remove(id: string): Promise<void> {
-  //     const result = await this.userRepo.delete(id);
-  //     if (result.affected === 0) {
-  //       throw new NotFoundException('User not found');
-  //     }
-  //   }
+  async remove(id: string): Promise<void> {
+    const result = await this.kontakteRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException('Kontakte ist nicht gefunden');
+    }
+    console.log(`Kontakte mit dem id ${id} ist gelöst.`);
+  }
 }
