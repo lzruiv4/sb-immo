@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
-@Entity('sb-immo_address')
+@Entity('sb_immo_address')
 @Unique([
   'street',
   'houseNumber',

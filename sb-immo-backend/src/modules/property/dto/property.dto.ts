@@ -1,28 +1,14 @@
-import { AddressDto } from '../../address/dto/address.dto';
-import { BasisContactDto } from '../../contact/dto/basis-contact.dto';
-import { PropertyStatusType } from '../../enums/property-statue.enum';
 import { PropertyEntity } from '../property.entity';
+import { BasisPropertyDto } from './create-property.dto';
 
-export class ResponsePropertyDto {
+export class PropertyDto extends BasisPropertyDto {
   propertyId: string;
-  propertyName: string;
-  address: AddressDto;
-  unit: string;
-  owner: BasisContactDto;
-  area: number;
-  buildYear: number;
-  status: PropertyStatusType;
 
-  static entityToDto(entity: PropertyEntity): ResponsePropertyDto {
+  static entityToDto(entity: PropertyEntity): PropertyDto {
+    const dto = BasisPropertyDto.entityToDto(entity);
     return {
       propertyId: entity.propertyId,
-      propertyName: entity.propertyName,
-      address: AddressDto.entityToDto(entity.address),
-      unit: entity.unit,
-      owner: BasisContactDto.entityToBasisContactDto(entity.owner),
-      area: entity.area,
-      buildYear: entity.buildYear,
-      status: entity.status,
-    } as ResponsePropertyDto;
+      ...dto,
+    } as PropertyDto;
   }
 }

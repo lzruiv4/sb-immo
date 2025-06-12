@@ -1,23 +1,13 @@
-import { RoleType } from 'src/modules/enums/role.enum';
 import { ContactEntity } from '../contact.entity';
+import { BasisContactDto } from './basis-contact.dto';
 
-export class ContactDto {
-  contactId: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phone: string;
-  role: RoleType;
+export class ContactDto extends BasisContactDto {
   notes: string;
 
   static entityToContactDto(entity: ContactEntity): ContactDto {
+    const dto = BasisContactDto.entityToBasisContactDto(entity);
     return {
-      contactId: entity.contactId,
-      firstname: entity.firstname,
-      lastname: entity.lastname,
-      email: entity.email,
-      phone: entity.phone,
-      role: entity.role,
+      ...dto,
       notes: entity.notes,
     };
   }

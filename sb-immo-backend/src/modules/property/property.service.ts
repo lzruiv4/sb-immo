@@ -3,8 +3,9 @@ import { PropertyEntity } from './property.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddressService } from '../address/address.service';
-import { PropertyDto } from './dto/response-property.dto';
-import { ResponsePropertyDto } from './dto/property.dto';
+import { BasisPropertyDto } from './dto/create-property.dto';
+import { PropertyDto } from './dto/property.dto';
+import { AddressDto } from '../address/dto/address.dto';
 
 @Injectable()
 export class PropertyService {
@@ -14,7 +15,7 @@ export class PropertyService {
     private addressService: AddressService,
   ) {}
 
-  async create(dto: PropertyDto): Promise<ResponsePropertyDto> {
+  async create(dto: BasisPropertyDto): Promise<PropertyDto> {
     if (!dto.propertyName) {
       dto.propertyName = `${dto.address.street} ${dto.address.houseNumber}, ${dto.address.postcode}, ${dto.address.city}`;
     }
@@ -23,32 +24,35 @@ export class PropertyService {
       dto.address,
     );
     if (!isDuplicate) {
-      const addressEntity = await this.addressService.create(dto.address);
-      newPropertyEntity.address = addressEntity; // Set the address relation
+      const addressDto = await this.addressService.create(dto.address);
+      newPropertyEntity.address = AddressDto.dtoToAddressEntity(addressDto); // Set the address relation
     } else {
-      const existingAddress = await this.addressService.findOne(dto.address);
-      newPropertyEntity.address = existingAddress; // Use existing address
+      const existingAddress = await this.addressService.findOne(
+        dto.address.addressId,
+      );
+      newPropertyEntity.address =
+        AddressDto.dtoToAddressEntity(existingAddress); // Use existing address
     }
-    return ResponsePropertyDto.entityToDto(
+    return PropertyDto.entityToDto(
       await this.propertyRepository.save(newPropertyEntity),
     );
   }
 
-  async findAll(): Promise<ResponsePropertyDto[]> {
+  async findAll(): Promise<PropertyDto[]> {
     return (await this.propertyRepository.find()).map((property) =>
-      ResponsePropertyDto.entityToDto(property),
+      PropertyDto.entityToDto(property),
     );
   }
 
-  async findOne(propertyId: string): Promise<ResponsePropertyDto> {
+  async findOne(propertyId: string): Promise<PropertyDto> {
     const propertyEntity = await this.propertyRepository.findOne({
       where: { propertyId },
     });
     if (!propertyEntity) throw new NotFoundException('Property not found');
-    return ResponsePropertyDto.entityToDto(propertyEntity);
+    return PropertyDto.entityToDto(propertyEntity);
   }
 
-  async update(id: string, dto: PropertyDto): Promise<ResponsePropertyDto> {
+  async update(id: string, dto: PropertyDto): Promise<PropertyDto> {
     await this.propertyRepository.update(id, dto);
     return this.findOne(id);
   }

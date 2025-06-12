@@ -12,7 +12,7 @@ export class AddressService {
     private addressRepository: Repository<AddressEntity>,
   ) {}
 
-  async create(dto: AddressDto): Promise<AddressEntity> {
+  async create(dto: AddressDto): Promise<AddressDto> {
     const exists = await this.isAddressDuplicate({
       street: dto.street,
       houseNumber: dto.houseNumber,
@@ -21,41 +21,51 @@ export class AddressService {
     } as BasisAddressDto);
     if (exists) {
       console.log('Address is already exists:', dto);
-      return this.findOne(dto);
+      return this.findOne(dto.addressId);
     } else {
       console.log('Creating new address:', dto);
       const address = this.addressRepository.create(dto);
-      return this.addressRepository.save(address);
+      return AddressDto.entityToAddressDto(
+        await this.addressRepository.save(address),
+      );
     }
   }
 
-  async findAll(): Promise<AddressEntity[]> {
-    return await this.addressRepository.find();
+  async findAll(): Promise<AddressDto[]> {
+    return (await this.addressRepository.find()).map((address) =>
+      AddressDto.entityToAddressDto(address),
+    );
   }
 
-  async findOne(dto: AddressDto): Promise<AddressEntity> {
-    const addressEntity = await this.addressRepository
-      .createQueryBuilder('property')
-      .where('LOWER(TRIM(property.street)) = :street', {
-        street: dto.street.toLowerCase().trim(),
-      })
-      .andWhere('TRIM(property.houseNumber) = :houseNumber', {
-        houseNumber: dto.houseNumber.trim(),
-      })
-      .andWhere('TRIM(property.postcode) = :postcode', {
-        postcode: dto.postcode.trim(),
-      })
-      .andWhere('LOWER(TRIM(property.city)) = :city', {
-        city: dto.city.toLowerCase().trim(),
-      })
-      .getOne();
+  async findOne(addressId: number): Promise<AddressDto> {
+    // TODO: Maybe find address by street
+    // const addressEntity = await this.addressRepository
+    //   .createQueryBuilder('property')
+    //   .where('LOWER(TRIM(property.street)) = :street', {
+    //     street: dto.street.toLowerCase().trim(),
+    //   })
+    //   .andWhere('TRIM(property.houseNumber) = :houseNumber', {
+    //     houseNumber: dto.houseNumber.trim(),
+    //   })
+    //   .andWhere('TRIM(property.postcode) = :postcode', {
+    //     postcode: dto.postcode.trim(),
+    //   })
+    //   .andWhere('LOWER(TRIM(property.city)) = :city', {
+    //     city: dto.city.toLowerCase().trim(),
+    //   })
+    //   .getOne();
+    const addressEntity = await this.addressRepository.findOne({
+      where: {
+        addressId,
+      },
+    });
     if (!addressEntity) throw new NotFoundException('Address not found');
-    return addressEntity;
+    return AddressDto.entityToAddressDto(addressEntity);
   }
 
-  async update(id: number, dto: AddressDto): Promise<AddressEntity> {
+  async update(id: number, dto: AddressDto): Promise<AddressDto> {
     await this.addressRepository.update(id, dto);
-    return this.findOne(dto);
+    return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
@@ -68,7 +78,6 @@ export class AddressService {
 
   async isAddressDuplicate(dto: BasisAddressDto): Promise<boolean> {
     const normalizedStreet = dto.street.toLowerCase().trim();
-    console.log(0, 'Checking for duplicate address:');
     const found = await this.addressRepository
       .createQueryBuilder('property')
       .where('LOWER(TRIM(property.street)) = :street', {

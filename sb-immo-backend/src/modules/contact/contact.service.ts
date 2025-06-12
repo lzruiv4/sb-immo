@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { ContactEntity } from './contact.entity';
-import { UpdateContactDto } from './dto/update-contact.dto';
+import { ContactDto } from './dto/contact.dto';
 
 @Injectable()
 export class ContactService {
@@ -12,25 +12,29 @@ export class ContactService {
     private contactRepository: Repository<ContactEntity>,
   ) {}
 
-  async create(dto: CreateContactDto): Promise<ContactEntity> {
+  async create(dto: CreateContactDto): Promise<ContactDto> {
     const newContactEntity = this.contactRepository.create(dto);
     newContactEntity.createdAt = new Date(); // Set createdAt to current date
-    return this.contactRepository.save(newContactEntity);
+    return ContactDto.entityToContactDto(
+      await this.contactRepository.save(newContactEntity),
+    );
   }
 
-  async findAll(): Promise<ContactEntity[]> {
-    return this.contactRepository.find();
+  async findAll(): Promise<ContactDto[]> {
+    return (await this.contactRepository.find()).map((contact) =>
+      ContactDto.entityToContactDto(contact),
+    );
   }
 
-  async findOne(contactId: string): Promise<ContactEntity> {
+  async findOne(contactId: string): Promise<ContactDto> {
     const contactEntity = await this.contactRepository.findOne({
       where: { contactId },
     });
     if (!contactEntity) throw new NotFoundException('Contact not found');
-    return contactEntity;
+    return ContactDto.entityToContactDto(contactEntity);
   }
 
-  async update(id: string, dto: UpdateContactDto): Promise<ContactEntity> {
+  async update(id: string, dto: ContactDto): Promise<ContactDto> {
     await this.contactRepository.update(id, dto);
     return this.findOne(id);
   }

@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
-import { PropertyDto } from './dto/response-property.dto';
+import { PropertyDto } from './dto/property.dto';
 
 @Controller('properties')
 export class PropertyController {

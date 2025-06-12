@@ -15,27 +15,30 @@ export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Post()
-  createAddress(@Body() dto: AddressDto) {
+  createAddress(@Body() dto: AddressDto): Promise<AddressDto> {
     return this.addressService.create(dto);
   }
 
   @Get()
-  findAllAddresses() {
+  findAllAddresses(): Promise<AddressDto[]> {
     return this.addressService.findAll();
   }
 
-  // @Get()
-  // findOne(@Body() dto: BasisAddressDto) {
-  //   return this.addressService.findOne(dto);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: number): Promise<AddressDto> {
+    return this.addressService.findOne(id);
+  }
 
   @Put(':id')
-  updateAddress(@Param('id') id: number, @Body() dto: AddressDto) {
+  updateAddress(
+    @Param('id') id: number,
+    @Body() dto: AddressDto,
+  ): Promise<AddressDto> {
     return this.addressService.update(id, dto);
   }
 
   @Delete(':id')
-  removeAddress(@Param('id') id: string) {
+  removeAddress(@Param('id') id: string): Promise<void> {
     return this.addressService.remove(id);
   }
 }
