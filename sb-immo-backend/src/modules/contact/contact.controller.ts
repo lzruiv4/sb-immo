@@ -7,36 +7,36 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { KontakteService } from './contact.service';
+import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create.contact.dto';
 import { UpdateContactDto } from './dto/update.contact.dto';
 
 @Controller('contacts')
-export class KontakteController {
-  constructor(private readonly kontakteService: KontakteService) {}
+export class ContactController {
+  constructor(private readonly contactService: ContactService) {}
 
   @Post()
   createUser(@Body() dto: CreateContactDto) {
-    return this.kontakteService.create(dto);
+    return this.contactService.create(dto);
   }
 
   @Get()
   testConnection() {
-    return this.kontakteService.findAll();
+    return this.contactService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.kontakteService.findOne(id);
+    return this.contactService.findOne(id);
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateContactDto) {
-    return this.kontakteService.update(id, dto);
+    return this.contactService.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.kontakteService.remove(id);
+    return this.contactService.remove(id);
   }
 }

@@ -6,7 +6,7 @@ import { ContactEntity } from './contact.entity';
 import { UpdateContactDto } from './dto/update.contact.dto';
 
 @Injectable()
-export class KontakteService {
+export class ContactService {
   constructor(
     @InjectRepository(ContactEntity)
     private contactRepository: Repository<ContactEntity>,

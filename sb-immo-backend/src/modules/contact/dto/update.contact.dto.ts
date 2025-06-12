@@ -1,8 +1,10 @@
+import { RoleType } from 'src/modules/enums/role.enum';
+
 export class UpdateContactDto {
   firstname: string;
   lastname: string;
   email: string;
   phone: string;
-  role: 'EIGENTUEMER' | 'MIETER' | 'DIENSTLEISTER';
+  role: RoleType;
   notes?: string;
 }

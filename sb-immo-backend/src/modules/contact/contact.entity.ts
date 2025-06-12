@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { RoleType } from '../enums/role.enum';
 
 @Entity('sb_contact')
 export class ContactEntity {
@@ -20,8 +21,8 @@ export class ContactEntity {
   @Column()
   phone: string;
 
-  @Column({ type: 'enum', enum: ['EIGENTUEMER', 'MIETER', 'DIENSTLEISTER'] })
-  role: 'EIGENTUEMER' | 'MIETER' | 'DIENSTLEISTER';
+  @Column({ type: 'enum', enum: RoleType, default: RoleType.ROLE_EIGENTUEMER })
+  role: RoleType;
 
   @Column({ type: 'timestamptz', nullable: true, name: 'created_at' })
   createdAt: Date;

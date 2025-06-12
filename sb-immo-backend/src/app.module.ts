@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { KontakteModule } from './modules/contact/contact.module';
-// import { join } from 'path';
+import { KontakteModule as ContactModule } from './modules/contact/contact.module';
 import { ContactEntity } from './modules/contact/contact.entity';
+import { AddressEntity } from './modules/address/address.entity';
+import { AddressModule } from './modules/address/address.module';
 
 @Module({
   imports: [
@@ -25,21 +26,17 @@ import { ContactEntity } from './modules/contact/contact.entity';
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          entities: [ContactEntity],
-          synchronize: isDev,
+          entities: [ContactEntity, AddressEntity],
+          synchronize: true,
           logging: isDev,
           autoLoadEntities: true,
         };
       },
     }),
-    KontakteModule,
+    ContactModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor(private configService: ConfigService) {
-    console.log('DB_HOST:', this.configService.get('DB_USERNAME'));
-    console.log('NODE_ENV:', this.configService.get('NODE_ENV'));
-  }
-}
+export class AppModule {}
