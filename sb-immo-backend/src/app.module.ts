@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { KontakteModule } from './modules/kontakte/kontakte.module';
+import { KontakteModule } from './modules/contact/contact.module';
 // import { join } from 'path';
-import { KontakteEntity } from './modules/kontakte/kontakte.entity';
+import { ContactEntity } from './modules/contact/contact.entity';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { KontakteEntity } from './modules/kontakte/kontakte.entity';
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          entities: [KontakteEntity],
+          entities: [ContactEntity],
           synchronize: isDev,
           logging: isDev,
           autoLoadEntities: true,

@@ -7,16 +7,16 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { KontakteService } from './kontakte.service';
-import { CreateKontakteDto } from './dto/create.kontakte.dto';
-import { UpdateKontakteDto } from './dto/update.kontakte.dto';
+import { KontakteService } from './contact.service';
+import { CreateContactDto } from './dto/create.contact.dto';
+import { UpdateContactDto } from './dto/update.contact.dto';
 
-@Controller('kontakte')
+@Controller('contacts')
 export class KontakteController {
   constructor(private readonly kontakteService: KontakteService) {}
 
   @Post()
-  createUser(@Body() dto: CreateKontakteDto) {
+  createUser(@Body() dto: CreateContactDto) {
     return this.kontakteService.create(dto);
   }
 
@@ -31,7 +31,7 @@ export class KontakteController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateKontakteDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateContactDto) {
     return this.kontakteService.update(id, dto);
   }
 

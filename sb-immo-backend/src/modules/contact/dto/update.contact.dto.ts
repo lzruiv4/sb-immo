@@ -1,4 +1,4 @@
-export class UpdateKontakteDto {
+export class UpdateContactDto {
   firstname: string;
   lastname: string;
   email: string;

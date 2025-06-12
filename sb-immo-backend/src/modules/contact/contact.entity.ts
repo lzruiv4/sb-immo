@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('sb_kontakte')
-export class KontakteEntity {
-  @PrimaryGeneratedColumn('uuid', { name: 'kontakte_id' })
-  kontakteId: string;
+@Entity('sb_contact')
+export class ContactEntity {
+  @PrimaryGeneratedColumn('uuid', { name: 'contact_id' })
+  contactId: string;
 
   @Column({ length: 100 })
   firstname: string;
@@ -13,6 +13,9 @@ export class KontakteEntity {
 
   @Column()
   email: string;
+
+  @Column()
+  password: string;
 
   @Column()
   phone: string;
