@@ -9,5 +9,6 @@ import { AddressModule } from '../address/address.module';
   imports: [TypeOrmModule.forFeature([PropertyEntity]), AddressModule],
   controllers: [PropertyController],
   providers: [PropertyService],
+  exports: [PropertyService],
 })
 export class PropertyModule {}

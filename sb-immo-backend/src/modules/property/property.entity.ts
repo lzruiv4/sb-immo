@@ -6,11 +6,11 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
-import { PropertyStatusType } from '../enums/property-statue.enum';
+import { PropertyStatusType } from '../enums/property-status.enum';
 
 @Entity('sb_property')
 export class PropertyEntity {
-  @PrimaryGeneratedColumn({ name: 'property_id' })
+  @PrimaryGeneratedColumn('uuid', { name: 'property_id' })
   propertyId: string;
 
   @Column({ name: 'property_name' })

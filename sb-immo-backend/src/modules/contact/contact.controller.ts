@@ -16,12 +16,12 @@ export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Post()
-  createUser(@Body() dto: CreateContactDto) {
+  createContact(@Body() dto: CreateContactDto) {
     return this.contactService.create(dto);
   }
 
   @Get()
-  findAllUsers() {
+  findAllContacts() {
     return this.contactService.findAll();
   }
 
@@ -31,12 +31,12 @@ export class ContactController {
   }
 
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() dto: ContactDto) {
+  updateContact(@Param('id') id: string, @Body() dto: ContactDto) {
     return this.contactService.update(id, dto);
   }
 
   @Delete(':id')
-  removeUser(@Param('id') id: string) {
+  removeContact(@Param('id') id: string) {
     return this.contactService.remove(id);
   }
 }

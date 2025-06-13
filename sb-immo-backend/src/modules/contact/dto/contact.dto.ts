@@ -11,4 +11,15 @@ export class ContactDto extends BasisContactDto {
       notes: entity.notes,
     };
   }
+
+  static dtoToContactEntity(dto: ContactDto): ContactEntity {
+    const entity = new ContactEntity();
+    entity.contactId = dto.contactId;
+    entity.firstname = dto.firstname;
+    entity.lastname = dto.lastname;
+    entity.email = dto.email;
+    entity.phone = dto.phone;
+    entity.notes = dto.notes;
+    return entity;
+  }
 }

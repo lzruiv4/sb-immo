@@ -1,5 +1,5 @@
+import { PropertyStatusType } from 'src/modules/enums/property-status.enum';
 import { AddressDto } from '../../address/dto/address.dto';
-import { PropertyStatusType } from '../../enums/property-statue.enum';
 import { PropertyEntity } from '../property.entity';
 
 export class BasisPropertyDto {
