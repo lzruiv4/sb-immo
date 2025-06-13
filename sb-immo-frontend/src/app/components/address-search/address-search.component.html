@@ -1,0 +1,30 @@
+<div class="card flex justify-center">
+  <!-- <div class="flex flex-col gap-2">
+    <label for="username">Get address</label>
+    <input
+      type="text"
+      class="p-inputtext"
+      [formControl]="searchControl"
+      placeholder="Please enter a street name"
+    />
+  </div> -->
+
+  <div class="card flex flex-col md:flex-row gap-4">
+    <p-inputgroup>
+      <p-button label="Search" />
+      <input
+        pInputText
+        placeholder="Please enter a street name"
+        [formControl]="searchControl"
+      />
+    </p-inputgroup>
+    <div *ngIf="addresses$ | async as addresses" class="mt-2">
+      <ul *ngIf="addresses.length > 0">
+        <li *ngFor="let addr of addresses">
+          {{ addr.street }} {{ addr.houseNumber }} {{ addr.postcode }}
+          {{ addr.city }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
