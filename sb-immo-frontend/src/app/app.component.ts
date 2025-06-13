@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
-import { AddressSearchComponent } from './components/address-search/address-search.component';
+import { Component, OnInit } from '@angular/core';
+import { PrimeNG } from 'primeng/config';
+import { HomeLayoutComponent } from './layout/home-layout/home-layout.component';
 
 @Component({
   selector: 'app-root',
-  imports: [AddressSearchComponent],
+  imports: [HomeLayoutComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  title = 'sb-immo-frontend';
+export class AppComponent implements OnInit {
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+  // constructor(private primeng: PrimeNG) {}
+
+  // ngOnInit() {
+  //   this.primeng.ripple.set(true);
+  // }
 }

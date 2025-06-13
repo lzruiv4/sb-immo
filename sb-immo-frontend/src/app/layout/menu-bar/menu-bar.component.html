@@ -1,0 +1,13 @@
+<div class="menu-container">
+  <nav class="menu">
+    <a *ngFor="let item of menuItems">
+      <i
+        class="pi"
+        [ngClass]="item.icon"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      ></i>
+    </a>
+  </nav>
+</div>

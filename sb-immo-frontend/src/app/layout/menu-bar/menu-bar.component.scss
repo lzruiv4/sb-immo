@@ -1,0 +1,36 @@
+.menu-container {
+  color: rgb(0, 0, 0);
+  width: 100%;
+  height: 100%;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu a {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.menu i {
+  margin-right: 10px;
+  font-size: 3rem;
+
+  &:active {
+    color: #100550;
+  }
+
+  &:hover {
+    color: #ff8025;
+  }
+}
