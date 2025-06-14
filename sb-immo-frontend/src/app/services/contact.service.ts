@@ -16,16 +16,19 @@ export class ContactService {
 
   constructor(private contactHttp: HttpClient) {}
 
-  getContacts(): Observable<IContactDto[]> {
+  getContacts(): void {
     this.loadingSubject.next(true);
-    return this.contactHttp.get<IContactDto[]>(BACKEND_API_CONTACT_URL).pipe(
-      tap((contacts) => this.contactsSubject.next(contacts)),
-      catchError((error) => {
-        console.error('There is an error in the request data.', error);
-        throw error;
-      }),
-      finalize(() => this.loadingSubject.next(false))
-    );
+    this.contactHttp
+      .get<IContactDto[]>(BACKEND_API_CONTACT_URL)
+      .pipe(
+        tap((contacts) => this.contactsSubject.next(contacts)),
+        catchError((error) => {
+          console.error('There is an error in the request data.', error);
+          throw error;
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      )
+      .subscribe();
   }
 
   saveNewContact(newContactDto: IContactDto): Observable<IContactDto> {

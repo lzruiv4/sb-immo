@@ -8,7 +8,7 @@
         [formControl]="searchControl"
       />
     </p-inputgroup>
-    <div *ngIf="addresses$ | async as addresses" class="mt-2">
+    <div *ngIf="addressesForInput$ | async as addresses" class="mt-2">
       <ul *ngIf="addresses.length > 0">
         <li *ngFor="let addr of addresses">
           {{ addr.street }} {{ addr.houseNumber }} {{ addr.postcode }}

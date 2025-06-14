@@ -29,7 +29,7 @@ export class AddressSearchComponent implements OnInit {
 
   constructor(private addressService: AddressService) {}
 
-  get addresses$() {
+  get addressesForInput$() {
     return this.addressService.addressesForInput$;
   }
 

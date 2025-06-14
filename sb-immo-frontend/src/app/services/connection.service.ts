@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, finalize, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  Observable,
+  tap,
+  throwError,
+} from 'rxjs';
 import { IPropertyRecordDto } from '../models/dtos/property-record.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_RECORD_URL } from '../core/apis/backend.api';
@@ -18,9 +25,9 @@ export class PropertyRecordService {
 
   constructor(private propertyRecordHttp: HttpClient) {}
 
-  getPropertyRecords(): Observable<IPropertyRecordDto[]> {
+  getPropertyRecords(): void {
     this.loadingSubject.next(true);
-    return this.propertyRecordHttp
+    this.propertyRecordHttp
       .get<IPropertyRecordDto[]>(BACKEND_API_PROPERTY_RECORD_URL)
       .pipe(
         tap((propertyRecords) =>
@@ -28,13 +35,14 @@ export class PropertyRecordService {
         ),
         catchError((error) => {
           console.error('There is an error in the request data.', error);
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => {
           this.loadingSubject.next(false);
           console.log('sss', this.propertyRecords$);
         })
-      );
+      )
+      .subscribe();
   }
 
   saveNewPropertyRecord(
@@ -53,7 +61,7 @@ export class PropertyRecordService {
         }),
         catchError((error) => {
           console.error('Error occurred during create new property record.');
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
       );
@@ -82,7 +90,7 @@ export class PropertyRecordService {
         }),
         catchError((error) => {
           console.error('Error occurred during update a property record.');
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
       );

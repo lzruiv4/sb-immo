@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, finalize, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  Observable,
+  tap,
+  throwError,
+} from 'rxjs';
 import { IPropertyDto } from '../models/dtos/property.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_URL } from '../core/apis/backend.api';
@@ -16,17 +23,19 @@ export class PropertyService {
 
   constructor(private propertyHttp: HttpClient) {}
 
-  getProperties(): Observable<IPropertyDto[]> {
+  getProperties(): void {
     this.loadingSubject.next(true);
-    return this.propertyHttp.get<IPropertyDto[]>(BACKEND_API_PROPERTY_URL).pipe(
-      tap((properties) => this.propertiesSubject.next(properties)),
-      catchError((error) => {
-        console.error('There is an error in the request data.', error);
-        this.propertiesSubject.next([]);
-        throw error;
-      }),
-      finalize(() => this.loadingSubject.next(false))
-    );
+    this.propertyHttp
+      .get<IPropertyDto[]>(BACKEND_API_PROPERTY_URL)
+      .pipe(
+        tap((properties) => this.propertiesSubject.next(properties)),
+        catchError((error) => {
+          console.error('There is an error in the request data.', error);
+          return throwError(() => error);
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      )
+      .subscribe();
   }
 
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {
@@ -40,7 +49,7 @@ export class PropertyService {
         }),
         catchError((error) => {
           console.error('Error occurred during create new property.');
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
       );
@@ -67,7 +76,7 @@ export class PropertyService {
         }),
         catchError((error) => {
           console.error('Error occurred during update a property.');
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
       );
@@ -87,7 +96,7 @@ export class PropertyService {
         }),
         catchError((error) => {
           console.error('Error occurred during delete a property.');
-          throw error;
+          return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
       );
