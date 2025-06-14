@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ContactService } from '../../services/contact.service';
+import { AddressSearchComponent } from "../address-search/address-search.component";
 
 @Component({
   selector: 'app-contact',
-  imports: [],
+  imports: [AddressSearchComponent],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
