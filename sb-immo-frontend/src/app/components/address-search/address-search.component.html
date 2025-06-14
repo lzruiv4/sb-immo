@@ -1,7 +1,7 @@
 <div class="card flex justify-center">
   <div class="card flex flex-col md:flex-row gap-4">
     <p-inputgroup>
-      <p-button label="Search" />
+      <!-- <p-button label="Search" /> -->
       <input
         pInputText
         placeholder="Please enter a street name"
@@ -18,3 +18,24 @@
     </div>
   </div>
 </div>
+<!-- <div class="card flex justify-center">
+  <form [formGroup]="formGroup">
+    <p-autocomplete
+      formControlName="selectedCountry"
+      [suggestions]="filteredCountries"
+      (completeMethod)="filterCountry($event)"
+      field="name"
+    />
+  </form>
+</div>
+
+<div
+  class="card flex justify-center"
+  style="background-color: aquamarine; height: 100%; width: 100%"
+>
+  <p-autocomplete
+    [formControl]="searchControl"
+    [dropdown]="true"
+    [suggestions]="(addresses$ | async) ?? []"
+  />
+</div> -->

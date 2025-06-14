@@ -1,8 +1,8 @@
 .main-container {
   width: 100vw;
   height: 100vh;
-  // display: flex;
-
+  display: flex;
+  // flex-direction: column;
   .main-header {
     width: 80px;
     height: 100vh;
@@ -10,5 +10,9 @@
 
   .main-content {
     flex: 1;
+    // height: 90%;
+    overflow-y: auto; /* 内容区域纵向滚动 */
+    // padding: 16px;
+    // background: #fff;
   }
 }

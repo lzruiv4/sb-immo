@@ -4,14 +4,16 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputGroup } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
-import { AddressService } from '../../sevices/address.service';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { AddressService } from '../../services/address.service';
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-address-search',
   standalone: true,
   imports: [
+    AutoCompleteModule,
     FormsModule,
     InputGroup,
     InputTextModule,
@@ -28,15 +30,17 @@ export class AddressSearchComponent implements OnInit {
   constructor(private addressService: AddressService) {}
 
   get addresses$() {
-    return this.addressService.addresses$;
+    return this.addressService.addressesForInput$;
   }
 
   ngOnInit(): void {
     this.searchControl.valueChanges
       .pipe(
-        debounceTime(300),
+        debounceTime(1000),
         distinctUntilChanged(),
-        switchMap((value) => this.addressService.getAddresses(value || ''))
+        switchMap((value) =>
+          this.addressService.getAddressesForInput(value || '')
+        )
       )
       .subscribe();
   }

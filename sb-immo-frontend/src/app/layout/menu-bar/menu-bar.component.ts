@@ -12,7 +12,7 @@ export class MenuBarComponent {
   collapsed = false;
 
   menuItems = [
-    { icon: 'pi-chart-line', path: '/dashboard' },
+    { icon: 'pi-chart-line', path: '' },
     { icon: 'pi-user', path: '/contact' },
     { icon: 'pi-home', path: '/property' },
     { icon: 'pi-sitemap', path: '/connection' },
