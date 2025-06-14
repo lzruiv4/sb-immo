@@ -53,6 +53,11 @@ export class PropertyService {
   }
 
   async update(id: string, dto: PropertyDto): Promise<PropertyDto> {
+    const tempAddress = await this.addressService.update(
+      dto.address.addressId,
+      dto.address,
+    );
+    dto.address = tempAddress;
     await this.propertyRepository.update(id, dto);
     return this.findOne(id);
   }

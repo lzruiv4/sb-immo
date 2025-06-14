@@ -64,7 +64,9 @@ export class AddressService {
   }
 
   async update(id: number, dto: AddressDto): Promise<AddressDto> {
-    await this.addressRepository.update(id, dto);
+    if (this.isAddressChanged(await this.findOne(id), dto)) {
+      await this.addressRepository.update(id, dto);
+    }
     return this.findOne(id);
   }
 
@@ -74,6 +76,26 @@ export class AddressService {
       throw new NotFoundException('Address not found');
     }
     console.log(`Address with id ${id} has been deleted.`);
+  }
+
+  private isAddressChanged(
+    oldAddress: AddressDto,
+    newAddressPartial: Partial<AddressDto>,
+  ): boolean {
+    if (!oldAddress || !newAddressPartial) return false;
+
+    return [
+      'street',
+      'number',
+      'city',
+      'postcode',
+      'country',
+      'countryCode',
+    ].some(
+      (key) =>
+        newAddressPartial[key] !== undefined &&
+        newAddressPartial[key] !== oldAddress[key],
+    );
   }
 
   async isAddressDuplicate(dto: BasisAddressDto): Promise<boolean> {
