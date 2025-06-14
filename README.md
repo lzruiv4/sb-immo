@@ -12,6 +12,6 @@ docker run -d \
 -e POSTGRES_USER=sa \
 -e POSTGRES_PASSWORD=123 \
 -e POSTGRES_DB=sb-immo \
--p 5432:5432 \
+-p 3031:5432 \
 postgres:latest
 ```

@@ -31,8 +31,7 @@
 
   &.active {
     color: #ffc400;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(195, 195, 195, 0.5);
+    box-shadow: 0 4px 10px rgba(195, 195, 195, 0.1);
   }
 
   &:hover {

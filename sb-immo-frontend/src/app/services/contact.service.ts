@@ -48,14 +48,11 @@ export class ContactService {
       );
   }
 
-  updateContact(
-    contactId: string,
-    updateContact: IContactDto
-  ): Observable<IContactDto> {
+  updateContact(updateContact: IContactDto): Observable<IContactDto> {
     this.loadingSubject.next(true);
     return this.contactHttp
       .put<IContactDto>(
-        `${BACKEND_API_CONTACT_URL}/${contactId}`,
+        `${BACKEND_API_CONTACT_URL}/${updateContact.contactId}`,
         updateContact
       )
       .pipe(
@@ -63,7 +60,9 @@ export class ContactService {
           const currentList = this.contactsSubject.value;
           const updateList = currentList.map((item) =>
             // update info in list
-            item.contactId === contactId ? { ...item, ...contact } : item
+            item.contactId === updateContact.contactId
+              ? { ...item, ...contact }
+              : item
           );
           this.contactsSubject.next(updateList);
         }),

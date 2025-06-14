@@ -1,14 +1,36 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ContactService } from '../../services/contact.service';
-import { AddressSearchComponent } from "../address-search/address-search.component";
+import { CommonModule } from '@angular/common';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
+import { IContactDto } from '../../models/dtos/contact.dto';
 
 @Component({
   selector: 'app-contact',
-  imports: [AddressSearchComponent],
+  imports: [
+    AvatarModule,
+    FormsModule,
+    TableModule,
+    // TagModule,
+    IconFieldModule,
+    InputTextModule,
+    InputIconModule,
+    // MultiSelectModule,
+    // SelectModule,
+    CommonModule,
+    ButtonModule,
+  ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
 export class ContactComponent implements OnInit {
+  loading: boolean = false;
+
   constructor(private contactService: ContactService) {}
 
   get contact$() {
@@ -18,5 +40,19 @@ export class ContactComponent implements OnInit {
   ngOnInit(): void {
     this.contactService.getContacts();
     this.contactService.contacts$.subscribe();
+  }
+
+  onRowEditInit() {}
+
+  showContactDetails(contactId: string) {
+    throw new Error('Method not implemented.');
+  }
+
+  onRowEditSave(contactToBeEdit: IContactDto) {
+    this.contactService.updateContact(contactToBeEdit).subscribe();
+  }
+
+  onRowEditCancel() {
+    this.contactService.getContacts();
   }
 }

@@ -10,6 +10,8 @@
   }
 
   .main-content {
-    flex: 1;
+    // flex: 1;
+    width: calc(100vw - 90px);
+    height: 100%;
   }
 }
