@@ -1,0 +1,243 @@
+<div class="property-container">
+  <p-table
+    [value]="(properties$ | async) ?? []"
+    dataKey="propertyId"
+    [rows]="5"
+    editMode="row"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [loading]="loading"
+    [paginator]="true"
+    [globalFilterFields]="[
+      'propertyName',
+      'address',
+      'unit',
+      'area',
+      'buildYear',
+      'status'
+    ]"
+    [tableStyle]="{ width: '100%' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Avatar</th>
+        <th>
+          <div class="flex items-center">
+            Property name
+            <p-columnFilter type="text" field="propertyName" display="menu" />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            Street
+            <p-columnFilter type="text" field="address.street" display="menu" />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            House number
+            <p-columnFilter
+              type="text"
+              field="address.houseNumber"
+              display="menu"
+            />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            Post code
+            <p-columnFilter
+              type="text"
+              field="address.postcode"
+              display="menu"
+            />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            City
+            <p-columnFilter type="text" field="address.city" display="menu" />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            Unit
+            <p-columnFilter type="text" field="unit" display="menu" />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            Area
+            <p-columnFilter type="text" field="area" display="menu" />
+          </div>
+        </th>
+        <th>
+          <div class="flex items-center">
+            Build year
+            <p-columnFilter type="text" field="buildYear" display="menu" />
+          </div>
+        </th>
+        <th>Status</th>
+        <th>Edit</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-property let-editing="editing" let-ri="rowIndex">
+      <tr [pEditableRow]="property">
+        <td>
+          <p-avatar icon="pi pi-home" class="mr-2" />
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.propertyName"
+              />
+            </ng-template>
+            <ng-template #output>
+              {{ property.propertyName }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.address.street"
+              />
+            </ng-template>
+            <ng-template #output>
+              {{ property.address.street }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.address.houseNumber"
+              />
+            </ng-template>
+            <ng-template #output>
+              {{ property.address.houseNumber }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.address.postcode"
+              />
+            </ng-template>
+            <ng-template #output>
+              {{ property.address.postcode }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.address.city"
+              />
+            </ng-template>
+            <ng-template #output>
+              {{ property.address.city }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input pInputText type="text" [(ngModel)]="property.unit" />
+            </ng-template>
+            <ng-template #output>
+              {{ property.unit }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input pInputText type="text" [(ngModel)]="property.area" />
+            </ng-template>
+            <ng-template #output>
+              {{ property.area }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template #input>
+              <input pInputText type="text" [(ngModel)]="property.buildYear" />
+            </ng-template>
+            <ng-template #output>
+              {{ property.buildYear }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-tag
+            [value]="getStatusTag(property.status)?.label"
+            [severity]="getStatusTag(property.status)?.severity"
+          />
+        </td>
+        <td>
+          <div class="flex items-center justify-center gap-2">
+            <button
+              *ngIf="!editing"
+              pButton
+              pRipple
+              type="button"
+              pInitEditableRow
+              icon="pi pi-pencil"
+              (click)="onRowEditInit()"
+              text
+              rounded
+              severity="secondary"
+            ></button>
+            <button
+              *ngIf="editing"
+              pButton
+              pRipple
+              type="button"
+              pSaveEditableRow
+              icon="pi pi-check"
+              (click)="onRowEditSave(property)"
+              text
+              rounded
+              severity="secondary"
+            ></button>
+            <button
+              *ngIf="editing"
+              pButton
+              pRipple
+              type="button"
+              pCancelEditableRow
+              icon="pi pi-times"
+              (click)="onRowEditCancel()"
+              text
+              rounded
+              severity="secondary"
+            ></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptyMessage>
+      <tr>
+        <td colspan="5">Property not found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

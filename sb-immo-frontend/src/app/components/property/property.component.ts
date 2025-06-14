@@ -12,6 +12,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
 import { ContactService } from '../../services/contact.service';
 import { ButtonModule } from 'primeng/button';
+import { IPropertyDto } from '../../models/dtos/property.dto';
+import { PropertyStatusType } from '../../models/enums/property-status.enum';
 
 @Component({
   selector: 'app-property',
@@ -28,11 +30,11 @@ import { ButtonModule } from 'primeng/button';
     CommonModule,
     ButtonModule,
   ],
-  // standalone: true,
   templateUrl: './property.component.html',
   styleUrl: './property.component.scss',
 })
 export class PropertyComponent implements OnInit {
+  loading: unknown;
   constructor(
     private propertyService: PropertyService,
     private contactService: ContactService
@@ -41,34 +43,36 @@ export class PropertyComponent implements OnInit {
   ngOnInit(): void {
     this.propertyService.getProperties();
     this.propertyService.properties$.subscribe();
-    this.contactService.getContacts();
-    this.contactService.contacts$.subscribe();
-    console.log('sss', this.contactService.contacts$);
   }
 
   get properties$() {
     return this.propertyService.properties$;
   }
 
-  get contact$() {
-    return this.contactService.contacts$;
+  onRowEditInit() {}
+
+  onRowEditSave(property: IPropertyDto) {
+    this.propertyService.updateProperty(property).subscribe();
   }
 
-  columnDefs = [
-    { field: 'firstname', header: 'Firstname' },
-    { field: 'lastname', header: 'Lastname' },
-    { field: 'email', header: 'Email' },
-    { field: 'phone', header: 'Phone' },
-    { field: 'note', header: 'Note' },
-  ];
-
-  onSave(contact: any) {
-    console.log('保存数据：', contact);
-    // 调用服务更新后端
+  onRowEditCancel() {
+    this.propertyService.getProperties();
   }
 
-  onCancel(contact: any) {
-    console.log('取消编辑：', contact);
-    // 可撤销临时数据
+  setupStatus: Record<PropertyStatusType, { label: string; severity: string }> =
+    {
+      [PropertyStatusType.AVAILABLE]: {
+        label: 'AVAILABLE',
+        severity: 'success',
+      },
+      [PropertyStatusType.MAINTENANCE]: {
+        label: 'MAINTENANCE',
+        severity: 'warning',
+      },
+      [PropertyStatusType.RENTED]: { label: 'RENTED', severity: 'info' },
+    };
+
+  getStatusTag(status: any): { label: string; severity: string } | undefined {
+    return this.setupStatus[status as PropertyStatusType];
   }
 }

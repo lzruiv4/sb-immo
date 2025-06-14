@@ -56,13 +56,12 @@ export class PropertyService {
   }
 
   updateProperty(
-    propertyId: string,
     updateProperty: IPropertyDto
   ): Observable<IPropertyDto> {
     this.loadingSubject.next(true);
     return this.propertyHttp
       .put<IPropertyDto>(
-        `${BACKEND_API_PROPERTY_URL}/${propertyId}`,
+        `${BACKEND_API_PROPERTY_URL}/${updateProperty.propertyId}`,
         updateProperty
       )
       .pipe(
@@ -70,7 +69,7 @@ export class PropertyService {
           const currentList = this.propertiesSubject.value;
           const updateList = currentList.map((item) =>
             // update info in list
-            item.propertyId === propertyId ? { ...item, ...property } : item
+            item.propertyId === updateProperty.propertyId ? { ...item, ...property } : item
           );
           this.propertiesSubject.next(updateList);
         }),
