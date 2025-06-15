@@ -1,4 +1,4 @@
-<div class="card flex justify-center">
+<!-- <div class="card flex justify-center">
   <p-button (click)="showDialog()" label="Show" />
   <p-dialog
     header="Header"
@@ -8,4 +8,13 @@
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   >
   </p-dialog>
+</div> -->
+
+<div class="card flex justify-center">
+  <p-autoComplete
+    [(ngModel)]="value"
+    [dropdown]="true"
+    [suggestions]="(items$ | async) ?? []"
+    (completeMethod)="search($event)"
+  />
 </div>

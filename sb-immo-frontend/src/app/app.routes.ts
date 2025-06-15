@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { HomeLayoutComponent } from './layout/home-layout/home-layout.component';
 import { ContactComponent } from './components/contact/contact.component';
-import { ConnectionComponent } from './components/connection/connection.component';
 import { PropertyComponent } from './components/property/property.component';
+import { PropertyRecordComponent } from './components/property-record/property-record.component';
 
 export const routes: Routes = [
   {
@@ -23,8 +23,8 @@ export const routes: Routes = [
         component: ContactComponent,
       },
       {
-        path: 'connection',
-        component: ConnectionComponent,
+        path: 'propertyRecord',
+        component: PropertyRecordComponent,
       },
     ],
   },

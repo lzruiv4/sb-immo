@@ -17,16 +17,13 @@ import { CreateContactComponent } from '../create-contact/create-contact.compone
     AvatarModule,
     FormsModule,
     TableModule,
-    // TagModule,
     IconFieldModule,
     InputTextModule,
     InputIconModule,
-    // MultiSelectModule,
-    // SelectModule,
     CommonModule,
     ButtonModule,
-    CreateContactComponent,
-  ],
+    CreateContactComponent
+],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })

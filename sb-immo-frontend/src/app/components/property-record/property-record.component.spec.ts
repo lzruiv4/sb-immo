@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConnectionComponent } from './connection.component';
+import { PropertyRecordComponent } from './property-record.component';
 
-describe('ConnectionComponent', () => {
-  let component: ConnectionComponent;
-  let fixture: ComponentFixture<ConnectionComponent>;
+describe('PropertyRecordComponent', () => {
+  let component: PropertyRecordComponent;
+  let fixture: ComponentFixture<PropertyRecordComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConnectionComponent]
+      imports: [PropertyRecordComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ConnectionComponent);
+    fixture = TestBed.createComponent(PropertyRecordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

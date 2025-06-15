@@ -15,7 +15,7 @@ export class MenuBarComponent {
     { icon: 'pi-chart-line', path: '' },
     { icon: 'pi-user', path: '/contact' },
     { icon: 'pi-home', path: '/property' },
-    { icon: 'pi-sitemap', path: '/connection' },
+    { icon: 'pi-sitemap', path: '/propertyRecord' },
   ];
 
   toggleSidebar() {

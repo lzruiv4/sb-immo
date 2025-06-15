@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
 import { PropertyRecordService } from '../../services/connection.service';
-import { AddressSearchComponent } from '../address-search/address-search.component';
 
 @Component({
-  selector: 'app-connection',
-  imports: [],
-  templateUrl: './connection.component.html',
-  styleUrl: './connection.component.scss',
+  selector: 'app-property-record',
+  imports: [SearchContactsComponent],
+  templateUrl: './property-record.component.html',
+  styleUrl: './property-record.component.scss',
 })
-export class ConnectionComponent implements OnInit {
+export class PropertyRecordComponent implements OnInit {
   constructor(private propertyRecordService: PropertyRecordService) {}
 
   ngOnInit(): void {

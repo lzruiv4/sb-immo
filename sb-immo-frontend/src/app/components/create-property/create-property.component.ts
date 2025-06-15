@@ -40,8 +40,6 @@ export class CreatePropertyComponent implements OnInit {
     },
     [PropertyStatusType.RENTED]: { label: 'RENTED', severity: 'info' },
   };
-  // @Input() getStatusTag!: (status: any) => any;
-  // @Input() statusOptions!: any[];
   @Output() closeDialog = new EventEmitter<void>();
 
   property: IPropertyDto = {
@@ -63,6 +61,7 @@ export class CreatePropertyComponent implements OnInit {
   };
 
   constructor(private propertyService: PropertyService) {}
+
   ngOnInit(): void {
     console.log('asfa', this.setupStatus);
   }
