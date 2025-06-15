@@ -1,20 +1,14 @@
-<!-- <div class="card flex justify-center">
-  <p-button (click)="showDialog()" label="Show" />
-  <p-dialog
-    header="Header"
-    [modal]="true"
-    [(visible)]="visible"
-    [style]="{ width: '50rem' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-  >
-  </p-dialog>
-</div> -->
-
 <div class="card flex justify-center">
   <p-autoComplete
     [(ngModel)]="value"
     [dropdown]="true"
+    field="email"
     [suggestions]="(items$ | async) ?? []"
     (completeMethod)="search($event)"
-  />
+    (onSelect)="selectContact($event)"
+  >
+    <ng-template let-contact pTemplate="item">
+      <div>{{ contact.firstname }} &lt;{{ contact.email }}&gt;</div>
+    </ng-template>
+  </p-autoComplete>
 </div>
