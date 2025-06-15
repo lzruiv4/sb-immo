@@ -9,6 +9,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { IContactDto } from '../../models/dtos/contact.dto';
+import { CreateContactComponent } from '../create-contact/create-contact.component';
 
 @Component({
   selector: 'app-contact',
@@ -24,12 +25,19 @@ import { IContactDto } from '../../models/dtos/contact.dto';
     // SelectModule,
     CommonModule,
     ButtonModule,
+    CreateContactComponent,
   ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
 export class ContactComponent implements OnInit {
   loading: boolean = false;
+
+  openCreateDialog = false;
+
+  openDialog() {
+    this.openCreateDialog = true;
+  }
 
   constructor(private contactService: ContactService) {}
 

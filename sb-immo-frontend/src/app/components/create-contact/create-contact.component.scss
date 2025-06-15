@@ -1,0 +1,43 @@
+form {
+  width: 100%;
+  height: 90%;
+}
+
+.input-group-container {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+
+  .input-container {
+    width: 80%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: bolder;
+
+    label {
+      width: 30%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      width: 60%;
+    }
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between; // 两端对齐
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0 25%;
+}

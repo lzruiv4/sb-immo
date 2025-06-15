@@ -1,0 +1,88 @@
+<p-dialog
+  header="New Contact"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '470px' }"
+>
+  <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+    <div class="input-group-container">
+      <div class="input-container">
+        <label for="firstname">Firstname</label>
+        <input
+          id="firstname"
+          type="text"
+          pInputText
+          [(ngModel)]="contact.firstname"
+          name="firstname"
+          required
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="lastname">Lastname</label>
+        <input
+          id="lastname"
+          type="text"
+          pInputText
+          [(ngModel)]="contact.lastname"
+          name="lastname"
+          required
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          [(ngModel)]="contact.email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="phone">Phone</label>
+        <input
+          id="phone"
+          type="text"
+          pInputText
+          [(ngModel)]="contact.phone"
+          name="phone"
+        />
+      </div>
+      
+      <div class="input-container">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          pInputTextarea
+          [(ngModel)]="contact.notes"
+          name="notes"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="visible = false"
+      ></button>
+
+      <button
+        pButton
+        type="submit"
+        label="Save"
+        icon="pi pi-save"
+        [disabled]="!contactForm.form.valid"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

@@ -14,6 +14,7 @@ import { ContactService } from '../../services/contact.service';
 import { ButtonModule } from 'primeng/button';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { PropertyStatusType } from '../../models/enums/property-status.enum';
+import { CreatePropertyComponent } from '../create-property/create-property.component';
 
 @Component({
   selector: 'app-property',
@@ -29,6 +30,7 @@ import { PropertyStatusType } from '../../models/enums/property-status.enum';
     SelectModule,
     CommonModule,
     ButtonModule,
+    CreatePropertyComponent,
   ],
   templateUrl: './property.component.html',
   styleUrl: './property.component.scss',
@@ -43,10 +45,17 @@ export class PropertyComponent implements OnInit {
   ngOnInit(): void {
     this.propertyService.getProperties();
     this.propertyService.properties$.subscribe();
+    // console.log(this.statusOptions);
   }
 
   get properties$() {
     return this.propertyService.properties$;
+  }
+
+  openCreateDialog = false;
+
+  openDialog() {
+    this.openCreateDialog = true;
   }
 
   onRowEditInit() {}

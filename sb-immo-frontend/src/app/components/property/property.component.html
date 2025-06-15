@@ -1,4 +1,14 @@
 <div class="property-container">
+  <div class="title-container">
+    <button pButton label="New property" (click)="openDialog()"></button>
+
+    <app-create-property
+      [visible]="openCreateDialog"
+      [setupStatus]="setupStatus"
+      (closeDialog)="openCreateDialog = false"
+    ></app-create-property>
+  </div>
+
   <p-table
     [value]="(properties$ | async) ?? []"
     dataKey="propertyId"

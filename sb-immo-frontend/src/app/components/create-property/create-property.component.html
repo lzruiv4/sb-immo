@@ -1,0 +1,147 @@
+<p-dialog
+  header="New property"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '700px' }"
+>
+  <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+    <div class="input-group-container">
+      <div class="input-container">
+        <label for="propertyName">Property name</label>
+        <input
+          id="propertyName"
+          type="text"
+          pInputText
+          [(ngModel)]="property.propertyName"
+          name="propertyName"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="street">Street</label>
+        <app-address-search
+          (addressSelected)="onAddressChosen($event)"
+          [style]="{ width: '70%' }"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="houseNumber">House number</label>
+        <input
+          id="houseNumber"
+          type="text"
+          pInputText
+          [(ngModel)]="property.address.houseNumber"
+          name="houseNumber"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="Postcode">Postcode</label>
+        <input
+          id="Postcode"
+          type="text"
+          pInputText
+          [(ngModel)]="property.address.postcode"
+          name="Postcode"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="Postcode">City</label>
+        <input
+          id="city"
+          type="text"
+          pInputText
+          [(ngModel)]="property.address.city"
+          name="city"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="unit">Unit</label>
+        <input
+          id="unit"
+          type="text"
+          pInputText
+          [(ngModel)]="property.unit"
+          name="unit"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="area">Area</label>
+        <input
+          id="area"
+          type="number"
+          pInputText
+          [(ngModel)]="property.area"
+          name="area"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="buildYear">Build year</label>
+        <input
+          id="buildYear"
+          type="number"
+          pInputText
+          [(ngModel)]="property.buildYear"
+          name="buildYear"
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="status">Status</label>
+        <p-autocomplete
+          name="status"
+          [(ngModel)]="selectedStatus"
+          [suggestions]="filteredStatuses"
+          (completeMethod)="filterStatus($event)"
+          [dropdown]="true"
+          field="label"
+          [forceSelection]="true"
+          placeholder="Select status"
+          [inputStyle]="{ width: '100%' }"
+        >
+          <!-- 选中项显示模板 -->
+          <ng-template let-status pTemplate="selectedItem">
+            <p-tag [severity]="status.severity" [value]="status.label">
+              {{ status.label }}
+            </p-tag>
+          </ng-template>
+
+          <!-- 下拉选项模板 -->
+          <ng-template let-status pTemplate="item">
+            <div class="flex align-items-center gap-2">
+              <p-tag
+                [severity]="status.severity"
+                [value]="status.label"
+              ></p-tag>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="visible = false"
+      ></button>
+
+      <button
+        pButton
+        type="submit"
+        label="Save"
+        icon="pi pi-save"
+        [disabled]="!contactForm.form.valid"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

@@ -1,177 +1,194 @@
 <div class="contact-container">
-  <p-table
-    [value]="(contact$ | async) ?? []"
-    dataKey="contactId"
-    [rows]="5"
-    editMode="row"
-    [rowsPerPageOptions]="[5, 10, 20, 50]"
-    [loading]="loading"
-    [paginator]="true"
-    [globalFilterFields]="['firstname', 'lastname', 'email', 'phone', 'notes']"
-    [tableStyle]="{ width: '100%' }"
-  >
-    <ng-template #header>
-      <tr>
-        <th>Avatar</th>
-        <th>Firstname</th>
-        <th>Lastname</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Notes</th>
-        <th>Edit</th>
-        <th>Show contacts</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th>
-          <p-columnFilter
-            field="firstname"
-            type="text"
-            placeholder="Search by first name"
-          ></p-columnFilter>
-        </th>
-        <th>
-          <p-columnFilter
-            field="lastname"
-            type="text"
-            placeholder="Search by last name"
-          ></p-columnFilter>
-        </th>
-        <th>
-          <p-columnFilter
-            field="email"
-            type="text"
-            placeholder="Search by email"
-          ></p-columnFilter>
-        </th>
-        <th>
-          <p-columnFilter
-            field="phone"
-            type="text"
-            placeholder="Search by phone"
-          ></p-columnFilter>
-        </th>
-        <th>
-          <p-columnFilter
-            field="notes"
-            type="text"
-            placeholder="Search by notes"
-          ></p-columnFilter>
-        </th>
-        <th></th>
-        <th></th>
-      </tr>
-    </ng-template>
-    <ng-template #body let-contact let-editing="editing" let-ri="rowIndex">
-      <tr [pEditableRow]="contact">
-        <td>
-          <p-avatar icon="pi pi-user" class="mr-2" />
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="contact.firstname" />
-            </ng-template>
-            <ng-template #output>
-              {{ contact.firstname }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="contact.lastname" />
-            </ng-template>
-            <ng-template #output>
-              {{ contact.lastname }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="contact.email" />
-            </ng-template>
-            <ng-template #output>
-              {{ contact.email }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="contact.phone" />
-            </ng-template>
-            <ng-template #output>
-              {{ contact.phone }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="contact.notes" />
-            </ng-template>
-            <ng-template #output>
-              {{ contact.notes }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <div class="flex items-center justify-center gap-2">
-            <button
-              *ngIf="!editing"
-              pButton
-              pRipple
-              type="button"
-              pInitEditableRow
-              icon="pi pi-pencil"
-              (click)="onRowEditInit()"
-              text
-              rounded
-              severity="secondary"
-            ></button>
-            <button
-              *ngIf="editing"
-              pButton
-              pRipple
-              type="button"
-              pSaveEditableRow
-              icon="pi pi-check"
-              (click)="onRowEditSave(contact)"
-              text
-              rounded
-              severity="secondary"
-            ></button>
-            <button
-              *ngIf="editing"
-              pButton
-              pRipple
-              type="button"
-              pCancelEditableRow
-              icon="pi pi-times"
-              (click)="onRowEditCancel()"
-              text
-              rounded
-              severity="secondary"
-            ></button>
-          </div>
-        </td>
-        <td>
-          <p-button
-            label="Contacts"
-            icon="pi pi-table"
-            severity="info"
-            (click)="showContactDetails(contact.contactId)"
-          />
-        </td>
-      </tr>
-    </ng-template>
+  <div class="title-container">
+    <button pButton label="New contact" (click)="openDialog()"></button>
 
-    <ng-template #emptyMessage>
-      <tr>
-        <td colspan="5">Contact not found.</td>
-      </tr>
-    </ng-template>
-  </p-table>
+    <app-create-contact
+      [visible]="openCreateDialog"
+      (closeDialog)="openCreateDialog = false"
+    ></app-create-contact>
+  </div>
+
+  <div class="table-container">
+    <p-table
+      [value]="(contact$ | async) ?? []"
+      dataKey="contactId"
+      [rows]="5"
+      editMode="row"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [loading]="loading"
+      [paginator]="true"
+      [globalFilterFields]="[
+        'firstname',
+        'lastname',
+        'email',
+        'phone',
+        'notes'
+      ]"
+      [tableStyle]="{ width: '100%' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Avatar</th>
+          <th>Firstname</th>
+          <th>Lastname</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Notes</th>
+          <th>Edit</th>
+          <th>Show contacts</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th>
+            <p-columnFilter
+              field="firstname"
+              type="text"
+              placeholder="Search by first name"
+            ></p-columnFilter>
+          </th>
+          <th>
+            <p-columnFilter
+              field="lastname"
+              type="text"
+              placeholder="Search by last name"
+            ></p-columnFilter>
+          </th>
+          <th>
+            <p-columnFilter
+              field="email"
+              type="text"
+              placeholder="Search by email"
+            ></p-columnFilter>
+          </th>
+          <th>
+            <p-columnFilter
+              field="phone"
+              type="text"
+              placeholder="Search by phone"
+            ></p-columnFilter>
+          </th>
+          <th>
+            <p-columnFilter
+              field="notes"
+              type="text"
+              placeholder="Search by notes"
+            ></p-columnFilter>
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-contact let-editing="editing" let-ri="rowIndex">
+        <tr [pEditableRow]="contact">
+          <td>
+            <p-avatar icon="pi pi-user" class="mr-2" />
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <input pInputText type="text" [(ngModel)]="contact.firstname" />
+              </ng-template>
+              <ng-template #output>
+                {{ contact.firstname }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <input pInputText type="text" [(ngModel)]="contact.lastname" />
+              </ng-template>
+              <ng-template #output>
+                {{ contact.lastname }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <input pInputText type="text" [(ngModel)]="contact.email" />
+              </ng-template>
+              <ng-template #output>
+                {{ contact.email }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <input pInputText type="text" [(ngModel)]="contact.phone" />
+              </ng-template>
+              <ng-template #output>
+                {{ contact.phone }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <input pInputText type="text" [(ngModel)]="contact.notes" />
+              </ng-template>
+              <ng-template #output>
+                {{ contact.notes }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <div class="flex items-center justify-center gap-2">
+              <button
+                *ngIf="!editing"
+                pButton
+                pRipple
+                type="button"
+                pInitEditableRow
+                icon="pi pi-pencil"
+                (click)="onRowEditInit()"
+                text
+                rounded
+                severity="secondary"
+              ></button>
+              <button
+                *ngIf="editing"
+                pButton
+                pRipple
+                type="button"
+                pSaveEditableRow
+                icon="pi pi-check"
+                (click)="onRowEditSave(contact)"
+                text
+                rounded
+                severity="secondary"
+              ></button>
+              <button
+                *ngIf="editing"
+                pButton
+                pRipple
+                type="button"
+                pCancelEditableRow
+                icon="pi pi-times"
+                (click)="onRowEditCancel()"
+                text
+                rounded
+                severity="secondary"
+              ></button>
+            </div>
+          </td>
+          <td>
+            <p-button
+              label="Contacts"
+              icon="pi pi-table"
+              severity="info"
+              (click)="showContactDetails(contact.contactId)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptyMessage>
+        <tr>
+          <td colspan="5">Contact not found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

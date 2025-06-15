@@ -1,45 +1,45 @@
 <div class="search-center">
-  <!-- <div class="card flex justify-center"> -->
-  <div
-    class="card flex flex-col md:flex-row gap-4"
-    style="width: 500px; height: 100px; margin: 10px"
-  >
-    <p-inputgroup>
-      <!-- <p-button label="Search" /> -->
-      <input
-        pInputText
-        placeholder="Please enter a street name"
-        [formControl]="searchControl"
-      />
-    </p-inputgroup>
-    <div *ngIf="addressesForInput$ | async as addresses" class="mt-2">
-      <ul *ngIf="addresses.length > 0">
-        <li *ngFor="let addr of addresses">
-          {{ addr.street }} {{ addr.houseNumber }} {{ addr.postcode }}
-          {{ addr.city }}
-        </li>
-      </ul>
-    </div>
+  <p-inputgroup class="w-full">
+    <input
+      pInputText
+      placeholder="Please enter a street name"
+      [formControl]="searchControl"
+      (focus)="onInputFocus()"
+      (blur)="onInputBlur()"
+      class="w-full"
+    />
+  </p-inputgroup>
+
+  <div class="search-results-panel">
+    <p-panel
+      *ngIf="showResultsPanel && (addressesForInput$ | async) as addresses"
+      header="Search Results"
+      [toggleable]="true"
+      class="mt-2 w-full absolute z-100"
+      styleClass="w-full max-h-30rem overflow-auto"
+    >
+      <ng-container *ngIf="addresses.length > 0">
+        <p-listbox
+          [options]="addresses"
+          optionLabel="street"
+          (onChange)="onAddressSelect($event.value)"
+          [style]="{ width: '100%' }"
+        >
+          <ng-template let-addr pTemplate="item">
+            <div class="flex flex-col">
+              <span
+                ><i class="pi pi-map-marker mr-2"></i> {{ addr.street }}
+                {{ addr.houseNumber }}, {{ addr.postcode }},
+                {{ addr.city }}</span
+              >
+              <!-- <small class="text-gray-500"
+                >{{ addr.postcode }} {{ addr.city }}</small
+              > -->
+              <!-- <span>{{ addr.street }}, {{ addr.houseNumber }}</span> -->
+            </div>
+          </ng-template>
+        </p-listbox>
+      </ng-container>
+    </p-panel>
   </div>
 </div>
-<!-- <div class="card flex justify-center">
-  <form [formGroup]="formGroup">
-    <p-autocomplete
-      formControlName="selectedCountry"
-      [suggestions]="filteredCountries"
-      (completeMethod)="filterCountry($event)"
-      field="name"
-    />
-  </form>
-</div>
-
-<div
-  class="card flex justify-center"
-  style="background-color: aquamarine; height: 100%; width: 100%"
->
-  <p-autocomplete
-    [formControl]="searchControl"
-    [dropdown]="true"
-    [suggestions]="(addresses$ | async) ?? []"
-  />
-</div> -->

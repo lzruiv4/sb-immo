@@ -85,6 +85,7 @@ export class AddressService {
   // Maybe only save address, so do not make update
   saveAddress(newAddress: IAddressDto): Observable<IAddressDto> {
     this.loadingSubject.next(true);
+    newAddress.addressId = undefined;
     return this.addressHttp
       .post<IAddressDto>(BACKEND_API_ADDRESS_URL, newAddress)
       .pipe(
