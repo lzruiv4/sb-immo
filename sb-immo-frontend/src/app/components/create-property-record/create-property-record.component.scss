@@ -1,0 +1,55 @@
+form {
+  width: 100%;
+  height: 90%;
+}
+
+.input-group-container {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  gap: 20px;
+
+  .input-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: bolder;
+    position: relative;
+
+    label {
+      width: 30%;
+      flex-shrink: 0;
+    }
+
+    input,
+    ::ng-deep .p-inputtext,
+    ::ng-deep .p-calendar {
+      flex: 1;
+      width: 100%;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+    }
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0 25%;
+}
+
+/* make sure in front */
+::ng-deep .p-datepicker {
+  z-index: 1050 !important;
+}

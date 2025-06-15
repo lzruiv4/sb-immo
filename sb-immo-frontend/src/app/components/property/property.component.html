@@ -1,6 +1,10 @@
 <div class="property-container">
   <div class="title-container">
-    <button pButton label="New property" (click)="openDialog()"></button>
+    <button
+      pButton
+      label="New property"
+      (click)="openCreateDialog = true"
+    ></button>
 
     <app-create-property
       [visible]="openCreateDialog"
@@ -43,36 +47,22 @@
           </div>
         </th>
         <th>
-          <div class="flex items-center">
-            House number
-          </div>
+          <div class="flex items-center">House number</div>
         </th>
         <th>
-          <div class="flex items-center">
-            Post code
-          </div>
+          <div class="flex items-center">Post code</div>
         </th>
         <th>
-          <div class="flex items-center">
-            City
-          </div>
+          <div class="flex items-center">City</div>
         </th>
         <th>
-          <div class="flex items-center">
-            Unit
-          </div>
+          <div class="flex items-center">Unit</div>
         </th>
         <th>
-          <div class="flex items-center">
-            Area
-            <p-columnFilter type="text" field="area" display="menu" />
-          </div>
+          <div class="flex items-center">Area</div>
         </th>
         <th>
-          <div class="flex items-center">
-            Build year
-            <p-columnFilter type="text" field="buildYear" display="menu" />
-          </div>
+          <div class="flex items-center">Build year</div>
         </th>
         <th>Status</th>
         <th>Edit</th>

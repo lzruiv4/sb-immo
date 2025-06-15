@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -8,7 +8,6 @@ import { AddressSearchComponent } from '../address-search/address-search.compone
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { PropertyStatusType } from '../../models/enums/property-status.enum';
 import { PropertyService } from '../../services/property.service';
-import { DropdownChangeEvent, DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
@@ -24,6 +23,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     AutoCompleteModule,
     TagModule,
   ],
+  standalone: true,
   templateUrl: './create-property.component.html',
   styleUrl: './create-property.component.scss',
 })
@@ -66,9 +66,15 @@ export class CreatePropertyComponent implements OnInit {
     console.log('asfa', this.setupStatus);
   }
 
-  onSubmit() {
+  onSubmit(ngForm: NgForm) {
     this.propertyService.saveNewProperty(this.property).subscribe();
-    this.visible = false;
+    this.closeDialog.emit();
+    ngForm.resetForm();
+  }
+
+  onCancel(ngForm: NgForm) {
+    this.closeDialog.emit();
+    ngForm.resetForm();
   }
 
   onAddressChosen(address: any) {

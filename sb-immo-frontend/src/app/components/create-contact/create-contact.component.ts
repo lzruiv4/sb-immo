@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { ContactService } from '../../services/contact.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -33,8 +33,14 @@ export class CreateContactComponent {
 
   constructor(private contactService: ContactService) {}
 
-  onSubmit() {
+  onSubmit(form: NgForm) {
     this.contactService.saveNewContact(this.contact).subscribe();
-    this.visible = false;
+    this.closeDialog.emit();
+    form.resetForm();
+  }
+
+  onCancel(form: NgForm): void {
+    this.closeDialog.emit();
+    form.resetForm();
   }
 }

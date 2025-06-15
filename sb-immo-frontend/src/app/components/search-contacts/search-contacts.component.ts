@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
 import {
   AutoCompleteCompleteEvent,
   AutoCompleteModule,
@@ -13,7 +12,7 @@ import { IContactDto } from '../../models/dtos/contact.dto';
 
 @Component({
   selector: 'app-search-contacts',
-  imports: [AutoCompleteModule, ButtonModule, CommonModule, FormsModule],
+  imports: [AutoCompleteModule, CommonModule, FormsModule],
   templateUrl: './search-contacts.component.html',
   styleUrl: './search-contacts.component.scss',
 })

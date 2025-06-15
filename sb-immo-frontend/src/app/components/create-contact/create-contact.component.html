@@ -5,7 +5,7 @@
   [closable]="false"
   [style]="{ width: '470px' }"
 >
-  <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+  <form (ngSubmit)="onSubmit(contactForm)" #contactForm="ngForm">
     <div class="input-group-container">
       <div class="input-container">
         <label for="firstname">Firstname</label>
@@ -53,7 +53,7 @@
           name="phone"
         />
       </div>
-      
+
       <div class="input-container">
         <label for="notes">Notes</label>
         <textarea
@@ -73,7 +73,7 @@
         label="Cancel"
         icon="pi pi-times"
         class="p-button-secondary"
-        (click)="visible = false"
+        (click)="onCancel(contactForm)"
       ></button>
 
       <button

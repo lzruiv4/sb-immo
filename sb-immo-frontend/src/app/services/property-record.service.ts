@@ -49,6 +49,7 @@ export class PropertyRecordService {
     newPropertyRecordDto: IPropertyRecordDto
   ): Observable<IPropertyRecordDto> {
     this.loadingSubject.next(true);
+    console.log('22222,  ', newPropertyRecordDto);
     return this.propertyRecordHttp
       .post<IPropertyRecordDto>(
         BACKEND_API_PROPERTY_RECORD_URL,

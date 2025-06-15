@@ -1,6 +1,10 @@
 <div class="contact-container">
   <div class="title-container">
-    <button pButton label="New contact" (click)="openDialog()"></button>
+    <button
+      pButton
+      label="New contact"
+      (click)="openCreateDialog = true"
+    ></button>
 
     <app-create-contact
       [visible]="openCreateDialog"

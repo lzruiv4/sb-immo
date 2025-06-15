@@ -22,8 +22,8 @@ import { CreateContactComponent } from '../create-contact/create-contact.compone
     InputIconModule,
     CommonModule,
     ButtonModule,
-    CreateContactComponent
-],
+    CreateContactComponent,
+  ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
@@ -32,9 +32,9 @@ export class ContactComponent implements OnInit {
 
   openCreateDialog = false;
 
-  openDialog() {
-    this.openCreateDialog = true;
-  }
+  // openDialog() {
+  //   this.openCreateDialog = true;
+  // }
 
   constructor(private contactService: ContactService) {}
 

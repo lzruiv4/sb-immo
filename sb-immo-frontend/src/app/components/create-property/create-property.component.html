@@ -5,7 +5,7 @@
   [closable]="false"
   [style]="{ width: '700px' }"
 >
-  <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+  <form (ngSubmit)="onSubmit(propertyForm)" #propertyForm="ngForm">
     <div class="input-group-container">
       <div class="input-container">
         <label for="propertyName">Property name</label>
@@ -34,6 +34,7 @@
           pInputText
           [(ngModel)]="property.address.houseNumber"
           name="houseNumber"
+          required
         />
       </div>
 
@@ -45,6 +46,7 @@
           pInputText
           [(ngModel)]="property.address.postcode"
           name="Postcode"
+          required
         />
       </div>
 
@@ -56,6 +58,7 @@
           pInputText
           [(ngModel)]="property.address.city"
           name="city"
+          required
         />
       </div>
 
@@ -78,6 +81,7 @@
           pInputText
           [(ngModel)]="property.area"
           name="area"
+          required
         />
       </div>
 
@@ -89,6 +93,7 @@
           pInputText
           [(ngModel)]="property.buildYear"
           name="buildYear"
+          required
         />
       </div>
 
@@ -132,7 +137,7 @@
         label="Cancel"
         icon="pi pi-times"
         class="p-button-secondary"
-        (click)="visible = false"
+        (click)="onCancel(propertyForm)"
       ></button>
 
       <button
@@ -140,7 +145,7 @@
         type="submit"
         label="Save"
         icon="pi pi-save"
-        [disabled]="!contactForm.form.valid"
+        [disabled]="!propertyForm.form.valid"
       ></button>
     </div>
   </form>

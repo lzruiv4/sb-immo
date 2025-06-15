@@ -1,0 +1,13 @@
+<div class="card flex justify-center">
+  <p-autoComplete
+    [(ngModel)]="value"
+    [dropdown]="true"
+    appendTo="body"
+    field="propertyName"
+    [suggestions]="(items$ | async) ?? []"
+    (completeMethod)="search($event)"
+    (onSelect)="selectProperty($event)"
+    required
+  >
+  </p-autoComplete>
+</div>

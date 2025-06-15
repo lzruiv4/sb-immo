@@ -36,7 +36,7 @@ import { CreatePropertyComponent } from '../create-property/create-property.comp
   styleUrl: './property.component.scss',
 })
 export class PropertyComponent implements OnInit {
-  loading: unknown;
+  loading: boolean = false;
   constructor(
     private propertyService: PropertyService,
     private contactService: ContactService
