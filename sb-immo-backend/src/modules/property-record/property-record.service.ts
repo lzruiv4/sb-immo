@@ -21,13 +21,6 @@ interface RoleWithDates {
   endAt?: Date;
 }
 
-//  const properties = await this.propertyRepository.find();
-//     return await Promise.all(
-//       properties.map(async (property) => {
-//         await this.updatePropertyStatusByDate(property);
-//         return property;
-//       }),
-//     );
 @Injectable()
 export class PropertyRecordService {
   constructor(
@@ -107,7 +100,6 @@ export class PropertyRecordService {
           rightNow >= record.startAt &&
           (!record.endAt || rightNow <= record.endAt),
       );
-    console.log('++++++++++++', records);
     if (records.some((record) => RoleType.ROLE_DIENSTLEISTER === record.role)) {
       property.status = PropertyStatusType.MAINTENANCE;
     } else if (records.some((record) => RoleType.ROLE_MIETER === record.role)) {
