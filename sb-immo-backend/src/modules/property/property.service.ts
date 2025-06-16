@@ -17,7 +17,7 @@ export class PropertyService {
 
   async create(dto: BasisPropertyDto): Promise<PropertyDto> {
     if (!dto.propertyName) {
-      dto.propertyName = `${dto.address.street} ${dto.address.houseNumber}, ${dto.address.postcode}, ${dto.address.city}`;
+      this.setupPropertyName(dto);
     }
     const newPropertyEntity = this.propertyRepository.create(dto);
     const isDuplicate = await this.addressService.isAddressDuplicate(
@@ -36,6 +36,10 @@ export class PropertyService {
     return PropertyDto.entityToDto(
       await this.propertyRepository.save(newPropertyEntity),
     );
+  }
+
+  private setupPropertyName(dto: BasisPropertyDto): string {
+    return (dto.propertyName = `${dto.address.street} ${dto.address.houseNumber}, ${dto.address.postcode}, ${dto.address.city}`);
   }
 
   async findAll(): Promise<PropertyDto[]> {
@@ -58,6 +62,9 @@ export class PropertyService {
       dto.address,
     );
     dto.address = tempAddress;
+    if (!dto.propertyName || dto.propertyName.trim() === '') {
+      dto.propertyName = this.setupPropertyName(dto);
+    }
     await this.propertyRepository.update(id, dto);
     return this.findOne(id);
   }

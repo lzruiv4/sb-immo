@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddressEntity } from './address.entity';
@@ -64,10 +68,24 @@ export class AddressService {
   }
 
   async update(id: number, dto: AddressDto): Promise<AddressDto> {
-    if (this.isAddressChanged(await this.findOne(id), dto)) {
+    console.log('id:', id, 'dto', dto);
+    if (id === undefined) {
+      console.log('id not');
+      const found = await this.isAddressDuplicate({
+        street: dto.street,
+        houseNumber: dto.houseNumber,
+        postcode: dto.postcode,
+        city: dto.city,
+      } as BasisAddressDto);
+      if (!found) {
+        return this.create(dto);
+      } else {
+        throw new BadRequestException('Address is already save');
+      }
+    } else {
       await this.addressRepository.update(id, dto);
+      return await this.findOne(id);
     }
-    return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
@@ -98,7 +116,7 @@ export class AddressService {
     );
   }
 
-  async isAddressDuplicate(dto: BasisAddressDto): Promise<boolean> {
+  async isAddressDuplicate(dto: BasisAddressDto): Promise<AddressDto | null> {
     const normalizedStreet = dto.street.toLowerCase().trim();
     const found = await this.addressRepository
       .createQueryBuilder('property')
@@ -112,6 +130,6 @@ export class AddressService {
         postcode: dto.postcode.trim(),
       })
       .getOne();
-    return !!found;
+    return found ?? null;
   }
 }
