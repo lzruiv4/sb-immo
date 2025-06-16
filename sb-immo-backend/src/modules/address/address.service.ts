@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,21 +17,20 @@ export class AddressService {
     private addressRepository: Repository<AddressEntity>,
   ) {}
 
-  async create(dto: AddressDto): Promise<AddressDto> {
-    const exists = await this.isAddressDuplicate({
-      street: dto.street,
-      houseNumber: dto.houseNumber,
-      postcode: dto.postcode,
-      city: dto.city,
-    } as BasisAddressDto);
-    if (exists) {
-      console.log('Address is already exists:', dto);
-      return this.findOne(dto.addressId);
+  async create(dto: BasisAddressDto): Promise<AddressDto> {
+    const count = await this.getAddressDuplicateCount(
+      dto.street,
+      dto.houseNumber,
+      dto.postcode,
+    );
+    if (count > 0) {
+      throw new ConflictException('Address is already in system');
     } else {
-      console.log('Creating new address:', dto);
-      const address = this.addressRepository.create(dto);
+      const addressEntity = this.addressRepository.create(
+        BasisAddressDto.dtoToAddressEntity(dto),
+      );
       return AddressDto.entityToAddressDto(
-        await this.addressRepository.save(address),
+        await this.addressRepository.save(addressEntity),
       );
     }
   }
@@ -42,22 +42,6 @@ export class AddressService {
   }
 
   async findOne(addressId: number): Promise<AddressDto> {
-    // TODO: Maybe find address by street
-    // const addressEntity = await this.addressRepository
-    //   .createQueryBuilder('property')
-    //   .where('LOWER(TRIM(property.street)) = :street', {
-    //     street: dto.street.toLowerCase().trim(),
-    //   })
-    //   .andWhere('TRIM(property.houseNumber) = :houseNumber', {
-    //     houseNumber: dto.houseNumber.trim(),
-    //   })
-    //   .andWhere('TRIM(property.postcode) = :postcode', {
-    //     postcode: dto.postcode.trim(),
-    //   })
-    //   .andWhere('LOWER(TRIM(property.city)) = :city', {
-    //     city: dto.city.toLowerCase().trim(),
-    //   })
-    //   .getOne();
     const addressEntity = await this.addressRepository.findOne({
       where: {
         addressId,
@@ -67,23 +51,42 @@ export class AddressService {
     return AddressDto.entityToAddressDto(addressEntity);
   }
 
+  async findAddressWithBasisInfo(
+    basisAddressDto: BasisAddressDto,
+  ): Promise<AddressDto> {
+    const addressEntity = await this.addressRepository
+      .createQueryBuilder('address')
+      .where('address.street = :street', { street: basisAddressDto.street })
+      .andWhere('address.houseNumber = :houseNumber', {
+        houseNumber: basisAddressDto.houseNumber,
+      })
+      .andWhere('address.postcode = :postcode', {
+        postcode: basisAddressDto.postcode,
+      })
+      .getOne();
+    if (!addressEntity) {
+      throw new NotFoundException('Address not found');
+    }
+    return AddressDto.entityToAddressDto(addressEntity);
+  }
+
   async update(id: number, dto: AddressDto): Promise<AddressDto> {
     console.log('id:', id, 'dto', dto);
-    if (id === undefined) {
-      console.log('id not');
-      const found = await this.isAddressDuplicate({
-        street: dto.street,
-        houseNumber: dto.houseNumber,
-        postcode: dto.postcode,
-        city: dto.city,
-      } as BasisAddressDto);
-      if (!found) {
-        return this.create(dto);
-      } else {
-        throw new BadRequestException('Address is already save');
-      }
+    if (
+      id === undefined ||
+      dto.addressId === undefined ||
+      id != dto.addressId
+    ) {
+      throw new BadRequestException(
+        'ADDRESS_UPDATE: Please check you address input',
+      );
     } else {
-      await this.addressRepository.update(id, dto);
+      const old = this.findOne(id);
+      const isChange = this.isAddressChanged(await old, dto);
+      if (isChange) {
+        await this.addressRepository.update(id, dto);
+      }
+      console.log('ADDRESS_UPDATE: You addresses are not changed');
       return await this.findOne(id);
     }
   }
@@ -104,7 +107,7 @@ export class AddressService {
 
     return [
       'street',
-      'number',
+      'houseNumber',
       'city',
       'postcode',
       'country',
@@ -116,20 +119,23 @@ export class AddressService {
     );
   }
 
-  async isAddressDuplicate(dto: BasisAddressDto): Promise<AddressDto | null> {
-    const normalizedStreet = dto.street.toLowerCase().trim();
+  async getAddressDuplicateCount(
+    street: string,
+    houseNumber: string,
+    postcode: string,
+  ): Promise<number> {
     const found = await this.addressRepository
-      .createQueryBuilder('property')
-      .where('LOWER(TRIM(property.street)) = :street', {
-        street: normalizedStreet,
+      .createQueryBuilder('address')
+      .where('LOWER(TRIM(address.street)) = :street', {
+        street: street.toLowerCase().trim(),
       })
-      .andWhere('TRIM(property.houseNumber) = :houseNumber', {
-        houseNumber: dto.houseNumber.trim(),
+      .andWhere('TRIM(address.houseNumber) = :houseNumber', {
+        houseNumber: houseNumber.trim(),
       })
-      .andWhere('TRIM(property.postcode) = :postcode', {
-        postcode: dto.postcode.trim(),
+      .andWhere('TRIM(address.postcode) = :postcode', {
+        postcode: postcode.trim(),
       })
-      .getOne();
-    return found ?? null;
+      .getCount();
+    return found;
   }
 }

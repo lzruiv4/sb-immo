@@ -3,20 +3,12 @@ import { BasisAddressDto } from './basis-address.dto';
 
 export class AddressDto extends BasisAddressDto {
   addressId: number;
-  district?: string;
-  state?: string;
-  country: string;
-  countryCode: string;
 
   static entityToAddressDto(entity: AddressEntity): AddressDto {
     const basisDto = BasisAddressDto.entityToBasisAddressDto(entity);
     return {
       addressId: entity.addressId,
       ...basisDto,
-      district: entity.district,
-      state: entity.state,
-      country: entity.country,
-      countryCode: entity.countryCode,
     } as AddressDto;
   }
 

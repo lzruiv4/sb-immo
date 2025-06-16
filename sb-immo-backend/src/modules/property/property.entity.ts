@@ -2,8 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
 import { PropertyStatusType } from '../enums/property-status.enum';
@@ -16,7 +16,8 @@ export class PropertyEntity {
   @Column({ name: 'property_name' })
   propertyName: string;
 
-  @OneToOne(() => AddressEntity, { eager: true })
+  // Maybe a house with more families
+  @ManyToOne(() => AddressEntity, { eager: true })
   @JoinColumn({ name: 'address_id' })
   address: AddressEntity;
 
