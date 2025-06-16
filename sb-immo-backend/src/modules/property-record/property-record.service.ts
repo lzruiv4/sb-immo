@@ -15,6 +15,19 @@ import { ContactDto } from '../contact/dto/contact.dto';
 import { PropertyStatusType } from '../enums/property-status.enum';
 import { RoleType } from '../enums/role.enum';
 
+interface RoleWithDates {
+  role: RoleType;
+  startAt: Date;
+  endAt?: Date;
+}
+
+//  const properties = await this.propertyRepository.find();
+//     return await Promise.all(
+//       properties.map(async (property) => {
+//         await this.updatePropertyStatusByDate(property);
+//         return property;
+//       }),
+//     );
 @Injectable()
 export class PropertyRecordService {
   constructor(
@@ -25,6 +38,7 @@ export class PropertyRecordService {
   ) {}
 
   async create(dto: BasisPropertyRecordDto): Promise<PropertyRecordDto> {
+    await this.setupStatus();
     const propertyDto = await this.propertyService.findOne(dto.propertyId);
     const contactDto = await this.contactService.findOne(dto.contactId);
     // Only the tenant's actions are restricted.
@@ -54,25 +68,59 @@ export class PropertyRecordService {
     propertyRecordDto: BasisPropertyRecordDto,
     propertyDto: PropertyDto,
   ): void {
-    if (propertyRecordDto.role === RoleType.ROLE_EIGENTUEMER) {
-      propertyDto.status = PropertyStatusType.AVAILABLE;
-    } else if (propertyRecordDto.role === RoleType.ROLE_MIETER) {
+    if (propertyRecordDto.role === RoleType.ROLE_MIETER) {
       propertyDto.status = PropertyStatusType.RENTED;
-    } else if (
+    }
+    if (
       propertyRecordDto.role === RoleType.ROLE_DIENSTLEISTER &&
       propertyDto.status === PropertyStatusType.AVAILABLE
     ) {
       // Only property in AVAILABLE can change the status to MAINTENANCE
       propertyDto.status = PropertyStatusType.MAINTENANCE;
-    } else {
-      throw new BadRequestException(
-        'CREATE_PROPERTY_RECORD: Please check your input',
-      );
     }
     propertyRecordDto.createdAt = new Date();
   }
 
+  async setupStatus(): Promise<void> {
+    const properties = await this.propertyService.findAll();
+    await Promise.all(
+      properties.map(async (property) => {
+        await this.updatePropertyStatusByDate(property);
+        return property;
+      }),
+    );
+  }
+
+  async updatePropertyStatusByDate(property: PropertyDto): Promise<void> {
+    const propertyRecords = await this.findAllByPropertyId(property.propertyId);
+    const rightNow = new Date();
+    let records: RoleWithDates[] = propertyRecords
+      .map((record) => {
+        return {
+          role: record.role,
+          startAt: record.startAt,
+          endAt: record.endAt,
+        } as RoleWithDates;
+      })
+      .filter(
+        (record) =>
+          rightNow >= record.startAt &&
+          (!record.endAt || rightNow <= record.endAt),
+      );
+    console.log('++++++++++++', records);
+    if (records.some((record) => RoleType.ROLE_DIENSTLEISTER === record.role)) {
+      property.status = PropertyStatusType.MAINTENANCE;
+    } else if (records.some((record) => RoleType.ROLE_MIETER === record.role)) {
+      property.status = PropertyStatusType.RENTED;
+    } else {
+      property.status = PropertyStatusType.AVAILABLE;
+    }
+    await this.propertyService.update(property.propertyId, property);
+    records = [];
+  }
+
   async findAll(): Promise<PropertyRecordDto[]> {
+    await this.setupStatus();
     return (await this.propertyRecordRepository.find()).map((propertyRecord) =>
       PropertyRecordDto.entityToPropertyRecordDto(propertyRecord),
     );
@@ -111,6 +159,7 @@ export class PropertyRecordService {
     propertyRecordId: string,
     dto: PropertyRecordDto,
   ): Promise<PropertyRecordDto> {
+    await this.setupStatus();
     const propertyRecordEntity = await this.propertyRecordRepository.findOne({
       where: { propertyRecordId },
     });

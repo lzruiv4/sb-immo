@@ -94,7 +94,7 @@ export class PropertyService {
     const oldAddress = await this.addressService.findAddressWithBasisInfo(
       dto.address,
     );
-    // if (this.addressService.isAddressChanged(oldAddress, dto.address))
+
     const checkAddressRegister = await this.getPropertyCountInSystem(dto);
     if (
       checkAddressRegister > 0 &&
