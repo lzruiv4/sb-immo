@@ -23,7 +23,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     AutoCompleteModule,
     TagModule,
   ],
-  standalone: true,
+  // standalone: true,
   templateUrl: './create-property.component.html',
   styleUrl: './create-property.component.scss',
 })
@@ -88,7 +88,7 @@ export class CreatePropertyComponent implements OnInit {
       country: address.country || '',
       countryCode: address.countryCode || '',
     };
-    console.log('Selected:', address);
+    // console.log('Selected:', address);
   }
 
   statusOptions = Object.keys(this.setupStatus).map((key: string) => ({

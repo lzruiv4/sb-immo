@@ -11,6 +11,7 @@
         <label for="propertyId">Property name</label>
         <app-search-property
           (selectedProperty)="handlePropertySelected($event)"
+          name="propertyId"
         />
       </div>
 
@@ -23,14 +24,17 @@
 
       <div class="input-container">
         <label for="role">Role</label>
-        <input
-          id="role"
-          type="text"
-          pInputText
+        <p-autoComplete
           [(ngModel)]="propertyRecord.role"
-          name="role"
+          [suggestions]="roles"
+          (completeMethod)="filterRoles($event)"
+          [dropdown]="true"
+          [forceSelection]="true"
+          placeholder="Select roles"
           required
-        />
+          name="role"
+        >
+        </p-autoComplete>
       </div>
 
       <div class="input-container">
@@ -44,6 +48,7 @@
           [panelStyle]="{ 'z-index': 1000 }"
           dateFormat="dd.mm.yy"
           (onSelect)="onStartDateSelect($event)"
+          name="startAt"
         />
       </div>
 
@@ -58,6 +63,7 @@
           [panelStyle]="{ 'z-index': 999 }"
           dateFormat="dd.mm.yy"
           [minDate]="propertyRecord.startAt"
+          name="endAt"
         />
       </div>
 

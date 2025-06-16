@@ -1,17 +1,31 @@
 .search-center {
-  position: relative;
   width: 100%;
+  position: relative; /* 使绝对定位面板相对输入框定位 */
 
-  .search-results-panel {
-    position: relative;
-    min-height: 0; /* 防止面板撑开容器 */
+  p-inputgroup {
+    width: 100%;
   }
 
-  .search-results-panel ::ng-deep .p-panel {
+  .search-results-panel {
     position: absolute;
-    width: 100%;
-    top: 100%;
+    top: calc(100% + 0.25rem); // 距离输入框底部一点距离
     left: 0;
-    margin-top: 0.5rem;
+    width: 100%; // 宽度与输入框相同
+    min-width: 200px;
+    max-height: 12rem;
+    overflow-y: auto;
+    z-index: 1050; // 确保面板浮在上层
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: white;
+    border-radius: 4px;
+
+    ::ng-deep .p-panel-content {
+      padding: 0; // 去掉默认 padding，让 listbox 占满
+    }
+
+    ::ng-deep .p-listbox {
+      width: 100%;
+      border: none;
+    }
   }
 }

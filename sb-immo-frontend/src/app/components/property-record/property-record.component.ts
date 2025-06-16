@@ -11,7 +11,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
-import { SearchPropertyComponent } from '../search-propery/search-propery.component';
+import { SearchPropertyComponent } from '../search-property/search-propery.component';
 import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
 
 @Component({
@@ -30,6 +30,7 @@ import { SearchContactsComponent } from '../search-contacts/search-contacts.comp
     SearchPropertyComponent,
     SearchContactsComponent,
   ],
+  standalone: true,
   templateUrl: './property-record.component.html',
   styleUrl: './property-record.component.scss',
 })

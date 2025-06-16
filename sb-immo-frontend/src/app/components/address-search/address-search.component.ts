@@ -1,27 +1,24 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputGroup } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { PanelModule } from 'primeng/panel';
 import { ListboxModule } from 'primeng/listbox';
 
 import { AddressService } from '../../services/address.service';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-address-search',
   standalone: true,
   imports: [
-    AutoCompleteModule,
-    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
     InputGroup,
     InputTextModule,
     ButtonModule,
-    CommonModule,
-    ReactiveFormsModule,
     PanelModule,
     ListboxModule,
   ],
@@ -32,6 +29,7 @@ export class AddressSearchComponent implements OnInit {
   @Output() addressSelected = new EventEmitter<any>();
 
   searchControl = new FormControl('');
+  addresses: any[] = [];
 
   constructor(private addressService: AddressService) {}
 
@@ -44,28 +42,36 @@ export class AddressSearchComponent implements OnInit {
       .pipe(
         debounceTime(1000),
         distinctUntilChanged(),
-        switchMap((value) =>
-          this.addressService.getAddressesForInput(value || '')
-        )
+        switchMap((value) => {
+          if (!value || value.trim() === '') {
+            this.showResultsPanel = false;
+            this.addresses = [];
+            return of([]);
+          }
+          return this.addressService.getAddressesForInput(value);
+        })
       )
-      .subscribe();
+      .subscribe((results) => {
+        this.addresses = results;
+        this.showResultsPanel = results && results.length > 0;
+      });
   }
 
   onAddressSelect(addr: any) {
     this.addressSelected.emit(addr);
+    this.showResultsPanel = false; // 选择后关闭面板
   }
 
-  showResultsPanel = false; // 控制面板显示
+  showResultsPanel = false;
 
-  // 输入框获得焦点时显示面板
   onInputFocus() {
-    if (this.searchControl.value) {
+    if (this.addresses.length > 0) {
       this.showResultsPanel = true;
     }
   }
 
-  // 输入框失去焦点时隐藏面板（可加延迟避免立即消失）
   onInputBlur() {
+    // 延迟关闭，避免点击面板时被误关闭
     setTimeout(() => {
       this.showResultsPanel = false;
     }, 200);

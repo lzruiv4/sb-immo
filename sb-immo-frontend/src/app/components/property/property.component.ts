@@ -15,6 +15,8 @@ import { ButtonModule } from 'primeng/button';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { PropertyStatusType } from '../../models/enums/property-status.enum';
 import { CreatePropertyComponent } from '../create-property/create-property.component';
+import { AddressSearchComponent } from '../address-search/address-search.component';
+import { IAddressDto } from '../../models/dtos/address.dto';
 
 @Component({
   selector: 'app-property',
@@ -31,12 +33,14 @@ import { CreatePropertyComponent } from '../create-property/create-property.comp
     CommonModule,
     ButtonModule,
     CreatePropertyComponent,
+    AddressSearchComponent,
   ],
   templateUrl: './property.component.html',
   styleUrl: './property.component.scss',
 })
 export class PropertyComponent implements OnInit {
   loading: boolean = false;
+
   constructor(
     private propertyService: PropertyService,
     private contactService: ContactService
@@ -83,5 +87,18 @@ export class PropertyComponent implements OnInit {
 
   getStatusTag(status: any): { label: string; severity: string } | undefined {
     return this.setupStatus[status as PropertyStatusType];
+  }
+
+  onAddressChosen(address: IAddressDto, property: IPropertyDto) {
+    property.address = {
+      street: address.street || '',
+      houseNumber: address.houseNumber || '',
+      postcode: address.postcode || '',
+      city: address.city || '',
+      district: address.district || '',
+      state: address.state || '',
+      country: address.country || '',
+      countryCode: address.countryCode || '',
+    };
   }
 }

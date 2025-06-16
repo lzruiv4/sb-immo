@@ -80,6 +80,7 @@
                 pInputText
                 type="text"
                 [(ngModel)]="property.propertyName"
+                name="propertyName"
               />
             </ng-template>
             <ng-template #output>
@@ -90,10 +91,16 @@
         <td>
           <p-cellEditor>
             <ng-template #input>
-              <input
+              <!-- <input
                 pInputText
                 type="text"
                 [(ngModel)]="property.address.street"
+              /> -->
+              <app-address-search
+                [(ngModel)]="property.address.street"
+                (addressSelected)="onAddressChosen($event, property)"
+                name="street"
+                style="min-width: 200px"
               />
             </ng-template>
             <ng-template #output>
@@ -108,6 +115,7 @@
                 pInputText
                 type="text"
                 [(ngModel)]="property.address.houseNumber"
+                name="houseNumber"
               />
             </ng-template>
             <ng-template #output>
@@ -122,6 +130,7 @@
                 pInputText
                 type="text"
                 [(ngModel)]="property.address.postcode"
+                name="postcode"
               />
             </ng-template>
             <ng-template #output>
@@ -136,6 +145,7 @@
                 pInputText
                 type="text"
                 [(ngModel)]="property.address.city"
+                name="city"
               />
             </ng-template>
             <ng-template #output>
@@ -146,7 +156,12 @@
         <td>
           <p-cellEditor>
             <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="property.unit" />
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.unit"
+                name="unit"
+              />
             </ng-template>
             <ng-template #output>
               {{ property.unit }}
@@ -156,7 +171,12 @@
         <td>
           <p-cellEditor>
             <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="property.area" />
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.area"
+                name="area"
+              />
             </ng-template>
             <ng-template #output>
               {{ property.area }}
@@ -166,7 +186,12 @@
         <td>
           <p-cellEditor>
             <ng-template #input>
-              <input pInputText type="text" [(ngModel)]="property.buildYear" />
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="property.buildYear"
+                name="buildYear"
+              />
             </ng-template>
             <ng-template #output>
               {{ property.buildYear }}
