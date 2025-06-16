@@ -8,7 +8,6 @@
 
     <app-create-property
       [visible]="openCreateDialog"
-      [setupStatus]="setupStatus"
       (closeDialog)="openCreateDialog = false"
     ></app-create-property>
   </div>
@@ -91,12 +90,8 @@
         <td>
           <p-cellEditor>
             <ng-template #input>
-              <!-- <input
-                pInputText
-                type="text"
-                [(ngModel)]="property.address.street"
-              /> -->
               <app-address-search
+                [oldAddress]="property.address.street"
                 [(ngModel)]="property.address.street"
                 (addressSelected)="onAddressChosen($event, property)"
                 name="street"
@@ -200,8 +195,8 @@
         </td>
         <td>
           <p-tag
-            [value]="getStatusTag(property.status)?.label"
-            [severity]="getStatusTag(property.status)?.severity"
+            [value]="getStatusTag(property.status).label"
+            [severity]="getStatusTag(property.status).severity"
           />
         </td>
         <td>

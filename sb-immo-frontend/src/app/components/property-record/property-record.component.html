@@ -122,14 +122,13 @@
           <td>
             <p-cellEditor>
               <ng-template #input>
-                <input
-                  pInputText
-                  type="text"
-                  [(ngModel)]="propertyRecord.role"
-                />
+                <app-basis-combos [suggestions]="statuses" />
               </ng-template>
               <ng-template #output>
-                {{ propertyRecord.role }}
+                <p-tag
+                  [value]="getStatusTag(propertyRecord.role).label"
+                  [severity]="getStatusTag(propertyRecord.role).severity"
+                />
               </ng-template>
             </p-cellEditor>
           </td>

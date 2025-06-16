@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -6,10 +6,14 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { AddressSearchComponent } from '../address-search/address-search.component';
 import { IPropertyDto } from '../../models/dtos/property.dto';
-import { PropertyStatusType } from '../../models/enums/property-status.enum';
+import {
+  PropertyStatusDescriptions,
+  PropertyStatusType,
+} from '../../models/enums/property-status.enum';
 import { PropertyService } from '../../services/property.service';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { BasisCombosComponent } from '../../share/basis-combos/basis-combos.component';
 
 @Component({
   selector: 'app-create-property',
@@ -22,25 +26,16 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     ButtonModule,
     AutoCompleteModule,
     TagModule,
+    BasisCombosComponent,
   ],
-  // standalone: true,
   templateUrl: './create-property.component.html',
   styleUrl: './create-property.component.scss',
 })
-export class CreatePropertyComponent implements OnInit {
+export class CreatePropertyComponent {
   @Input() visible = false;
-  @Input() setupStatus: Record<
-    PropertyStatusType,
-    { label: string; severity: string }
-  > = {
-    [PropertyStatusType.AVAILABLE]: { label: 'AVAILABLE', severity: 'success' },
-    [PropertyStatusType.MAINTENANCE]: {
-      label: 'MAINTENANCE',
-      severity: 'warning',
-    },
-    [PropertyStatusType.RENTED]: { label: 'RENTED', severity: 'info' },
-  };
   @Output() closeDialog = new EventEmitter<void>();
+
+  statuses = PropertyStatusDescriptions;
 
   property: IPropertyDto = {
     propertyName: '',
@@ -61,10 +56,6 @@ export class CreatePropertyComponent implements OnInit {
   };
 
   constructor(private propertyService: PropertyService) {}
-
-  ngOnInit(): void {
-    console.log('asfa', this.setupStatus);
-  }
 
   onSubmit(ngForm: NgForm) {
     this.propertyService.saveNewProperty(this.property).subscribe();
@@ -88,46 +79,5 @@ export class CreatePropertyComponent implements OnInit {
       country: address.country || '',
       countryCode: address.countryCode || '',
     };
-    // console.log('Selected:', address);
-  }
-
-  statusOptions = Object.keys(this.setupStatus).map((key: string) => ({
-    value: key as PropertyStatusType,
-    label: this.setupStatus[key as PropertyStatusType].label,
-    severity: this.setupStatus[key as PropertyStatusType].severity,
-  }));
-
-  filteredStatuses: any[] = [];
-  selectedStatus: {
-    value: PropertyStatusType;
-    label: string;
-    severity: string;
-  } | null = null;
-
-  // 过滤方法
-  filterStatus(event: { query: string }) {
-    this.filteredStatuses = this.statusOptions.filter(
-      (option) =>
-        option.label.toLowerCase().includes(event.query.toLowerCase()) ||
-        option.value
-          .toString()
-          .toLowerCase()
-          .includes(event.query.toLowerCase())
-    );
-  }
-
-  // 复用父组件的获取状态标签方法
-  getStatusTag(status: PropertyStatusType) {
-    return this.setupStatus[status];
-  }
-
-  // 值改变时的类型安全处理
-  onStatusChange(status: {
-    value: PropertyStatusType;
-    label: string;
-    severity: string;
-  }) {
-    console.log('Selected status:', status.value);
-    // 可以在这里触发父组件的回调等操作
   }
 }

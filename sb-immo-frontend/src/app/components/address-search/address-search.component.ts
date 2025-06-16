@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -26,6 +26,7 @@ import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
   styleUrl: './address-search.component.scss',
 })
 export class AddressSearchComponent implements OnInit {
+  @Input() oldAddress? = '';
   @Output() addressSelected = new EventEmitter<any>();
 
   searchControl = new FormControl('');

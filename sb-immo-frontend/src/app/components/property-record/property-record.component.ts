@@ -13,6 +13,9 @@ import { AvatarModule } from 'primeng/avatar';
 import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
 import { SearchPropertyComponent } from '../search-property/search-propery.component';
 import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
+import { RoleType, RoleTypeDescriptions } from '../../models/enums/role.enum';
+import { BasisCombosComponent } from '../../share/basis-combos/basis-combos.component';
+import { ITag } from '../../share/models/tag.model';
 
 @Component({
   selector: 'app-property-record',
@@ -29,6 +32,7 @@ import { SearchContactsComponent } from '../search-contacts/search-contacts.comp
     ButtonModule,
     SearchPropertyComponent,
     SearchContactsComponent,
+    BasisCombosComponent,
   ],
   standalone: true,
   templateUrl: './property-record.component.html',
@@ -37,6 +41,8 @@ import { SearchContactsComponent } from '../search-contacts/search-contacts.comp
 export class PropertyRecordComponent implements OnInit {
   loading: boolean = false;
   openCreateDialog: boolean = false;
+
+  statuses = RoleTypeDescriptions;
 
   constructor(private propertyRecordService: PropertyRecordService) {}
 
@@ -63,5 +69,9 @@ export class PropertyRecordComponent implements OnInit {
 
   onRowEditCancel() {
     this.propertyRecordService.getPropertyRecords();
+  }
+
+  getStatusTag(status: RoleType): ITag {
+    return this.statuses[status];
   }
 }

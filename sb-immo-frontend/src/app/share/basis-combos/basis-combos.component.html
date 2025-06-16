@@ -1,0 +1,20 @@
+<div class="card flex justify-center">
+  <p-autocomplete
+    name="status"
+    [(ngModel)]="selectedStatus"
+    [suggestions]="filteredStatuses"
+    (completeMethod)="filterStatus($event)"
+    [dropdown]="true"
+    field="label"
+    [forceSelection]="true"
+    placeholder="Select status"
+    [inputStyle]="{ width: '100%' }"
+  >
+    <!-- 下拉选项模板 -->
+    <ng-template let-status pTemplate="item">
+      <div class="flex align-items-center gap-2">
+        <p-tag [severity]="status.severity" [value]="status.label"></p-tag>
+      </div>
+    </ng-template>
+  </p-autocomplete>
+</div>

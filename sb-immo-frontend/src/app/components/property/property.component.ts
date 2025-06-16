@@ -10,13 +10,16 @@ import { TableModule } from 'primeng/table';
 import { PropertyService } from '../../services/property.service';
 import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
-import { ContactService } from '../../services/contact.service';
 import { ButtonModule } from 'primeng/button';
 import { IPropertyDto } from '../../models/dtos/property.dto';
-import { PropertyStatusType } from '../../models/enums/property-status.enum';
+import {
+  PropertyStatusDescriptions,
+  PropertyStatusType,
+} from '../../models/enums/property-status.enum';
 import { CreatePropertyComponent } from '../create-property/create-property.component';
 import { AddressSearchComponent } from '../address-search/address-search.component';
 import { IAddressDto } from '../../models/dtos/address.dto';
+import { ITag } from '../../share/models/tag.model';
 
 @Component({
   selector: 'app-property',
@@ -41,15 +44,13 @@ import { IAddressDto } from '../../models/dtos/address.dto';
 export class PropertyComponent implements OnInit {
   loading: boolean = false;
 
-  constructor(
-    private propertyService: PropertyService,
-    private contactService: ContactService
-  ) {}
+  setupStatus = PropertyStatusDescriptions;
+
+  constructor(private propertyService: PropertyService) {}
 
   ngOnInit(): void {
     this.propertyService.getProperties();
     this.propertyService.properties$.subscribe();
-    // console.log(this.statusOptions);
   }
 
   get properties$() {
@@ -72,21 +73,8 @@ export class PropertyComponent implements OnInit {
     this.propertyService.getProperties();
   }
 
-  setupStatus: Record<PropertyStatusType, { label: string; severity: string }> =
-    {
-      [PropertyStatusType.AVAILABLE]: {
-        label: 'AVAILABLE',
-        severity: 'success',
-      },
-      [PropertyStatusType.MAINTENANCE]: {
-        label: 'MAINTENANCE',
-        severity: 'warning',
-      },
-      [PropertyStatusType.RENTED]: { label: 'RENTED', severity: 'info' },
-    };
-
-  getStatusTag(status: any): { label: string; severity: string } | undefined {
-    return this.setupStatus[status as PropertyStatusType];
+  getStatusTag(status: PropertyStatusType): ITag {
+    return this.setupStatus[status];
   }
 
   onAddressChosen(address: IAddressDto, property: IPropertyDto) {
