@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PropertyRecordEntity } from './property-record.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +12,8 @@ import { BasisPropertyRecordDto } from './dto/basis-property-record.dto';
 import { PropertyService } from '../property/property.service';
 import { PropertyDto } from '../property/dto/property.dto';
 import { ContactDto } from '../contact/dto/contact.dto';
+import { PropertyStatusType } from '../enums/property-status.enum';
+import { RoleType } from '../enums/role.enum';
 
 @Injectable()
 export class PropertyRecordService {
@@ -20,27 +26,50 @@ export class PropertyRecordService {
 
   async create(dto: BasisPropertyRecordDto): Promise<PropertyRecordDto> {
     const propertyDto = await this.propertyService.findOne(dto.propertyId);
-    if (!propertyDto)
-      throw new NotFoundException(
-        'Property not found, please create a property first',
-      );
-
     const contactDto = await this.contactService.findOne(dto.contactId);
-    if (!contactDto)
-      throw new NotFoundException(
-        'Contact not found, please create a contact first',
+    // Only the tenant's actions are restricted.
+    if (
+      RoleType.ROLE_MIETER === dto.role &&
+      propertyDto.status !== PropertyStatusType.AVAILABLE
+    ) {
+      throw new BadRequestException(
+        'CREATE_PROPERTY_RECORD: The property is unavailable.',
       );
+    } else {
+      this.createPropertyRecordByRole(dto, propertyDto);
+      const newPropertyRecordEntity = this.propertyRecordRepository.create(dto);
+      newPropertyRecordEntity.propertyEntity =
+        PropertyDto.dtoToPropertyEntity(propertyDto);
 
-    const newPropertyRecordEntity = this.propertyRecordRepository.create(dto);
-    newPropertyRecordEntity.propertyEntity =
-      PropertyDto.dtoToPropertyEntity(propertyDto);
+      newPropertyRecordEntity.contactEntity =
+        ContactDto.dtoToContactEntity(contactDto);
+      await this.propertyService.update(propertyDto.propertyId, propertyDto);
+      return PropertyRecordDto.entityToPropertyRecordDto(
+        await this.propertyRecordRepository.save(newPropertyRecordEntity),
+      );
+    }
+  }
 
-    newPropertyRecordEntity.contactEntity =
-      ContactDto.dtoToContactEntity(contactDto);
-
-    return PropertyRecordDto.entityToPropertyRecordDto(
-      await this.propertyRecordRepository.save(newPropertyRecordEntity),
-    );
+  private createPropertyRecordByRole(
+    propertyRecordDto: BasisPropertyRecordDto,
+    propertyDto: PropertyDto,
+  ): void {
+    if (propertyRecordDto.role === RoleType.ROLE_EIGENTUEMER) {
+      propertyDto.status = PropertyStatusType.AVAILABLE;
+    } else if (propertyRecordDto.role === RoleType.ROLE_MIETER) {
+      propertyDto.status = PropertyStatusType.RENTED;
+    } else if (
+      propertyRecordDto.role === RoleType.ROLE_DIENSTLEISTER &&
+      propertyDto.status === PropertyStatusType.AVAILABLE
+    ) {
+      // Only property in AVAILABLE can change the status to MAINTENANCE
+      propertyDto.status = PropertyStatusType.MAINTENANCE;
+    } else {
+      throw new BadRequestException(
+        'CREATE_PROPERTY_RECORD: Please check your input',
+      );
+    }
+    propertyRecordDto.createdAt = new Date();
   }
 
   async findAll(): Promise<PropertyRecordDto[]> {

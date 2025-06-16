@@ -39,4 +39,7 @@ export class PropertyRecordEntity {
    * **/
   @Column({ nullable: true })
   notes: string;
+
+  @Column({ type: 'timestamptz', nullable: true, name: 'created_at' })
+  createdAt: Date;
 }

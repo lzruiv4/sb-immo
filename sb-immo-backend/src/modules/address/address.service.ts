@@ -99,7 +99,7 @@ export class AddressService {
     console.log(`Address with id ${id} has been deleted.`);
   }
 
-  private isAddressChanged(
+  isAddressChanged(
     oldAddress: AddressDto,
     newAddressPartial: Partial<AddressDto>,
   ): boolean {

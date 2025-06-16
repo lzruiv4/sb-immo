@@ -8,6 +8,7 @@ export class BasisPropertyRecordDto {
   startAt: Date;
   endAt?: Date; // Optional end date for the record
   notes?: string;
+  createdAt?: Date;
 
   static entityToBasisPropertyRecordDto(
     entity: PropertyRecordEntity,
@@ -19,6 +20,7 @@ export class BasisPropertyRecordDto {
       startAt: entity.startAt, // Default to now if not set
       endAt: entity.endAt,
       notes: entity.notes,
+      createdAt: entity.createdAt,
     };
   }
 }

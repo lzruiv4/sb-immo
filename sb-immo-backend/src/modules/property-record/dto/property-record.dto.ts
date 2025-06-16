@@ -25,6 +25,7 @@ export class PropertyRecordDto extends BasisPropertyRecordDto {
       startAt: dto.startAt,
       endAt: dto.endAt,
       notes: dto.notes,
+      createdAt: dto.createdAt,
     } as PropertyRecordEntity;
   }
 }

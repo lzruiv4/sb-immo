@@ -91,8 +91,15 @@ export class PropertyService {
   }
 
   async update(id: string, dto: PropertyDto): Promise<PropertyDto> {
+    const oldAddress = await this.addressService.findAddressWithBasisInfo(
+      dto.address,
+    );
+    // if (this.addressService.isAddressChanged(oldAddress, dto.address))
     const checkAddressRegister = await this.getPropertyCountInSystem(dto);
-    if (checkAddressRegister > 0) {
+    if (
+      checkAddressRegister > 0 &&
+      dto.address.addressId !== oldAddress.addressId
+    ) {
       throw new ConflictException(
         `The address with id ${dto.address.addressId} is registered`,
       );
