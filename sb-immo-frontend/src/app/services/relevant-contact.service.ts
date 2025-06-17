@@ -34,7 +34,7 @@ export class RelevantContactService {
       catchError((err) => {
         console.error(`Failed to get contacts for ${contactId}:`, err);
         return throwError(
-          () => new Error(`无法获取联系人 ${contactId} 的相关信息`)
+          () => new Error(`Can not find anything about ${contactId}`)
         );
       })
     );
@@ -45,8 +45,8 @@ export class RelevantContactService {
   ): Observable<ISearchRelevantContactID> {
     this.propertyRecordService.getPropertyRecords();
     return this.propertyRecordService.propertyRecords$.pipe(
-      filter((records) => records.length > 0), // 确保有数据
-      take(1), // 只取最新一次数据
+      filter((records) => records.length > 0),
+      take(1),
       map((propertyRecords) => {
         // find all property records
         const propertyRecordsByContactId = propertyRecords
@@ -113,11 +113,7 @@ export class RelevantContactService {
       map((contacts) => {
         const contact = contacts.find((c) => c.contactId === idSet.contactId);
         if (!contact) {
-          console.warn(
-            `联系人 ${idSet.contactId} 不存在。可用ID: ${contacts
-              .map((c) => c.contactId)
-              .join(', ')}`
-          );
+          // return empty
           return this.createEmptyResponse(idSet.contactId);
         }
 
