@@ -15,12 +15,6 @@ import { ContactDto } from '../contact/dto/contact.dto';
 import { PropertyStatusType } from '../enums/property-status.enum';
 import { RoleType } from '../enums/role.enum';
 
-interface RoleWithDates {
-  role: RoleType;
-  startAt: Date;
-  endAt?: Date;
-}
-
 @Injectable()
 export class PropertyRecordService {
   constructor(

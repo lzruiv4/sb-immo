@@ -10,6 +10,9 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { CreateContactComponent } from '../create-contact/create-contact.component';
+import { Observable } from 'rxjs';
+import { ISearchRelevantContact } from '../../share/models/search-relevant-contacts';
+import { FindContactsComponent } from '../find-contacts/find-contacts.component';
 
 @Component({
   selector: 'app-contact',
@@ -23,20 +26,27 @@ import { CreateContactComponent } from '../create-contact/create-contact.compone
     CommonModule,
     ButtonModule,
     CreateContactComponent,
+    FindContactsComponent,
   ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
 export class ContactComponent implements OnInit {
   loading: boolean = false;
-
   openCreateDialog = false;
+  isContactsDialog = false;
+
+  currentContactId: string | null = null;
 
   constructor(private contactService: ContactService) {}
 
   get contact$() {
     return this.contactService.contacts$;
   }
+
+  relevantContacts$: Observable<ISearchRelevantContact[]> = new Observable<
+    ISearchRelevantContact[]
+  >();
 
   ngOnInit(): void {
     this.contactService.getContacts();
@@ -45,8 +55,15 @@ export class ContactComponent implements OnInit {
 
   onRowEditInit() {}
 
-  showContactDetails(contactId: string) {
-    throw new Error('Method not implemented.');
+  openContactsDialog(contactId: string) {
+    this.currentContactId = contactId;
+    console.log(this.currentContactId);
+    this.isContactsDialog = true;
+  }
+
+  closeContactsDialog() {
+    this.currentContactId = null;
+    this.isContactsDialog = false;
   }
 
   onRowEditSave(contactToBeEdit: IContactDto) {

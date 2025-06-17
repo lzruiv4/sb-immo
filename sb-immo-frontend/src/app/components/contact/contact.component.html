@@ -60,7 +60,12 @@
           <th>Show contacts</th>
         </tr>
       </ng-template>
-      <ng-template #body let-contact let-editing="editing" let-ri="rowIndex">
+      <ng-template
+        pTemplate="body"
+        let-contact
+        let-editing="editing"
+        let-ri="rowIndex"
+      >
         <tr [pEditableRow]="contact">
           <td>
             <p-avatar icon="pi pi-user" class="mr-2" />
@@ -160,7 +165,7 @@
               label="Contacts"
               icon="pi pi-table"
               severity="info"
-              (click)="showContactDetails(contact.contactId)"
+              (click)="openContactsDialog(contact.contactId)"
             />
           </td>
         </tr>
@@ -172,5 +177,12 @@
         </tr>
       </ng-template>
     </p-table>
+
+    <app-find-contacts
+      *ngIf="currentContactId"
+      [visible]="isContactsDialog"
+      [contactId]="currentContactId"
+      (closeDialog)="closeContactsDialog()"
+    />
   </div>
 </div>

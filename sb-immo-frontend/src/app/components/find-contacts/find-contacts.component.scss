@@ -1,0 +1,32 @@
+.dialog-upper-section {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+
+  .three-column-layout {
+    display: flex;
+    gap: 1.5rem;
+    height: 100%;
+
+    .contact-column {
+      flex: 1;
+      padding: 1rem;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      min-height: 500px;
+    }
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  margin-top: auto;
+}
+
+::ng-deep .p-dialog .p-dialog-content {
+  display: flex;
+  flex-direction: column;
+}

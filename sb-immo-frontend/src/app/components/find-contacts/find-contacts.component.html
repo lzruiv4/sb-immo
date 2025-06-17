@@ -1,0 +1,42 @@
+<p-dialog
+  header="Contacts"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '90%' }"
+>
+  <div class="dialog-upper-section">
+    <div class="three-column-layout" *ngIf="contacts$ | async as contacts">
+      <div class="contact-column">
+        <p-tag value="OWNER" severity="success" />
+        <div *ngFor="let contact of contacts.owners">
+          <app-card-show [contact]="contact" />
+        </div>
+      </div>
+
+      <div class="contact-column">
+        <p-tag value="RENTER" severity="info" />
+        <div *ngFor="let contact of contacts.renters">
+          <app-card-show [contact]="contact" />
+        </div>
+      </div>
+
+      <div class="contact-column">
+        <p-tag value="SERVICE_PROVIDER" severity="warn" />
+        <div *ngFor="let contact of contacts.serviceProviders">
+          <app-card-show [contact]="contact" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="button-container">
+    <button
+      pButton
+      type="button"
+      label="Close"
+      icon="pi pi-times"
+      class="p-button-secondary"
+      (click)="onCancel()"
+    ></button>
+  </div>
+</p-dialog>

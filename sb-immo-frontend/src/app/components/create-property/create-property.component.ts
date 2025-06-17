@@ -13,7 +13,7 @@ import {
 import { PropertyService } from '../../services/property.service';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { BasisCombosComponent } from '../../share/basis-combos/basis-combos.component';
+import { BasisCombosComponent } from '../../share/basis-components/basis-combos/basis-combos.component';
 import { IAddressDto } from '../../models/dtos/address.dto';
 
 @Component({

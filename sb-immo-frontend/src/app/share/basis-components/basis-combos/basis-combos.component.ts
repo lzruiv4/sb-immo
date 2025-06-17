@@ -10,9 +10,9 @@ import {
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TagModule } from 'primeng/tag';
-import { ITag } from '../models/tag.model';
-import { PropertyStatusType } from '../../models/enums/property-status.enum';
-import { RoleType } from '../../models/enums/role.enum';
+import { ITag } from '../../models/tag.model';
+import { PropertyStatusType } from '../../../models/enums/property-status.enum';
+import { RoleType } from '../../../models/enums/role.enum';
 
 @Component({
   selector: 'app-basis-combos',
