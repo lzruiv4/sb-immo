@@ -15,10 +15,7 @@ export class ContactService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(
-    private contactHttp: HttpClient
-  ) // private propertyRecord: PropertyRecordService
-  {}
+  constructor(private contactHttp: HttpClient) {}
 
   getContacts(): void {
     this.loadingSubject.next(true);

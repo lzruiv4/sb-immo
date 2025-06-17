@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
-  filter,
   finalize,
   map,
   Observable,
@@ -13,11 +12,6 @@ import { IPropertyRecordDto } from '../models/dtos/property-record.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_RECORD_URL } from '../core/apis/backend.api';
 import { RoleType } from '../models/enums/role.enum';
-import {
-  ISearchRelevantContact,
-  ISearchRelevantContactID,
-} from '../share/models/search-relevant-contacts';
-import { ContactService } from './contact.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,10 +25,7 @@ export class PropertyRecordService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(
-    private propertyRecordHttp: HttpClient,
-    private contactService: ContactService
-  ) {}
+  constructor(private propertyRecordHttp: HttpClient) {}
 
   getPropertyRecords(): void {
     this.loadingSubject.next(true);
@@ -64,88 +55,6 @@ export class PropertyRecordService {
       )
       .subscribe();
   }
-
-  // getPropertyRecordByContactId(
-  //   contactId: string
-  // ): Observable<ISearchRelevantContactID[]> {
-  //   return this.propertyRecords$.pipe(
-  //     map((propertyRecords) => {
-  //       // find all property records
-  //       const propertyRecordsByContactId = propertyRecords
-  //         .filter((propertyRecord) => propertyRecord.contactId === contactId)
-  //         .map((propertyRecord) => propertyRecord.propertyId);
-
-  //       // find all contact with the same property records
-  //       const contactsWithSamePropertyRecord = propertyRecords.filter(
-  //         (propertyRecord) =>
-  //           propertyRecordsByContactId.includes(propertyRecord.propertyId) &&
-  //           propertyRecord.contactId !== contactId
-  //       );
-
-  //       // find all contact with role owner id
-  //       const ownerIds = Array.from(
-  //         new Set(
-  //           contactsWithSamePropertyRecord
-  //             .filter(
-  //               (propertyRecord) =>
-  //                 propertyRecord.role === RoleType.ROLE_EIGENTUEMER
-  //             )
-  //             .map((propertyRecord) => propertyRecord.contactId)
-  //         )
-  //       );
-
-  //       // find all contact with role renter id
-  //       const renterIds = Array.from(
-  //         new Set(
-  //           contactsWithSamePropertyRecord
-  //             .filter(
-  //               (propertyRecord) => propertyRecord.role === RoleType.ROLE_MIETER
-  //             )
-  //             .map((propertyRecord) => propertyRecord.contactId)
-  //         )
-  //       );
-
-  //       // find all contact with role serviceProvider id
-  //       const serviceProviderIds = Array.from(
-  //         new Set(
-  //           contactsWithSamePropertyRecord
-  //             .filter(
-  //               (propertyRecord) =>
-  //                 propertyRecord.role === RoleType.ROLE_DIENSTLEISTER
-  //             )
-  //             .map((propertyRecord) => propertyRecord.contactId)
-  //         )
-  //       );
-
-  //       return {
-  //         // owners: this.contactService.contacts$.pipe(
-  //         //   map((contacts) =>
-  //         //     contacts.filter((contact) =>
-  //         //       ownerIds.includes(contact.contactId ?? '')
-  //         //     )
-  //         //   )
-  //         // ),
-  //         // renters: this.contactService.contacts$.pipe(
-  //         //   map((contacts) =>
-  //         //     contacts.filter((contact) =>
-  //         //       renterIds.includes(contact.contactId ?? '')
-  //         //     )
-  //         //   )
-  //         // ),
-  //         // serviceProviders: this.contactService.contacts$.pipe(
-  //         //   map((contacts) =>
-  //         //     contacts.filter((contact) =>
-  //         //       serviceProviderIds.includes(contact.contactId ?? '')
-  //         //     )
-  //         //   )
-  //         // ),
-  //         ownerIds,
-  //         renterIds,
-  //         serviceProviderIds,
-  //       };
-  //     })
-  //   );
-  // }
 
   getOverlappingPropertyRecordsByContactId(
     contactId: string
