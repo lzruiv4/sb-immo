@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   AutoCompleteCompleteEvent,
@@ -17,6 +17,7 @@ import { PropertyService } from '../../services/property.service';
   styleUrl: './search-property.component.scss',
 })
 export class SearchPropertyComponent {
+  @Input() current: IPropertyDto | null = null;
   @Output() selectedProperty = new EventEmitter<IPropertyDto>();
 
   items$: Observable<IPropertyDto[]> = new Observable<IPropertyDto[]>();
@@ -26,6 +27,7 @@ export class SearchPropertyComponent {
   constructor(private propertyService: PropertyService) {}
 
   ngOnInit(): void {
+    if (this.current) this.value = this.current;
     this.propertyService.getProperties();
     this.propertyService.properties$.subscribe();
   }
@@ -46,7 +48,7 @@ export class SearchPropertyComponent {
   }
 
   selectProperty(event: AutoCompleteSelectEvent) {
-    console.log(event.value);
+    // console.log(event.value);
     const property: IPropertyDto = event.value as IPropertyDto;
     this.selectedProperty.emit(property);
   }

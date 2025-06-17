@@ -3,8 +3,6 @@ import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { PropertyService } from '../../services/property.service';
@@ -31,8 +29,6 @@ import { ITag } from '../../share/models/tag.model';
     IconFieldModule,
     InputTextModule,
     InputIconModule,
-    MultiSelectModule,
-    SelectModule,
     CommonModule,
     ButtonModule,
     CreatePropertyComponent,
@@ -44,13 +40,15 @@ import { ITag } from '../../share/models/tag.model';
 export class PropertyComponent implements OnInit {
   loading: boolean = false;
 
+  addressId: number = 0;
+
   setupStatus = PropertyStatusDescriptions;
 
   constructor(private propertyService: PropertyService) {}
 
   ngOnInit(): void {
     this.propertyService.getProperties();
-    this.propertyService.properties$.subscribe();
+    this.propertyService.properties$.subscribe((pr) => console.log(pr));
   }
 
   get properties$() {
@@ -63,13 +61,24 @@ export class PropertyComponent implements OnInit {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit() {}
+  onRowEditInit(property: IPropertyDto) {
+    console.log('Open', property);
+  }
 
   onRowEditSave(property: IPropertyDto) {
+    console.log('产业在组件内====', property);
+    // Clone the property and its address to avoid mutating shared references
+    // const updatedProperty: IPropertyDto = {
+    //   ...property,
+    //   address: {
+    //     ...property.address,
+    //     addressId: this.addressId,
+    //   },
+    // };
     this.propertyService.updateProperty(property).subscribe();
   }
 
-  onRowEditCancel() {
+  onRowEditCancel(property: IPropertyDto) {
     this.propertyService.getProperties();
   }
 
@@ -78,7 +87,9 @@ export class PropertyComponent implements OnInit {
   }
 
   onAddressChosen(address: IAddressDto, property: IPropertyDto) {
+    console.log('+', property, ',,,,', address);
     property.address = {
+      addressId: property.address.addressId,
       street: address.street || '',
       houseNumber: address.houseNumber || '',
       postcode: address.postcode || '',
@@ -88,5 +99,7 @@ export class PropertyComponent implements OnInit {
       country: address.country || '',
       countryCode: address.countryCode || '',
     };
+    // Object.assign(property, address);
+    // property = { ...property, address };
   }
 }

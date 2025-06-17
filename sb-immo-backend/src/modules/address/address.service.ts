@@ -53,7 +53,7 @@ export class AddressService {
 
   async findAddressWithBasisInfo(
     basisAddressDto: BasisAddressDto,
-  ): Promise<AddressDto> {
+  ): Promise<AddressDto | null> {
     const addressEntity = await this.addressRepository
       .createQueryBuilder('address')
       .where('address.street = :street', { street: basisAddressDto.street })
@@ -64,30 +64,21 @@ export class AddressService {
         postcode: basisAddressDto.postcode,
       })
       .getOne();
-    if (!addressEntity) {
-      throw new NotFoundException('Address not found');
-    }
-    return AddressDto.entityToAddressDto(addressEntity);
+
+    return !addressEntity ? null : AddressDto.entityToAddressDto(addressEntity);
   }
 
   async update(id: number, dto: AddressDto): Promise<AddressDto> {
-    console.log('id:', id, 'dto', dto);
-    if (
-      id === undefined ||
-      dto.addressId === undefined ||
-      id != dto.addressId
-    ) {
-      throw new BadRequestException(
-        'ADDRESS_UPDATE: Please check you address input',
-      );
-    } else {
-      const old = this.findOne(id);
-      const isChange = this.isAddressChanged(await old, dto);
-      if (isChange) {
+    // Here can only
+    if (id == dto.addressId) {
+      if (await this.isAddressChanged(dto)) {
         await this.addressRepository.update(id, dto);
       }
-      console.log('ADDRESS_UPDATE: You addresses are not changed');
       return await this.findOne(id);
+    } else {
+      throw new BadRequestException(
+        'UPDATE_ADDRESS: You input address is not in system, please create a new address',
+      );
     }
   }
 
@@ -99,11 +90,19 @@ export class AddressService {
     console.log(`Address with id ${id} has been deleted.`);
   }
 
-  isAddressChanged(
-    oldAddress: AddressDto,
+  async isAddressChanged(
     newAddressPartial: Partial<AddressDto>,
-  ): boolean {
-    if (!oldAddress || !newAddressPartial) return false;
+  ): Promise<boolean> {
+    if (
+      !newAddressPartial ||
+      newAddressPartial.addressId === undefined ||
+      newAddressPartial.addressId === null
+    ) {
+      return false;
+    }
+
+    const oldAddress = await this.findOne(newAddressPartial.addressId);
+    if (!oldAddress) return false;
 
     return [
       'street',

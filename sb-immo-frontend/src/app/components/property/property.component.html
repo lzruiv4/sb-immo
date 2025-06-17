@@ -15,14 +15,17 @@
   <p-table
     [value]="(properties$ | async) ?? []"
     dataKey="propertyId"
-    [rows]="5"
+    [rows]="10"
     editMode="row"
-    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [rowsPerPageOptions]="[5, 10, 15]"
     [loading]="loading"
     [paginator]="true"
     [globalFilterFields]="[
       'propertyName',
-      'address',
+      'address.street',
+      'address.houseNumber',
+      'address.postcode',
+      'address.city',
       'unit',
       'area',
       'buildYear',
@@ -30,7 +33,7 @@
     ]"
     [tableStyle]="{ width: '100%' }"
   >
-    <ng-template #header>
+    <ng-template pTemplate="header">
       <tr>
         <th>Avatar</th>
         <th>
@@ -42,7 +45,7 @@
         <th>
           <div class="flex items-center">
             Street
-            <p-columnFilter type="text" field="address.street" display="menu" />
+            <p-columnFilter type="text" field="street" display="menu" />
           </div>
         </th>
         <th>
@@ -67,7 +70,13 @@
         <th>Edit</th>
       </tr>
     </ng-template>
-    <ng-template #body let-property let-editing="editing" let-ri="rowIndex">
+    <ng-template
+      pTemplate="body"
+      let-property
+      let-editing="editing"
+      let-rowIndex="rowIndex"
+      style="overflow: auto"
+    >
       <tr [pEditableRow]="property">
         <td>
           <p-avatar icon="pi pi-home" class="mr-2" />
@@ -92,7 +101,6 @@
             <ng-template #input>
               <app-address-search
                 [oldAddress]="property.address.street"
-                [(ngModel)]="property.address.street"
                 (addressSelected)="onAddressChosen($event, property)"
                 name="street"
                 style="min-width: 200px"
@@ -208,7 +216,7 @@
               type="button"
               pInitEditableRow
               icon="pi pi-pencil"
-              (click)="onRowEditInit()"
+              (click)="onRowEditInit(property)"
               text
               rounded
               severity="secondary"
@@ -232,7 +240,7 @@
               type="button"
               pCancelEditableRow
               icon="pi pi-times"
-              (click)="onRowEditCancel()"
+              (click)="onRowEditCancel(property)"
               text
               rounded
               severity="secondary"
@@ -244,7 +252,7 @@
 
     <ng-template #emptyMessage>
       <tr>
-        <td colspan="5">Property not found.</td>
+        <td colspan="12">Property not found.</td>
       </tr>
     </ng-template>
   </p-table>

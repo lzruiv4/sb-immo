@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, finalize, Observable, tap } from 'rxjs';
 import { IContactDto } from '../models/dtos/contact.dto';
 import { BACKEND_API_CONTACT_URL } from '../core/apis/backend.api';
+import { PropertyRecordService } from './property-record.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,10 @@ export class ContactService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(private contactHttp: HttpClient) {}
+  constructor(
+    private contactHttp: HttpClient
+  ) // private propertyRecord: PropertyRecordService
+  {}
 
   getContacts(): void {
     this.loadingSubject.next(true);

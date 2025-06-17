@@ -16,6 +16,8 @@ import { SearchContactsComponent } from '../search-contacts/search-contacts.comp
 import { RoleType, RoleTypeDescriptions } from '../../models/enums/role.enum';
 import { BasisCombosComponent } from '../../share/basis-combos/basis-combos.component';
 import { ITag } from '../../share/models/tag.model';
+import { DatePickerModule } from 'primeng/datepicker';
+import { dateFormat } from '../../share/models/date.model';
 
 @Component({
   selector: 'app-property-record',
@@ -33,6 +35,7 @@ import { ITag } from '../../share/models/tag.model';
     SearchPropertyComponent,
     SearchContactsComponent,
     BasisCombosComponent,
+    DatePickerModule,
   ],
   standalone: true,
   templateUrl: './property-record.component.html',
@@ -43,6 +46,7 @@ export class PropertyRecordComponent implements OnInit {
   openCreateDialog: boolean = false;
 
   statuses = RoleTypeDescriptions;
+  defaultDateForm: string = dateFormat;
 
   constructor(private propertyRecordService: PropertyRecordService) {}
 

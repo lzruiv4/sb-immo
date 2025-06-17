@@ -75,7 +75,7 @@ export class AddressService {
           return throwError(() => error);
         }),
         finalize(() => {
-          console.log(this.addresses$);
+          // console.log(this.addresses$);
           this.loadingSubject.next(false);
         })
       )

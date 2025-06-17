@@ -14,6 +14,7 @@ import { PropertyService } from '../../services/property.service';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BasisCombosComponent } from '../../share/basis-combos/basis-combos.component';
+import { IAddressDto } from '../../models/dtos/address.dto';
 
 @Component({
   selector: 'app-create-property',
@@ -58,9 +59,10 @@ export class CreatePropertyComponent {
   constructor(private propertyService: PropertyService) {}
 
   onSubmit(ngForm: NgForm) {
-    this.propertyService.saveNewProperty(this.property).subscribe();
-    this.closeDialog.emit();
-    ngForm.resetForm();
+    this.propertyService.saveNewProperty(this.property).subscribe(() => {
+      this.closeDialog.emit();
+      ngForm.resetForm();
+    });
   }
 
   onCancel(ngForm: NgForm) {
@@ -68,16 +70,11 @@ export class CreatePropertyComponent {
     ngForm.resetForm();
   }
 
-  onAddressChosen(address: any) {
+  onAddressChosen(address: IAddressDto): void {
+    // 合并新旧地址（避免破坏表单绑定）
     this.property.address = {
-      street: address.street || '',
-      houseNumber: address.houseNumber || '',
-      postcode: address.postcode || '',
-      city: address.city || '',
-      district: address.district || '',
-      state: address.state || '',
-      country: address.country || '',
-      countryCode: address.countryCode || '',
+      ...this.property.address, // 保留原有字段
+      ...address, // 覆盖新字段
     };
   }
 }

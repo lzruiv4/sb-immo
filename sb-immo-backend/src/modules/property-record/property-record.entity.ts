@@ -21,7 +21,7 @@ export class PropertyRecordEntity {
   @JoinColumn({ name: 'contact_id' })
   contactEntity: ContactEntity;
 
-  @Column({ type: 'enum', enum: RoleType, default: RoleType.ROLE_EIGENTUEMER })
+  @Column({ type: 'enum', enum: RoleType, default: RoleType.ROLE_OWNER })
   role: RoleType;
 
   @Column({ type: 'timestamptz', nullable: true, name: 'start_at' })

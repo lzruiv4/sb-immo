@@ -1,13 +1,16 @@
 import { ITag } from '../../share/models/tag.model';
 
 export enum RoleType {
-  ROLE_EIGENTUEMER = 'Eigentümer',
-  ROLE_MIETER = 'Mieter',
-  ROLE_DIENSTLEISTER = 'Dienstleister',
+  ROLE_OWNER = 'OWNER',
+  ROLE_RENTER = 'RENTER',
+  ROLE_SERVICE_PROVIDER = 'SERVICE_PROVIDER',
 }
 
 export const RoleTypeDescriptions: Record<RoleType, ITag> = {
-  [RoleType.ROLE_EIGENTUEMER]: { label: 'EIGENTÜMER', severity: 'success' },
-  [RoleType.ROLE_MIETER]: { label: 'MIETER', severity: 'info' },
-  [RoleType.ROLE_DIENSTLEISTER]: { label: 'DIENSTLEISTER', severity: 'warn' },
+  [RoleType.ROLE_OWNER]: { label: 'OWNER', severity: 'success' },
+  [RoleType.ROLE_RENTER]: { label: 'RENTER', severity: 'info' },
+  [RoleType.ROLE_SERVICE_PROVIDER]: {
+    label: 'SERVICE_PROVIDER',
+    severity: 'warn',
+  },
 };

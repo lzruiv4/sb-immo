@@ -42,7 +42,7 @@ export class CreatePropertyRecordComponent implements OnInit {
   propertyRecord: IPropertyRecordDto = {
     propertyId: '',
     contactId: '',
-    role: RoleType.ROLE_EIGENTUEMER,
+    role: RoleType.ROLE_OWNER,
     startAt: new Date(),
     endAt: undefined,
     notes: '',

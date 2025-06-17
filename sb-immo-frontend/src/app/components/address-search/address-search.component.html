@@ -1,15 +1,16 @@
 <div class="search-center">
-  <p-inputgroup class="w-full">
+  <p-inputGroup class="w-full">
     <input
       pInputText
-      placeholder="Please enter a street name"
+      [placeholder]="
+        searchControl.value === ''
+          ? 'Please enter a street name'
+          : searchControl.value
+      "
       [formControl]="searchControl"
-      (focus)="onInputFocus()"
-      (blur)="onInputBlur()"
       class="w-full"
     />
-  </p-inputgroup>
-
+  </p-inputGroup>
   <div class="search-results-panel" *ngIf="showResultsPanel">
     <p-panel
       header="Search Results"

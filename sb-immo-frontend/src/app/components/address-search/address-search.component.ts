@@ -9,6 +9,7 @@ import { ListboxModule } from 'primeng/listbox';
 
 import { AddressService } from '../../services/address.service';
 import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { IAddressDto } from '../../models/dtos/address.dto';
 
 @Component({
   selector: 'app-address-search',
@@ -26,24 +27,29 @@ import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
   styleUrl: './address-search.component.scss',
 })
 export class AddressSearchComponent implements OnInit {
-  @Input() oldAddress? = '';
-  @Output() addressSelected = new EventEmitter<any>();
+  @Input() oldAddress: string = '';
+  @Output() addressSelected = new EventEmitter<IAddressDto>();
 
   searchControl = new FormControl('');
-  addresses: any[] = [];
+  addresses: IAddressDto[] = [];
+  showResultsPanel = false;
+  private ignoreNextValueChange = false;
 
   constructor(private addressService: AddressService) {}
 
-  get addressesForInput$() {
-    return this.addressService.addressesForInput$;
-  }
-
   ngOnInit(): void {
+    if (this.oldAddress) {
+      this.searchControl.setValue(this.oldAddress);
+    }
     this.searchControl.valueChanges
       .pipe(
-        debounceTime(1000),
+        debounceTime(200),
         distinctUntilChanged(),
         switchMap((value) => {
+          if (this.ignoreNextValueChange) {
+            this.ignoreNextValueChange = false;
+            return of([]);
+          }
           if (!value || value.trim() === '') {
             this.showResultsPanel = false;
             this.addresses = [];
@@ -54,27 +60,14 @@ export class AddressSearchComponent implements OnInit {
       )
       .subscribe((results) => {
         this.addresses = results;
-        this.showResultsPanel = results && results.length > 0;
+        this.showResultsPanel = results.length > 0;
       });
   }
 
-  onAddressSelect(addr: any) {
-    this.addressSelected.emit(addr);
-    this.showResultsPanel = false; // 选择后关闭面板
-  }
-
-  showResultsPanel = false;
-
-  onInputFocus() {
-    if (this.addresses.length > 0) {
-      this.showResultsPanel = true;
-    }
-  }
-
-  onInputBlur() {
-    // 延迟关闭，避免点击面板时被误关闭
-    setTimeout(() => {
-      this.showResultsPanel = false;
-    }, 200);
+  onAddressSelect(address: IAddressDto) {
+    this.ignoreNextValueChange = true;
+    this.searchControl.setValue(address.street, { emitEvent: true });
+    this.showResultsPanel = false;
+    this.addressSelected.emit(address);
   }
 }

@@ -32,10 +32,6 @@ export class ContactComponent implements OnInit {
 
   openCreateDialog = false;
 
-  // openDialog() {
-  //   this.openCreateDialog = true;
-  // }
-
   constructor(private contactService: ContactService) {}
 
   get contact$() {

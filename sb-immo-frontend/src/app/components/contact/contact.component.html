@@ -30,56 +30,34 @@
       ]"
       [tableStyle]="{ width: '100%' }"
     >
-      <ng-template #header>
+      <ng-template pTemplate="header">
         <tr>
           <th>Avatar</th>
-          <th>Firstname</th>
-          <th>Lastname</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Notes</th>
+          <th>
+            Firstname<p-columnFilter
+              type="text"
+              field="firstname"
+              display="menu"
+            />
+          </th>
+          <th>
+            Lastname
+            <p-columnFilter type="text" field="lastname" display="menu" />
+          </th>
+          <th>
+            Email
+            <p-columnFilter type="text" field="email" display="menu" />
+          </th>
+          <th>
+            Phone
+            <p-columnFilter type="text" field="phone" display="menu" />
+          </th>
+          <th>
+            Notes
+            <p-columnFilter type="text" field="notes" display="menu" />
+          </th>
           <th>Edit</th>
           <th>Show contacts</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th>
-            <p-columnFilter
-              field="firstname"
-              type="text"
-              placeholder="Search by first name"
-            ></p-columnFilter>
-          </th>
-          <th>
-            <p-columnFilter
-              field="lastname"
-              type="text"
-              placeholder="Search by last name"
-            ></p-columnFilter>
-          </th>
-          <th>
-            <p-columnFilter
-              field="email"
-              type="text"
-              placeholder="Search by email"
-            ></p-columnFilter>
-          </th>
-          <th>
-            <p-columnFilter
-              field="phone"
-              type="text"
-              placeholder="Search by phone"
-            ></p-columnFilter>
-          </th>
-          <th>
-            <p-columnFilter
-              field="notes"
-              type="text"
-              placeholder="Search by notes"
-            ></p-columnFilter>
-          </th>
-          <th></th>
-          <th></th>
         </tr>
       </ng-template>
       <ng-template #body let-contact let-editing="editing" let-ri="rowIndex">
@@ -190,7 +168,7 @@
 
       <ng-template #emptyMessage>
         <tr>
-          <td colspan="5">Contact not found.</td>
+          <td colspan="8">Contact not found.</td>
         </tr>
       </ng-template>
     </p-table>

@@ -1,5 +1,5 @@
 export enum RoleType {
-  ROLE_EIGENTUEMER = 'Eigentümer',
-  ROLE_MIETER = 'Mieter',
-  ROLE_DIENSTLEISTER = 'Dienstleister',
+  ROLE_OWNER = 'OWNER',
+  ROLE_RENTER = 'RENTER',
+  ROLE_SERVICE_PROVIDER = 'SERVICE_PROVIDER',
 }

@@ -5,6 +5,7 @@ import {
   Input,
   Output,
   OnChanges,
+  OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -20,15 +21,20 @@ import { RoleType } from '../../models/enums/role.enum';
   styleUrls: ['./basis-combos.component.scss'],
 })
 export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
-  implements OnChanges
+  implements OnChanges, OnInit
 {
   @Input() suggestions!: Record<T, ITag>;
+  @Input() current: T | null = null;
   @Output() statusSelected = new EventEmitter<any>();
 
   filteredStatuses: any[] = [];
   selectedStatus: T | null = null;
 
   statusOptions: { value: T; label: string; severity: string }[] = [];
+
+  ngOnInit(): void {
+    if (this.current) this.selectedStatus = this.current;
+  }
 
   ngOnChanges() {
     if (this.suggestions) {

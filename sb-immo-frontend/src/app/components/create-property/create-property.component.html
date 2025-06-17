@@ -21,6 +21,7 @@
       <div class="input-container">
         <label for="street">Street</label>
         <app-address-search
+          [oldAddress]="property.address.street"
           (addressSelected)="onAddressChosen($event)"
           [style]="{ width: '70%' }"
         />
@@ -39,19 +40,19 @@
       </div>
 
       <div class="input-container">
-        <label for="Postcode">Postcode</label>
+        <label for="postcode">Postcode</label>
         <input
-          id="Postcode"
+          id="postcode"
           type="text"
           pInputText
           [(ngModel)]="property.address.postcode"
-          name="Postcode"
+          name="postcode"
           required
         />
       </div>
 
       <div class="input-container">
-        <label for="Postcode">City</label>
+        <label for="city">City</label>
         <input
           id="city"
           type="text"
@@ -99,7 +100,7 @@
 
       <div class="input-container">
         <label for="status">Status</label>
-        <app-basis-combos [suggestions]="statuses" />
+        <app-basis-combos [suggestions]="statuses" name="status" />
       </div>
     </div>
 

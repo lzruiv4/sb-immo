@@ -1,9 +1,9 @@
 import { ITag } from '../../share/models/tag.model';
 
 export enum PropertyStatusType {
-  AVAILABLE = 'Verfügbar',
-  RENTED = 'Vermietet',
-  MAINTENANCE = 'Wartung',
+  AVAILABLE = 'AVAILABLE',
+  RENTED = 'MAINTENANCE',
+  MAINTENANCE = 'RENTED',
 }
 
 export const PropertyStatusDescriptions: Record<PropertyStatusType, ITag> = {

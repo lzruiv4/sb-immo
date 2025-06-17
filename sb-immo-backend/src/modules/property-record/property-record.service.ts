@@ -36,7 +36,7 @@ export class PropertyRecordService {
     const contactDto = await this.contactService.findOne(dto.contactId);
     // Only the tenant's actions are restricted.
     if (
-      RoleType.ROLE_MIETER === dto.role &&
+      RoleType.ROLE_RENTER === dto.role &&
       propertyDto.status !== PropertyStatusType.AVAILABLE
     ) {
       throw new BadRequestException(
@@ -50,7 +50,7 @@ export class PropertyRecordService {
 
       newPropertyRecordEntity.contactEntity =
         ContactDto.dtoToContactEntity(contactDto);
-      await this.propertyService.update(propertyDto.propertyId, propertyDto);
+      await this.propertyService.updatePropertyName(propertyDto);
       return PropertyRecordDto.entityToPropertyRecordDto(
         await this.propertyRecordRepository.save(newPropertyRecordEntity),
       );
@@ -61,11 +61,11 @@ export class PropertyRecordService {
     propertyRecordDto: BasisPropertyRecordDto,
     propertyDto: PropertyDto,
   ): void {
-    if (propertyRecordDto.role === RoleType.ROLE_MIETER) {
+    if (propertyRecordDto.role === RoleType.ROLE_RENTER) {
       propertyDto.status = PropertyStatusType.RENTED;
     }
     if (
-      propertyRecordDto.role === RoleType.ROLE_DIENSTLEISTER &&
+      propertyRecordDto.role === RoleType.ROLE_SERVICE_PROVIDER &&
       propertyDto.status === PropertyStatusType.AVAILABLE
     ) {
       // Only property in AVAILABLE can change the status to MAINTENANCE
@@ -75,40 +75,52 @@ export class PropertyRecordService {
   }
 
   async setupStatus(): Promise<void> {
-    const properties = await this.propertyService.findAll();
-    await Promise.all(
-      properties.map(async (property) => {
+    try {
+      const properties = await this.propertyService.findAll();
+      // 考虑使用串行处理以避免数据库压力/竞态条件
+      for (const property of properties) {
         await this.updatePropertyStatusByDate(property);
-        return property;
-      }),
-    );
+      }
+    } catch (error) {
+      // 适当的错误处理
+      console.error('Error in setupStatus:', error);
+      throw error; // 或者根据业务需求处理
+    }
   }
 
   async updatePropertyStatusByDate(property: PropertyDto): Promise<void> {
-    const propertyRecords = await this.findAllByPropertyId(property.propertyId);
-    const rightNow = new Date();
-    let records: RoleWithDates[] = propertyRecords
-      .map((record) => {
-        return {
-          role: record.role,
-          startAt: record.startAt,
-          endAt: record.endAt,
-        } as RoleWithDates;
-      })
-      .filter(
+    try {
+      const propertyRecords = await this.findAllByPropertyId(
+        property.propertyId,
+      );
+      const rightNow = new Date();
+
+      const activeRecords = propertyRecords.filter(
         (record) =>
           rightNow >= record.startAt &&
           (!record.endAt || rightNow <= record.endAt),
       );
-    if (records.some((record) => RoleType.ROLE_DIENSTLEISTER === record.role)) {
-      property.status = PropertyStatusType.MAINTENANCE;
-    } else if (records.some((record) => RoleType.ROLE_MIETER === record.role)) {
-      property.status = PropertyStatusType.RENTED;
-    } else {
-      property.status = PropertyStatusType.AVAILABLE;
+
+      // 明确优先级逻辑
+      if (
+        activeRecords.some(
+          (record) => record.role === RoleType.ROLE_SERVICE_PROVIDER,
+        )
+      ) {
+        property.status = PropertyStatusType.MAINTENANCE;
+      } else if (
+        activeRecords.some((record) => record.role === RoleType.ROLE_RENTER)
+      ) {
+        property.status = PropertyStatusType.RENTED;
+      } else {
+        property.status = PropertyStatusType.AVAILABLE;
+      }
+
+      await this.propertyService.updatePropertyName(property);
+    } catch (error) {
+      console.error(`Error updating property ${property.propertyId}:`, error);
+      throw error; // 或者根据业务需求处理
     }
-    await this.propertyService.update(property.propertyId, property);
-    records = [];
   }
 
   async findAll(): Promise<PropertyRecordDto[]> {

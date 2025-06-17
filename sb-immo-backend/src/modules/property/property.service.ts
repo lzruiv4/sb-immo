@@ -20,9 +20,11 @@ export class PropertyService {
   ) {}
 
   async create(dto: BasisPropertyDto): Promise<PropertyDto> {
-    if ((await this.getPropertyCountInSystem(dto)) > 0) {
-      console.log('check property');
-      throw new ConflictException('Property is already in system');
+    // Check the register address and plus unit
+    if (await this.isPropertyRegister(dto)) {
+      throw new ConflictException(
+        'CREATE_PROPERTY: Address is already register, maybe in an other unit',
+      );
     } else {
       // check property name is empty
       if (!dto.propertyName || dto.propertyName.trim() === '') {
@@ -30,21 +32,14 @@ export class PropertyService {
       }
       const newPropertyEntity = this.propertyRepository.create(dto);
 
-      const duplicateAddressesCount =
-        await this.addressService.getAddressDuplicateCount(
-          dto.address.street,
-          dto.address.houseNumber,
-          dto.address.postcode,
-        );
-      // check address maybe in system
-      if (duplicateAddressesCount === 0) {
+      const addressInSystem =
+        await this.addressService.findAddressWithBasisInfo(dto.address);
+      if (!addressInSystem) {
         const addressDto = await this.addressService.create(dto.address);
         newPropertyEntity.address = AddressDto.dtoToAddressEntity(addressDto); // Set the address relation
       } else {
-        const existingAddress =
-          await this.addressService.findAddressWithBasisInfo(dto.address);
         newPropertyEntity.address =
-          AddressDto.dtoToAddressEntity(existingAddress); // Use existing address
+          AddressDto.dtoToAddressEntity(addressInSystem); // Use existing address
       }
       return PropertyDto.entityToDto(
         await this.propertyRepository.save(newPropertyEntity),
@@ -52,9 +47,7 @@ export class PropertyService {
     }
   }
 
-  private async getPropertyCountInSystem(
-    dto: BasisPropertyDto,
-  ): Promise<number> {
+  private async isPropertyRegister(dto: BasisPropertyDto): Promise<boolean> {
     const count = await this.propertyRepository
       .createQueryBuilder('property')
       .leftJoinAndSelect('property.address', 'address')
@@ -69,7 +62,7 @@ export class PropertyService {
         unit: dto.unit,
       })
       .getCount();
-    return count;
+    return count > 0;
   }
 
   private setupPropertyName(dto: BasisPropertyDto): string {
@@ -90,44 +83,39 @@ export class PropertyService {
     return PropertyDto.entityToDto(propertyEntity);
   }
 
-  async update(id: string, dto: PropertyDto): Promise<PropertyDto> {
-    const oldAddress = await this.addressService.findAddressWithBasisInfo(
+  async updatePropertyName(dto: PropertyDto): Promise<void> {
+    if (!dto.propertyName || dto.propertyName.trim() === '') {
+      dto.propertyName = this.setupPropertyName(dto);
+    }
+    await this.propertyRepository.update(dto.propertyId, dto);
+  }
+
+  async update(propertyId: string, dto: PropertyDto): Promise<PropertyDto> {
+    // Just check if the property is in the database
+    const checkAddressWithUnitRegister = await this.isPropertyRegister(dto);
+    if (checkAddressWithUnitRegister) {
+      throw new ConflictException(
+        `CREATE_PROPERTY: The address with id ${dto.address.addressId} is registered`,
+      );
+    }
+    // check the address should be created or get from db
+    const findAddress = await this.addressService.findAddressWithBasisInfo(
       dto.address,
     );
-
-    const checkAddressRegister = await this.getPropertyCountInSystem(dto);
     if (
-      checkAddressRegister > 0 &&
-      dto.address.addressId !== oldAddress.addressId
+      !findAddress ||
+      (await this.addressService.isAddressChanged(dto.address))
     ) {
-      throw new ConflictException(
-        `The address with id ${dto.address.addressId} is registered`,
-      );
-    } else {
-      const checkAddressInSystemCount =
-        await this.addressService.getAddressDuplicateCount(
-          dto.address.street,
-          dto.address.houseNumber,
-          dto.address.postcode,
-        );
-      if (checkAddressInSystemCount === 0) {
-        const newAddress = await this.addressService.create(dto.address);
-        dto.address = newAddress;
-      } else {
-        const updateAddress = await this.addressService.update(
-          dto.address.addressId,
-          dto.address,
-        );
-
-        dto.address = updateAddress;
-      }
-      if (!dto.propertyName || dto.propertyName.trim() === '') {
-        dto.propertyName = this.setupPropertyName(dto);
-      }
-
-      await this.propertyRepository.update(id, dto);
-      return this.findOne(id);
+      const newAddress = await this.addressService.create(dto.address);
+      dto.address = newAddress;
     }
+
+    // check property name is empty
+    if (!dto.propertyName || dto.propertyName.trim() === '') {
+      this.setupPropertyName(dto);
+    }
+    await this.propertyRepository.update(propertyId, dto);
+    return this.findOne(propertyId);
   }
 
   async remove(id: string): Promise<void> {

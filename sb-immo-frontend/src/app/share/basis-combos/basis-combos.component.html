@@ -10,10 +10,13 @@
     placeholder="Select status"
     [inputStyle]="{ width: '100%' }"
   >
-    <!-- 下拉选项模板 -->
     <ng-template let-status pTemplate="item">
       <div class="flex align-items-center gap-2">
-        <p-tag [severity]="status.severity" [value]="status.label"></p-tag>
+        <p-tag
+          [severity]="status.severity"
+          [value]="status.label"
+          styleClass="d-block w-100"
+        ></p-tag>
       </div>
     </ng-template>
   </p-autocomplete>

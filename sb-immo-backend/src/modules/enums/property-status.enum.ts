@@ -1,5 +1,5 @@
 export enum PropertyStatusType {
-  AVAILABLE = 'Verfügbar',
-  RENTED = 'Vermietet',
-  MAINTENANCE = 'Wartung',
+  AVAILABLE = 'AVAILABLE',
+  RENTED = 'RENTED',
+  MAINTENANCE = 'MAINTENANCE',
 }

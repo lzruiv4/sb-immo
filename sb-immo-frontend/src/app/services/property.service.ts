@@ -3,13 +3,18 @@ import {
   BehaviorSubject,
   catchError,
   finalize,
+  firstValueFrom,
+  map,
   Observable,
+  switchMap,
+  take,
   tap,
   throwError,
 } from 'rxjs';
 import { IPropertyDto } from '../models/dtos/property.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_URL } from '../core/apis/backend.api';
+import { AddressService } from './address.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +26,10 @@ export class PropertyService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(private propertyHttp: HttpClient) {}
+  constructor(
+    private propertyHttp: HttpClient,
+    private addressService: AddressService
+  ) {}
 
   getProperties(): void {
     this.loadingSubject.next(true);
@@ -36,10 +44,13 @@ export class PropertyService {
         finalize(() => this.loadingSubject.next(false))
       )
       .subscribe();
+    this.addressService.getAddresses();
+    this.addressService.addresses$.subscribe();
   }
 
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {
     this.loadingSubject.next(true);
+    console.log('@+++++++', newPropertyDto);
     return this.propertyHttp
       .post<IPropertyDto>(BACKEND_API_PROPERTY_URL, newPropertyDto)
       .pipe(
@@ -55,10 +66,9 @@ export class PropertyService {
       );
   }
 
-  updateProperty(
-    updateProperty: IPropertyDto
-  ): Observable<IPropertyDto> {
+  updateProperty(updateProperty: IPropertyDto): Observable<IPropertyDto> {
     this.loadingSubject.next(true);
+    console.log('Update, ', updateProperty);
     return this.propertyHttp
       .put<IPropertyDto>(
         `${BACKEND_API_PROPERTY_URL}/${updateProperty.propertyId}`,
@@ -69,12 +79,16 @@ export class PropertyService {
           const currentList = this.propertiesSubject.value;
           const updateList = currentList.map((item) =>
             // update info in list
-            item.propertyId === updateProperty.propertyId ? { ...item, ...property } : item
+            item.propertyId === updateProperty.propertyId
+              ? { ...item, ...property }
+              : item
           );
           this.propertiesSubject.next(updateList);
         }),
         catchError((error) => {
-          console.error('Error occurred during update a property.');
+          console.error(
+            'UPDATE_PROPERTY: Error occurred during update a property.'
+          );
           return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))

@@ -1,4 +1,4 @@
-import { RoleType } from "../enums/role.enum";
+import { RoleType } from '../enums/role.enum';
 
 export interface IPropertyRecordDto {
   propertyRecordId?: string;
@@ -8,4 +8,5 @@ export interface IPropertyRecordDto {
   startAt: Date;
   endAt?: Date; // Optional end date for the record
   notes?: string;
+  createdAt?: Date;
 }

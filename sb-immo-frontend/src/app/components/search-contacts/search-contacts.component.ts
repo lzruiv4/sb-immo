@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   AutoCompleteCompleteEvent,
   AutoCompleteModule,
@@ -17,6 +17,7 @@ import { IContactDto } from '../../models/dtos/contact.dto';
   styleUrl: './search-contacts.component.scss',
 })
 export class SearchContactsComponent implements OnInit {
+  @Input() current: IContactDto | null = null;
   @Output() selectedContact = new EventEmitter<IContactDto>();
 
   items$: Observable<IContactDto[]> = new Observable<IContactDto[]>();
@@ -26,6 +27,7 @@ export class SearchContactsComponent implements OnInit {
   constructor(private contactService: ContactService) {}
 
   ngOnInit(): void {
+    if (this.current) this.value = this.current;
     this.contactService.getContacts();
     this.contactService.contacts$.subscribe();
   }
