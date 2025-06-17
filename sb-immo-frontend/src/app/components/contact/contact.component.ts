@@ -57,7 +57,6 @@ export class ContactComponent implements OnInit {
 
   openContactsDialog(contactId: string) {
     this.currentContactId = contactId;
-    console.log(this.currentContactId);
     this.isContactsDialog = true;
   }
 

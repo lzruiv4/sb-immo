@@ -27,7 +27,6 @@ export class FindContactsComponent implements OnInit {
     this.contacts$ = this.relevantContactService.getRelevantContactByContactId(
       this.contactId
     );
-    console.log('ssss', this.contactId);
   }
 
   onCancel() {

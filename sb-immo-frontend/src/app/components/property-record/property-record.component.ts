@@ -42,6 +42,9 @@ import { dateFormat } from '../../share/models/date.model';
   styleUrl: './property-record.component.scss',
 })
 export class PropertyRecordComponent implements OnInit {
+  // controller for edit row
+  currentPropertyRecordId: string | null = null;
+
   loading: boolean = false;
   openCreateDialog: boolean = false;
 
@@ -63,16 +66,25 @@ export class PropertyRecordComponent implements OnInit {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit() {}
+  onRowEditInit(propertyRecord: IPropertyRecordDto) {
+    this.currentPropertyRecordId = propertyRecord.propertyRecordId ?? null;
+    console.log(
+      this.currentPropertyRecordId,
+      '   ',
+      propertyRecord.propertyRecordId
+    );
+  }
 
   onRowEditSave(propertyRecord: IPropertyRecordDto) {
     this.propertyRecordService
       .saveNewPropertyRecord(propertyRecord)
       .subscribe();
+    this.currentPropertyRecordId = null;
   }
 
   onRowEditCancel() {
     this.propertyRecordService.getPropertyRecords();
+    this.currentPropertyRecordId = null;
   }
 
   getStatusTag(status: RoleType): ITag {
