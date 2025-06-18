@@ -36,6 +36,10 @@ cd sb-immo-frontend && ng serve
 
 ### UI
 
+##### Relevant contacts
+
+<img src="markdown-image/relevant-contacts.png" width="100%" height="auto"/>
+
 ##### Property
 
 <img src="markdown-image/property.png" width="100%" height="auto"/>

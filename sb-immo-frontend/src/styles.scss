@@ -10,3 +10,9 @@ body {
   overflow: hidden; /* 防止多余滚动 */
   box-sizing: border-box;
 }
+
+.p-tag {
+  display: block; /* 变为块级元素，默认占满父容器宽度 */
+  width: 100%; /* 显式设置 100% 宽度 */
+  box-sizing: border-box; /* 包含 padding 和 border 在内的宽度计算 */
+}
