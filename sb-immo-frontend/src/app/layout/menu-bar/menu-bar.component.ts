@@ -9,16 +9,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './menu-bar.component.scss',
 })
 export class MenuBarComponent {
-  collapsed = false;
-
   menuItems = [
     { icon: 'pi-chart-line', path: '' },
     { icon: 'pi-user', path: '/contact' },
     { icon: 'pi-home', path: '/property' },
     { icon: 'pi-sitemap', path: '/propertyRecord' },
   ];
-
-  toggleSidebar() {
-    this.collapsed = !this.collapsed;
-  }
 }

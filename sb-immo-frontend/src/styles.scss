@@ -16,3 +16,11 @@ body {
   width: 100%; /* 显式设置 100% 宽度 */
   box-sizing: border-box; /* 包含 padding 和 border 在内的宽度计算 */
 }
+
+button {
+  &:hover {
+    background-color: #007459;
+    box-shadow: 0 4px 10px rgba(195, 195, 195, 0.1);
+    transform: translateY(-2px);
+  }
+}
