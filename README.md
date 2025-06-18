@@ -53,3 +53,11 @@ cd sb-immo-frontend && ng serve
 <img src="markdown-image/create-property-record.png" width="100%" height="auto"/>
 
 # sb-immo-backend with NestJs
+
+##### Swagger API
+
+👉👉 [OPEN SWAGGER API](http://localhost:3000/api)
+
+<img src="markdown-image/api-1.png" width="100%" height="auto"/>
+
+<img src="markdown-image/api-2.png" width="100%" height="auto"/>

@@ -1,13 +1,22 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { AddressEntity } from '../address.entity';
 
 export class BasisAddressDto {
+  @ApiProperty()
   street: string;
+  @ApiProperty()
   houseNumber: string;
+  @ApiProperty()
   postcode: string;
+  @ApiProperty()
   city: string;
+  @ApiProperty()
   district?: string;
+  @ApiProperty()
   state?: string;
+  @ApiProperty()
   country: string;
+  @ApiProperty()
   countryCode: string;
 
   static entityToBasisAddressDto(entity: AddressEntity): BasisAddressDto {

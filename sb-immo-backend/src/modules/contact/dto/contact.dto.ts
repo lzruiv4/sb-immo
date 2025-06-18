@@ -1,7 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ContactEntity } from '../contact.entity';
 import { BasisContactDto } from './basis-contact.dto';
 
 export class ContactDto extends BasisContactDto {
+  @ApiProperty()
   notes: string;
 
   static entityToContactDto(entity: ContactEntity): ContactDto {

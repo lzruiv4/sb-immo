@@ -1,7 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { AddressEntity } from '../address.entity';
 import { BasisAddressDto } from './basis-address.dto';
 
 export class AddressDto extends BasisAddressDto {
+  @ApiProperty()
   addressId: number;
 
   static entityToAddressDto(entity: AddressEntity): AddressDto {

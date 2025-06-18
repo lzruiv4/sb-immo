@@ -11,7 +11,9 @@ import {
 import { PropertyRecordService } from './property-record.service';
 import { BasisPropertyRecordDto } from './dto/basis-property-record.dto';
 import { PropertyRecordDto } from './dto/property-record.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Property record')
 @Controller('propertyRecords')
 export class PropertyRecordController {
   constructor(private readonly propertyRecordService: PropertyRecordService) {}

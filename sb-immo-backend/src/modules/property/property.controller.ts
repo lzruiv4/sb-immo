@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { PropertyDto } from './dto/property.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Property')
 @Controller('properties')
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
