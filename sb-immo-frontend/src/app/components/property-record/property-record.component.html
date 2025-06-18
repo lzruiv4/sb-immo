@@ -10,17 +10,7 @@
 
   <div class="table-container">
     <p-table
-      [value]="data"
-      dataKey="propertyRecordId"
-      [rows]="10"
-      editMode="row"
-      [rowsPerPageOptions]="[5, 10, 15]"
-      [loading]="loading"
-      [paginator]="true"
-      [tableStyle]="{ width: '100%' }"
-    >
-      <!-- <p-table
-      [value]="(propertyRecords$ | async) || []"
+      [value]="(dataPlusPropertyAndContact$ | async) || []"
       dataKey="propertyRecordId"
       [rows]="10"
       editMode="row"
@@ -29,7 +19,7 @@
       [rowsPerPageOptions]="[5, 10, 15]"
       [paginator]="true"
       [tableStyle]="{ width: '100%' }"
-    > -->
+    >
       <ng-template #header>
         <tr>
           <th style="width: 25%">
@@ -37,13 +27,6 @@
             <p-columnFilter
               type="text"
               field="propertyRecordId"
-              display="menu"
-            />
-          </th>
-          <th style="width: 10%">
-            Created at<p-columnFilter
-              type="text"
-              field="createdAt"
               display="menu"
             />
           </th>
@@ -56,6 +39,13 @@
           </th>
           <th style="width: 10%">
             Role<p-columnFilter type="text" field="role" display="menu" />
+          </th>
+          <th style="width: 10%">
+            Created at<p-columnFilter
+              type="text"
+              field="createdAt"
+              display="menu"
+            />
           </th>
           <th style="width: 10%">
             Start at<p-columnFilter
@@ -78,9 +68,9 @@
             <p-cellEditor>
               <ng-template #input>
                 <app-search-property
-                  [current]="propertyRecord.propertyId"
-                  name="property"
-                  appendTo="body"
+                  [current]="propertyRecord.property"
+                  (selectedProperty)="propertySelected($event, propertyRecord)"
+                  name="propertyId"
                 />
               </ng-template>
               <ng-template #output>
@@ -89,57 +79,34 @@
                     icon="pi pi-home"
                     class="w-[15px] mr-[5px]"
                   ></p-avatar>
-                  <!-- {{ propertyRecord.property.propertyName }} -->
                   <span>{{ propertyRecord.property.propertyName }}</span>
                 </div>
               </ng-template>
             </p-cellEditor>
           </td>
-          <td>
-            <p-cellEditor>
-              <ng-template #input>
-                <p-datepicker
-                  [(ngModel)]="propertyRecord.createdAt"
-                  [showIcon]="true"
-                  inputId="buttondisplay"
-                  [showOnFocus]="false"
-                  appendTo="body"
-                  [panelStyle]="{ 'z-index': 1000 }"
-                  dateFormat="dd.mm.yy"
-                  name="createdAt"
-                />
-              </ng-template>
-              <ng-template #output>
-                {{ propertyRecord.createdAt | date : defaultDateForm }}
-              </ng-template>
-            </p-cellEditor>
-          </td>
 
           <td>
             <p-cellEditor>
               <ng-template #input>
-                <app-search-contacts
+                <!-- <app-search-contacts
                   [current]="propertyRecord.contact"
-                  name="contact"
-                />
+                  (selectedContact)="contactSelected($event, propertyRecord)"
+                  name="contactId"
+                /> -->
               </ng-template>
               <ng-template #output>
                 {{ propertyRecord.contact.lastname }},
                 {{ propertyRecord.contact.firstname }}
-                <!-- {{ propertyRecord.contactId }} -->
               </ng-template>
             </p-cellEditor>
           </td>
-
           <td>
             <p-cellEditor>
               <ng-template #input>
                 <app-basis-combos
-                  [(ngModel)]="propertyRecord.status"
                   [suggestions]="statuses"
-                  [current]="propertyRecord.status"
-                  appendTo="body"
-                  name="status"
+                  [current]="propertyRecord.role"
+                  name="role"
                 />
               </ng-template>
               <ng-template #output>
@@ -155,9 +122,28 @@
             <p-cellEditor>
               <ng-template #input>
                 <p-datepicker
+                  [(ngModel)]="propertyRecord.createdAt"
+                  [showIcon]="true"
+                  inputId="createdAt"
+                  [showOnFocus]="false"
+                  appendTo="body"
+                  [panelStyle]="{ 'z-index': 1000 }"
+                  dateFormat="dd.mm.yy"
+                  name="createdAt"
+                />
+              </ng-template>
+              <ng-template #output>
+                {{ propertyRecord.createdAt | date : defaultDateForm }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+          <td>
+            <p-cellEditor>
+              <ng-template #input>
+                <p-datepicker
                   [(ngModel)]="propertyRecord.startAt"
                   [showIcon]="true"
-                  inputId="buttondisplay"
+                  inputId="startAt"
                   [showOnFocus]="false"
                   appendTo="body"
                   [panelStyle]="{ 'z-index': 1000 }"
@@ -177,7 +163,7 @@
                 <p-datepicker
                   [(ngModel)]="propertyRecord.endAt"
                   [showIcon]="true"
-                  inputId="buttondisplay"
+                  inputId="endAt"
                   [showOnFocus]="false"
                   appendTo="body"
                   [panelStyle]="{ 'z-index': 1000 }"

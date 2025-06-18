@@ -46,10 +46,7 @@ export class PropertyComponent implements OnInit {
 
   constructor(private propertyService: PropertyService) {}
 
-  ngOnInit(): void {
-    this.propertyService.getProperties();
-    this.propertyService.properties$.subscribe((pr) => console.log(pr));
-  }
+  ngOnInit(): void {}
 
   get properties$() {
     return this.propertyService.properties$;

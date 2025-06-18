@@ -25,7 +25,9 @@ export class PropertyRecordService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(private propertyRecordHttp: HttpClient) {}
+  constructor(private propertyRecordHttp: HttpClient) {
+    this.getPropertyRecords();
+  }
 
   getPropertyRecords(): void {
     this.loadingSubject.next(true);

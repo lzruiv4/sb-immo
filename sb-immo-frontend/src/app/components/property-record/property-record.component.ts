@@ -20,7 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { dateFormat } from '../../share/models/date.model';
 import { PropertyService } from '../../services/property.service';
 import { ContactService } from '../../services/contact.service';
-import { combineLatest, combineLatestAll, map, Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
 
@@ -47,6 +47,12 @@ import { IContactDto } from '../../models/dtos/contact.dto';
   styleUrl: './property-record.component.scss',
 })
 export class PropertyRecordComponent implements OnInit {
+  contactSelected($event: IContactDto, _t36: any) {
+    throw new Error('Method not implemented.');
+  }
+  propertySelected($event: IPropertyDto, _t36: any) {
+    throw new Error('Method not implemented.');
+  }
   // controller for edit row
   currentPropertyRecordId: string | null = null;
 
@@ -56,18 +62,7 @@ export class PropertyRecordComponent implements OnInit {
   statuses = RoleTypeDescriptions;
   defaultDateForm: string = dateFormat;
 
-  // dataPlusPropertyAndContact$!: Observable<
-  //   Array<
-  //     IPropertyRecordDto & {
-  //       property?: IPropertyDto;
-  //       contact?: IContactDto;
-  //     }
-  //   >
-  // >;
-
   dataPlusPropertyAndContact$!: Observable<IPropertyRecordDto[]>;
-
-  data: any[] = [];
 
   constructor(
     private propertyRecordService: PropertyRecordService,
@@ -80,11 +75,6 @@ export class PropertyRecordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.propertyRecordService.getPropertyRecords();
-    this.propertyService.getProperties();
-    this.contactService.getContacts();
-    // this.propertyRecordService.propertyRecords$.subscribe();
-
     this.dataPlusPropertyAndContact$ = combineLatest([
       this.propertyRecordService.propertyRecords$,
       this.propertyService.properties$,
@@ -106,8 +96,7 @@ export class PropertyRecordComponent implements OnInit {
         }));
       })
     );
-    this.dataPlusPropertyAndContact$.subscribe((r) => (this.data = r));
-    // this.dataPlusPropertyAndContact$.subscribe();
+    this.dataPlusPropertyAndContact$.subscribe();
   }
 
   openDialog() {

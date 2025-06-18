@@ -3,18 +3,19 @@
     [(ngModel)]="value"
     [dropdown]="true"
     appendTo="body"
-    field="email"
-    [suggestions]="(items$ | async) ?? []"
+    field="contactName"
+    [attr.name]="name"
+    [suggestions]="data"
     (completeMethod)="search($event)"
     (onSelect)="selectContact($event)"
     required
   >
-    <ng-template let-contact pTemplate="item">
+    <!-- <ng-template let-contact pTemplate="item">
       <div>
         {{ contact.firstname }} {{ contact.lastname }} <br />&lt;{{
           contact.email
         }}&gt;
       </div>
-    </ng-template>
+    </ng-template> -->
   </p-autoComplete>
 </div>

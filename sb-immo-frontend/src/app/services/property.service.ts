@@ -3,18 +3,13 @@ import {
   BehaviorSubject,
   catchError,
   finalize,
-  firstValueFrom,
-  map,
   Observable,
-  switchMap,
-  take,
   tap,
   throwError,
 } from 'rxjs';
 import { IPropertyDto } from '../models/dtos/property.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_URL } from '../core/apis/backend.api';
-import { AddressService } from './address.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +22,10 @@ export class PropertyService {
   loading$ = this.loadingSubject.asObservable();
 
   constructor(
-    private propertyHttp: HttpClient,
-    private addressService: AddressService
-  ) {}
+    private propertyHttp: HttpClient
+  ) {
+    this.getProperties();
+  }
 
   getProperties(): void {
     this.loadingSubject.next(true);
@@ -44,13 +40,12 @@ export class PropertyService {
         finalize(() => this.loadingSubject.next(false))
       )
       .subscribe();
-    this.addressService.getAddresses();
-    this.addressService.addresses$.subscribe();
+    // this.addressService.getAddresses();
+    // this.addressService.addresses$.subscribe();
   }
 
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {
     this.loadingSubject.next(true);
-    console.log('@+++++++', newPropertyDto);
     return this.propertyHttp
       .post<IPropertyDto>(BACKEND_API_PROPERTY_URL, newPropertyDto)
       .pipe(

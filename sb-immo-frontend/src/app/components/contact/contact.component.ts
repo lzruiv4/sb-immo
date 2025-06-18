@@ -31,10 +31,10 @@ import { FindContactsComponent } from '../find-contacts/find-contacts.component'
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent {
   loading: boolean = false;
-  openCreateDialog = false;
-  isContactsDialog = false;
+  openCreateDialog: boolean = false;
+  isContactsDialog: boolean = false;
 
   currentContactId: string | null = null;
 
@@ -47,11 +47,6 @@ export class ContactComponent implements OnInit {
   relevantContacts$: Observable<ISearchRelevantContact[]> = new Observable<
     ISearchRelevantContact[]
   >();
-
-  ngOnInit(): void {
-    this.contactService.getContacts();
-    this.contactService.contacts$.subscribe();
-  }
 
   onRowEditInit() {}
 

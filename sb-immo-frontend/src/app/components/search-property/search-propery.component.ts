@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   AutoCompleteCompleteEvent,
@@ -7,7 +15,6 @@ import {
   AutoCompleteSelectEvent,
 } from 'primeng/autocomplete';
 import { IPropertyDto } from '../../models/dtos/property.dto';
-import { map, Observable } from 'rxjs';
 import { PropertyService } from '../../services/property.service';
 
 @Component({
@@ -16,35 +23,39 @@ import { PropertyService } from '../../services/property.service';
   templateUrl: './search-property.component.html',
   styleUrl: './search-property.component.scss',
 })
-export class SearchPropertyComponent implements OnInit {
+export class SearchPropertyComponent implements OnInit, OnChanges {
   @Input() current: IPropertyDto | null = null;
+  @Input() name: string = '';
   @Output() selectedProperty = new EventEmitter<IPropertyDto>();
-
-  items$: Observable<IPropertyDto[]> = new Observable<IPropertyDto[]>();
 
   value: IPropertyDto | null = null;
 
   constructor(private propertyService: PropertyService) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['current']) {
+      this.value = this.current;
+    }
+  }
+
   ngOnInit(): void {
     if (this.current) this.value = this.current;
-    this.propertyService.getProperties();
-    this.propertyService.properties$.subscribe();
   }
+
+  data: any[] = [];
 
   search(event: AutoCompleteCompleteEvent) {
     const input = event.query.toLowerCase();
-    this.items$ = this.propertyService.properties$.pipe(
-      map((properties) =>
-        properties.filter(
-          (property) =>
-            property.propertyName.toLowerCase().includes(input) ||
-            property.address.street.toLowerCase().includes(input) ||
-            property.address.postcode.toLowerCase().includes(input) ||
-            property.address.city.toLowerCase().includes(input)
-        )
-      )
-    );
+
+    this.propertyService.properties$.subscribe((properties) => {
+      this.data = properties.filter(
+        (property) =>
+          property.propertyName.toLowerCase().includes(input) ||
+          property.address.street.toLowerCase().includes(input) ||
+          property.address.postcode.toLowerCase().includes(input) ||
+          property.address.city.toLowerCase().includes(input)
+      );
+    });
   }
 
   selectProperty(event: AutoCompleteSelectEvent) {
