@@ -36,7 +36,7 @@ export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
     if (this.current) this.selectedStatus = this.current;
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (this.suggestions) {
       this.statusOptions = Object.keys(this.suggestions).map((key: string) => ({
         value: key as T,
@@ -46,8 +46,7 @@ export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
     }
   }
 
-  // 过滤方法
-  filterStatus(event: { query: string }) {
+  filterStatus(event: { query: string }): void {
     this.filteredStatuses = this.getFilteredStatuses(event.query);
   }
 

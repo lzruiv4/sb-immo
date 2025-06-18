@@ -1,21 +1,15 @@
-<div class="card flex justify-center">
-  <p-autoComplete
-    [(ngModel)]="value"
-    [dropdown]="true"
-    appendTo="body"
-    field="contactName"
-    [attr.name]="name"
-    [suggestions]="data"
-    (completeMethod)="search($event)"
-    (onSelect)="selectContact($event)"
-    required
-  >
-    <!-- <ng-template let-contact pTemplate="item">
-      <div>
-        {{ contact.firstname }} {{ contact.lastname }} <br />&lt;{{
-          contact.email
-        }}&gt;
-      </div>
-    </ng-template> -->
-  </p-autoComplete>
-</div>
+<app-basis-data-combos
+  [inputModel]="current"
+  name="email"
+  [data]="data"
+  [filterFn]="filterContacts"
+  (selectedItem)="selectContact($event)"
+>
+  <ng-template #item let-item pTemplate="item">
+    {{ item.firstname }} {{ item.lastname }} <br />&lt;{{ item.email }}&gt;
+  </ng-template>
+
+  <ng-template #selectedItem let-item pTemplate="selectedItem">
+    {{ item.firstname }} {{ item.lastname }}
+  </ng-template>
+</app-basis-data-combos>

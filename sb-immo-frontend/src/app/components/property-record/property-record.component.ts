@@ -20,7 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { dateFormat } from '../../share/models/date.model';
 import { PropertyService } from '../../services/property.service';
 import { ContactService } from '../../services/contact.service';
-import { combineLatest, map, Observable } from 'rxjs';
+import { combineLatest, every, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
 
@@ -47,12 +47,6 @@ import { IContactDto } from '../../models/dtos/contact.dto';
   styleUrl: './property-record.component.scss',
 })
 export class PropertyRecordComponent implements OnInit {
-  contactSelected($event: IContactDto, _t36: any) {
-    throw new Error('Method not implemented.');
-  }
-  propertySelected($event: IPropertyDto, _t36: any) {
-    throw new Error('Method not implemented.');
-  }
   // controller for edit row
   currentPropertyRecordId: string | null = null;
 
@@ -108,6 +102,7 @@ export class PropertyRecordComponent implements OnInit {
   }
 
   onRowEditSave(propertyRecord: IPropertyRecordDto) {
+    console.log('Update @@@@', propertyRecord);
     this.propertyRecordService
       .saveNewPropertyRecord(propertyRecord)
       .subscribe();
@@ -121,5 +116,13 @@ export class PropertyRecordComponent implements OnInit {
 
   getStatusTag(status: RoleType): ITag {
     return this.statuses[status];
+  }
+
+  contactSelected(contact: IContactDto, propertyRecord: any) {
+    console.log('@@@@', contact, propertyRecord.property.propertyName);
+  }
+
+  propertySelected(property: IPropertyDto, propertyRecord: any) {
+    console.log('@@@@', event, propertyRecord.property.propertyName);
   }
 }

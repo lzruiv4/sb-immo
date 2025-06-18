@@ -88,11 +88,11 @@
           <td>
             <p-cellEditor>
               <ng-template #input>
-                <!-- <app-search-contacts
+                <app-search-contacts
                   [current]="propertyRecord.contact"
                   (selectedContact)="contactSelected($event, propertyRecord)"
-                  name="contactId"
-                /> -->
+                  name="contact"
+                />
               </ng-template>
               <ng-template #output>
                 {{ propertyRecord.contact.lastname }},
