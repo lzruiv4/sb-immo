@@ -1,10 +1,14 @@
 # sb-immo
 
-# sb-immo-frontend
+<p align="center">
+  <a ><img src="sb-immo-frontend/public/logo.png" width="200" alt="sb logo" /></a>
+</p>
 
-# sb-immo-backend
+### Setup
 
-### Setup database
+The backend is based on PostgreSQL with NestJS. Please set up the database first, preferably using Docker.
+
+😉 You can quickly deploy and start the project using the code below, please make sure you have Docker.
 
 ```bash
 docker run -d \
@@ -15,3 +19,33 @@ docker run -d \
 -p 3031:5432 \
 postgres:latest
 ```
+
+# sb-immo-frontend
+
+To start the backend, run:
+
+```bash
+cd sb-immo-backend && npm run start:dev
+```
+
+To start the frontend UI, please open new terminal under root and run:
+
+```bash
+cd sb-immo-frontend && ng serve
+```
+
+### UI
+
+##### Property
+
+<img src="markdown-image/property.png" width="100%" height="auto"/>
+
+##### Property record
+
+<img src="markdown-image/property-record.png" width="100%" height="auto"/>
+
+##### Create property record
+
+<img src="markdown-image/create-property-record.png" width="100%" height="auto"/>
+
+# sb-immo-backend with NestJs

@@ -18,6 +18,11 @@ import { BasisCombosComponent } from '../../share/basis-components/basis-combos/
 import { ITag } from '../../share/models/tag.model';
 import { DatePickerModule } from 'primeng/datepicker';
 import { dateFormat } from '../../share/models/date.model';
+import { PropertyService } from '../../services/property.service';
+import { ContactService } from '../../services/contact.service';
+import { combineLatest, combineLatestAll, map, Observable } from 'rxjs';
+import { IPropertyDto } from '../../models/dtos/property.dto';
+import { IContactDto } from '../../models/dtos/contact.dto';
 
 @Component({
   selector: 'app-property-record',
@@ -51,15 +56,58 @@ export class PropertyRecordComponent implements OnInit {
   statuses = RoleTypeDescriptions;
   defaultDateForm: string = dateFormat;
 
-  constructor(private propertyRecordService: PropertyRecordService) {}
+  // dataPlusPropertyAndContact$!: Observable<
+  //   Array<
+  //     IPropertyRecordDto & {
+  //       property?: IPropertyDto;
+  //       contact?: IContactDto;
+  //     }
+  //   >
+  // >;
 
-  ngOnInit(): void {
-    this.propertyRecordService.getPropertyRecords();
-    this.propertyRecordService.propertyRecords$.subscribe();
-  }
+  dataPlusPropertyAndContact$!: Observable<IPropertyRecordDto[]>;
+
+  data: any[] = [];
+
+  constructor(
+    private propertyRecordService: PropertyRecordService,
+    private propertyService: PropertyService,
+    private contactService: ContactService
+  ) {}
 
   get propertyRecords$() {
     return this.propertyRecordService.propertyRecords$;
+  }
+
+  ngOnInit(): void {
+    this.propertyRecordService.getPropertyRecords();
+    this.propertyService.getProperties();
+    this.contactService.getContacts();
+    // this.propertyRecordService.propertyRecords$.subscribe();
+
+    this.dataPlusPropertyAndContact$ = combineLatest([
+      this.propertyRecordService.propertyRecords$,
+      this.propertyService.properties$,
+      this.contactService.contacts$,
+    ]).pipe(
+      map(([propertyRecords, properties, contacts]) => {
+        const propertyMap = new Map(
+          properties.map((property) => [property.propertyId, property])
+        );
+
+        const contactMap = new Map(
+          contacts.map((contact) => [contact.contactId, contact])
+        );
+
+        return propertyRecords.map((record) => ({
+          ...record,
+          property: propertyMap.get(record.propertyId),
+          contact: contactMap.get(record.contactId),
+        }));
+      })
+    );
+    this.dataPlusPropertyAndContact$.subscribe((r) => (this.data = r));
+    // this.dataPlusPropertyAndContact$.subscribe();
   }
 
   openDialog() {
@@ -68,11 +116,6 @@ export class PropertyRecordComponent implements OnInit {
 
   onRowEditInit(propertyRecord: IPropertyRecordDto) {
     this.currentPropertyRecordId = propertyRecord.propertyRecordId ?? null;
-    console.log(
-      this.currentPropertyRecordId,
-      '   ',
-      propertyRecord.propertyRecordId
-    );
   }
 
   onRowEditSave(propertyRecord: IPropertyRecordDto) {

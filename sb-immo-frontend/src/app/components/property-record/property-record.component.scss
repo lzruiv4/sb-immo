@@ -19,5 +19,16 @@
   .table-container {
     width: 100%;
     margin-top: 30px;
+
+    .avatar-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      span {
+        flex: 1;
+      }
+    }
   }
 }

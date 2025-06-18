@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   AutoCompleteCompleteEvent,
@@ -16,7 +16,7 @@ import { PropertyService } from '../../services/property.service';
   templateUrl: './search-property.component.html',
   styleUrl: './search-property.component.scss',
 })
-export class SearchPropertyComponent {
+export class SearchPropertyComponent implements OnInit {
   @Input() current: IPropertyDto | null = null;
   @Output() selectedProperty = new EventEmitter<IPropertyDto>();
 
@@ -48,7 +48,6 @@ export class SearchPropertyComponent {
   }
 
   selectProperty(event: AutoCompleteSelectEvent) {
-    // console.log(event.value);
     const property: IPropertyDto = event.value as IPropertyDto;
     this.selectedProperty.emit(property);
   }
