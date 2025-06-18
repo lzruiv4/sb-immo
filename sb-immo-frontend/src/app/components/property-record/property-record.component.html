@@ -68,7 +68,7 @@
             <p-cellEditor>
               <ng-template #input>
                 <app-search-property
-                  [current]="propertyRecord.property"
+                  [property]="propertyRecord.property"
                   (selectedProperty)="propertySelected($event, propertyRecord)"
                   name="propertyId"
                 />
@@ -89,7 +89,7 @@
             <p-cellEditor>
               <ng-template #input>
                 <app-search-contacts
-                  [current]="propertyRecord.contact"
+                  [contact]="propertyRecord.contact"
                   (selectedContact)="contactSelected($event, propertyRecord)"
                   name="contact"
                 />

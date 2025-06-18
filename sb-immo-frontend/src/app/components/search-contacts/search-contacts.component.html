@@ -1,5 +1,5 @@
 <app-basis-data-combos
-  [inputModel]="current"
+  [inputModel]="contact"
   name="email"
   [data]="data"
   [filterFn]="filterContacts"
@@ -7,9 +7,5 @@
 >
   <ng-template #item let-item pTemplate="item">
     {{ item.firstname }} {{ item.lastname }} <br />&lt;{{ item.email }}&gt;
-  </ng-template>
-
-  <ng-template #selectedItem let-item pTemplate="selectedItem">
-    {{ item.firstname }} {{ item.lastname }}
   </ng-template>
 </app-basis-data-combos>

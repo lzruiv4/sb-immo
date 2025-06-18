@@ -14,14 +14,13 @@ import { BasisDataCombosComponent } from '../../share/basis-components/basis-dat
   selector: 'app-search-contacts',
   imports: [BasisDataCombosComponent],
   templateUrl: './search-contacts.component.html',
-  styleUrl: './search-contacts.component.scss',
 })
 export class SearchContactsComponent implements OnChanges {
-  @Input() current!: IContactDto;
+  @Input() contact!: IContactDto;
   @Input() name: string = '';
   @Output() selectedContact = new EventEmitter<IContactDto>();
 
-  value: IContactDto | null = null;
+  // value: IContactDto | null = null;
 
   data: IContactDto[] = [];
 
@@ -37,8 +36,8 @@ export class SearchContactsComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['current']) {
-      this.value = this.current;
+    if (changes['contact']) {
+      this.contact = this.contact;
     }
   }
 

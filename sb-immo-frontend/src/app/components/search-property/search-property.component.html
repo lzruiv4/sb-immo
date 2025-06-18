@@ -1,14 +1,8 @@
-<div class="card flex justify-center">
-  <p-autoComplete
-    [(ngModel)]="value"
-    [dropdown]="true"
-    appendTo="body"
-    field="propertyName"
-    [attr.name]="name"
-    [suggestions]="data"
-    (completeMethod)="search($event)"
-    (onSelect)="selectProperty($event)"
-    required
-  >
-  </p-autoComplete>
-</div>
+<app-basis-data-combos
+  [inputModel]="property"
+  name="propertyName"
+  [data]="data"
+  [filterFn]="filterProperties"
+  (selectedItem)="selectProperty($event)"
+>
+</app-basis-data-combos>
