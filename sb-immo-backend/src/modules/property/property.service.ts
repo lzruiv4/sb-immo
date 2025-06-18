@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { AddressService } from '../address/address.service';
 import { BasisPropertyDto } from './dto/create-property.dto';
 import { PropertyDto } from './dto/property.dto';
-import { AddressDto } from '../address/dto/address.dto';
 
 @Injectable()
 export class PropertyService {
@@ -30,25 +29,40 @@ export class PropertyService {
       if (!dto.propertyName || dto.propertyName.trim() === '') {
         this.setupPropertyName(dto);
       }
+
+      // Setup address for property
+      await this.setupPropertyAddress(dto);
+
       const newPropertyEntity = this.propertyRepository.create(dto);
 
-      const addressInSystem =
-        await this.addressService.findAddressWithBasisInfo(dto.address);
-      if (!addressInSystem) {
-        const addressDto = await this.addressService.create(dto.address);
-        newPropertyEntity.address = AddressDto.dtoToAddressEntity(addressDto); // Set the address relation
-      } else {
-        newPropertyEntity.address =
-          AddressDto.dtoToAddressEntity(addressInSystem); // Use existing address
-      }
       return PropertyDto.entityToDto(
         await this.propertyRepository.save(newPropertyEntity),
       );
     }
   }
 
-  private async isPropertyRegister(dto: BasisPropertyDto): Promise<boolean> {
-    const count = await this.propertyRepository
+  private async setupPropertyAddress(dto: BasisPropertyDto) {
+    const addressInSystem = await this.addressService.findAddressWithBasisInfo(
+      dto.address,
+    );
+    if (!addressInSystem) {
+      const addressDto = await this.addressService.create(dto.address);
+      dto.address = addressDto; // Set the address relation
+    } else {
+      dto.address = addressInSystem;
+    }
+  }
+
+  /**
+   * Checks if the address has been registered.
+   * If the propertyId is the same, it will return false.
+   * Another is true
+   */
+  private async isPropertyRegister(
+    dto: BasisPropertyDto,
+    propertyId?: string,
+  ): Promise<boolean> {
+    const properties = this.propertyRepository
       .createQueryBuilder('property')
       .leftJoinAndSelect('property.address', 'address')
       .where('address.street = :street', { street: dto.address.street })
@@ -60,9 +74,14 @@ export class PropertyService {
       })
       .andWhere('property.unit = :unit', {
         unit: dto.unit,
-      })
-      .getCount();
-    return count > 0;
+      });
+
+    if (propertyId) {
+      properties.andWhere('property.propertyId != :propertyId', {
+        propertyId: propertyId,
+      });
+    }
+    return await properties.getExists();
   }
 
   private setupPropertyName(dto: BasisPropertyDto): string {
@@ -79,7 +98,8 @@ export class PropertyService {
     const propertyEntity = await this.propertyRepository.findOne({
       where: { propertyId },
     });
-    if (!propertyEntity) throw new NotFoundException('Property not found');
+    if (!propertyEntity)
+      throw new NotFoundException('GET_PROPERTY_BY_ID: Property not found');
     return PropertyDto.entityToDto(propertyEntity);
   }
 
@@ -92,23 +112,18 @@ export class PropertyService {
 
   async update(propertyId: string, dto: PropertyDto): Promise<PropertyDto> {
     // Just check if the property is in the database
-    const checkAddressWithUnitRegister = await this.isPropertyRegister(dto);
+    const checkAddressWithUnitRegister = await this.isPropertyRegister(
+      dto,
+      dto.propertyId,
+    );
+
     if (checkAddressWithUnitRegister) {
       throw new ConflictException(
-        `CREATE_PROPERTY: The address with id ${dto.address.addressId} is registered`,
+        `UPDATE_PROPERTY: The address with id ${dto.address.addressId} is registered`,
       );
     }
-    // check the address should be created or get from db
-    const findAddress = await this.addressService.findAddressWithBasisInfo(
-      dto.address,
-    );
-    if (
-      !findAddress ||
-      (await this.addressService.isAddressChanged(dto.address))
-    ) {
-      const newAddress = await this.addressService.create(dto.address);
-      dto.address = newAddress;
-    }
+
+    await this.setupPropertyAddress(dto);
 
     // check property name is empty
     if (!dto.propertyName || dto.propertyName.trim() === '') {

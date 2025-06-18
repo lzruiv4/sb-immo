@@ -18,12 +18,12 @@ export class AddressService {
   ) {}
 
   async create(dto: BasisAddressDto): Promise<AddressDto> {
-    const count = await this.getAddressDuplicateCount(
+    const isDuplicated = await this.isAddressDuplicate(
       dto.street,
       dto.houseNumber,
       dto.postcode,
     );
-    if (count > 0) {
+    if (isDuplicated) {
       throw new ConflictException('Address is already in system');
     } else {
       const addressEntity = this.addressRepository.create(
@@ -47,7 +47,8 @@ export class AddressService {
         addressId,
       },
     });
-    if (!addressEntity) throw new NotFoundException('Address not found');
+    if (!addressEntity)
+      throw new NotFoundException('GET_ADDRESS_BY_ID: Address not found');
     return AddressDto.entityToAddressDto(addressEntity);
   }
 
@@ -68,17 +69,28 @@ export class AddressService {
     return !addressEntity ? null : AddressDto.entityToAddressDto(addressEntity);
   }
 
+  /**
+   * An address can only be updated if a record with the
+   *  - same street,
+   *  - house number,
+   *  - and postcode
+   * already exists in the system.
+   * Otherwise, the update operation will be rejected with an error.
+   *
+   */
   async update(id: number, dto: AddressDto): Promise<AddressDto> {
-    // Here can only
+    // check again
     if (id == dto.addressId) {
-      if (await this.isAddressChanged(dto)) {
+      if (await this.findAddressWithBasisInfo(dto)) {
         await this.addressRepository.update(id, dto);
+      } else {
+        throw new BadRequestException(
+          'UPDATE_ADDRESS: Address is not found in system',
+        );
       }
       return await this.findOne(id);
     } else {
-      throw new BadRequestException(
-        'UPDATE_ADDRESS: You input address is not in system, please create a new address',
-      );
+      throw new BadRequestException('UPDATE_ADDRESS: Please check you input');
     }
   }
 
@@ -118,12 +130,12 @@ export class AddressService {
     );
   }
 
-  async getAddressDuplicateCount(
+  async isAddressDuplicate(
     street: string,
     houseNumber: string,
     postcode: string,
-  ): Promise<number> {
-    const found = await this.addressRepository
+  ): Promise<boolean> {
+    return await this.addressRepository
       .createQueryBuilder('address')
       .where('LOWER(TRIM(address.street)) = :street', {
         street: street.toLowerCase().trim(),
@@ -134,7 +146,6 @@ export class AddressService {
       .andWhere('TRIM(address.postcode) = :postcode', {
         postcode: postcode.trim(),
       })
-      .getCount();
-    return found;
+      .getExists();
   }
 }

@@ -21,7 +21,7 @@ export class PropertyEntity {
   @JoinColumn({ name: 'address_id' })
   address: AddressEntity;
 
-  @Column()
+  @Column({ nullable: true })
   unit: string; // maybe with multiple tenants  e.g. 1.O.G.
 
   @Column('float')

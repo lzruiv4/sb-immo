@@ -24,7 +24,7 @@ export class PropertyRecordEntity {
   @Column({ type: 'enum', enum: RoleType, default: RoleType.ROLE_OWNER })
   role: RoleType;
 
-  @Column({ type: 'timestamptz', nullable: true, name: 'start_at' })
+  @Column({ type: 'timestamptz', name: 'start_at' })
   startAt: Date;
 
   @Column({ type: 'timestamptz', nullable: true, name: 'end_at' })
@@ -40,6 +40,6 @@ export class PropertyRecordEntity {
   @Column({ nullable: true })
   notes: string;
 
-  @Column({ type: 'timestamptz', nullable: true, name: 'created_at' })
+  @Column({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 }

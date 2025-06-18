@@ -10,17 +10,17 @@ export class ContactEntity {
   @Column({ length: 20 })
   lastname: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   // TODO: add password field
   // @Column()
   // password: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column({ type: 'timestamptz', nullable: true, name: 'created_at' })
+  @Column({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
   @Column({ nullable: true })

@@ -11,7 +11,7 @@ import {
 import { PropertyRecordService } from './property-record.service';
 import { BasisPropertyRecordDto } from './dto/basis-property-record.dto';
 import { PropertyRecordDto } from './dto/property-record.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Property record')
 @Controller('propertyRecords')
@@ -24,6 +24,8 @@ export class PropertyRecordController {
   }
 
   @Get()
+  @ApiQuery({ name: 'contactId', required: false })
+  @ApiQuery({ name: 'propertyId', required: false })
   findAllPropertyRecords(
     @Query('contactId') contactId?: string,
     @Query('propertyId') propertyId?: string,

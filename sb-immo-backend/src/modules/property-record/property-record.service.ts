@@ -24,10 +24,24 @@ export class PropertyRecordService {
     private contactService: ContactService,
   ) {}
 
+  /**
+   * Creates a new property record based on the provided data transfer object (DTO).
+   *
+   * - Initializes status and retrieves related property and contact information.
+   * - Restricts creation if the role is a renter and the property is not available.
+   * - Associates the property and contact entities with the new property record.
+   * - Updates the property name and saves the new property record to the repository.
+   *
+   * @param dto - The data transfer object containing the details for the new property record.
+   * @returns A promise that resolves to the created property record DTO.
+   * @throws BadRequestException when the renter and the property is unavailable.
+   */
   async create(dto: BasisPropertyRecordDto): Promise<PropertyRecordDto> {
+    // Only used in systems with small data volumes
     await this.setupStatus();
     const propertyDto = await this.propertyService.findOne(dto.propertyId);
     const contactDto = await this.contactService.findOne(dto.contactId);
+
     // Only the tenant's actions are restricted.
     if (
       RoleType.ROLE_RENTER === dto.role &&
@@ -44,6 +58,7 @@ export class PropertyRecordService {
 
       newPropertyRecordEntity.contactEntity =
         ContactDto.dtoToContactEntity(contactDto);
+      // Make sure propertyName is not empty
       await this.propertyService.updatePropertyName(propertyDto);
       return PropertyRecordDto.entityToPropertyRecordDto(
         await this.propertyRecordRepository.save(newPropertyRecordEntity),
@@ -68,17 +83,23 @@ export class PropertyRecordService {
     propertyRecordDto.createdAt = new Date();
   }
 
+  /**
+   * When setting the property status,
+   * - As a service provider
+   *     -> can ignore whether there are tenants;
+   * - As an owner, the property status doesn't matter either.
+   * - Only as a renter is the property's availability relevant
+   *     —> only available properties can be rented.
+   */
   async setupStatus(): Promise<void> {
     try {
       const properties = await this.propertyService.findAll();
-      // 考虑使用串行处理以避免数据库压力/竞态条件
       for (const property of properties) {
         await this.updatePropertyStatusByDate(property);
       }
     } catch (error) {
-      // 适当的错误处理
       console.error('Error in setupStatus:', error);
-      throw error; // 或者根据业务需求处理
+      throw error;
     }
   }
 
@@ -95,7 +116,7 @@ export class PropertyRecordService {
           (!record.endAt || rightNow <= record.endAt),
       );
 
-      // 明确优先级逻辑
+      // service provider can arrived, what ever the status
       if (
         activeRecords.some(
           (record) => record.role === RoleType.ROLE_SERVICE_PROVIDER,
@@ -109,11 +130,12 @@ export class PropertyRecordService {
       } else {
         property.status = PropertyStatusType.AVAILABLE;
       }
-
-      await this.propertyService.updatePropertyName(property);
     } catch (error) {
-      console.error(`Error updating property ${property.propertyId}:`, error);
-      throw error; // 或者根据业务需求处理
+      console.error(
+        `UPDATE_PROPERTY: Error updating property ${property.propertyId}:`,
+        error,
+      );
+      throw error;
     }
   }
 
@@ -149,10 +171,17 @@ export class PropertyRecordService {
       where: { propertyRecordId },
     });
     if (!propertyRecordEntity)
-      throw new NotFoundException('Property record not found');
+      throw new NotFoundException(
+        'GET_PROPERTY_RECORD: Property record not found',
+      );
     return PropertyRecordDto.entityToPropertyRecordDto(propertyRecordEntity);
   }
 
+  /**
+   * Update data.
+   * The front end take the address from database,
+   * so there is no need to update the property data(where the property ==> address) and contacts.
+   */
   async update(
     propertyRecordId: string,
     dto: PropertyRecordDto,
@@ -167,7 +196,7 @@ export class PropertyRecordService {
       // Ensure the dto contains the necessary fields
       if (!dto.propertyId || !dto.contactId) {
         throw new NotFoundException(
-          'Property ID and Contact ID must be provided for update',
+          'UPDATE_PROPERTY_RECORD: Property ID and Contact ID must be provided',
         );
       }
       // Validate that the property and contact exist
@@ -175,12 +204,18 @@ export class PropertyRecordService {
         await this.propertyService.findOne(dto.propertyId),
       );
       if (!propertyEntity)
-        throw new NotFoundException('Property not found for update');
+        throw new NotFoundException(
+          'UPDATE_PROPERTY_RECORD: Property not found',
+        );
+
       const contactEntity = ContactDto.dtoToContactEntity(
         await this.contactService.findOne(dto.contactId),
       );
       if (!contactEntity)
-        throw new NotFoundException('Contact not found for update');
+        throw new NotFoundException(
+          'UPDATE_PROPERTY_RECORD: Contact not found',
+        );
+
       const updateEntity = PropertyRecordDto.propertyRecordDtoToEntity(dto);
       updateEntity.propertyEntity = propertyEntity;
       updateEntity.contactEntity = contactEntity;
@@ -197,6 +232,8 @@ export class PropertyRecordService {
     if (result.affected === 0) {
       throw new NotFoundException('Property record not found');
     }
-    console.log(`Property record with id ${id} has been deleted.`);
+    console.log(
+      `REMOVE_PROPERTY_RECORD: Property record with id ${id} has been deleted.`,
+    );
   }
 }

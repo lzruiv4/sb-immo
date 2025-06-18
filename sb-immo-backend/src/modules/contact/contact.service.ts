@@ -30,7 +30,8 @@ export class ContactService {
     const contactEntity = await this.contactRepository.findOne({
       where: { contactId },
     });
-    if (!contactEntity) throw new NotFoundException('Contact not found');
+    if (!contactEntity)
+      throw new NotFoundException('GET_CONTACT_BY_ID: Contact not found');
     return ContactDto.entityToContactDto(contactEntity);
   }
 
@@ -42,8 +43,8 @@ export class ContactService {
   async remove(id: string): Promise<void> {
     const result = await this.contactRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException('Contact not found');
+      throw new NotFoundException('REMOVE_CONTACT: Contact not found');
     }
-    console.log(`Contact with id ${id} has been deleted.`);
+    console.log(`REMOVE_CONTACT: Contact with id ${id} has been deleted.`);
   }
 }
