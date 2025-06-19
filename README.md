@@ -6,7 +6,7 @@
 
 ### Setup
 
-The backend is based on PostgreSQL with NestJS. Please set up the database first, preferably using Docker.
+The backend is based on NestJS with PostgreSQL. Please set up the database first, preferably using Docker.
 
 😉 You can quickly deploy and start the project using the code below, please make sure you have Docker.
 
@@ -35,6 +35,10 @@ cd sb-immo-frontend && ng serve
 ```
 
 ### UI
+
+##### Welcome
+
+<img src="markdown-image/welcome.png" width="100%" height="auto"/>
 
 ##### Relevant contacts
 
