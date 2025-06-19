@@ -45,7 +45,8 @@ export class PropertyRecordService {
     // Only the tenant's actions are restricted.
     if (
       RoleType.ROLE_RENTER === dto.role &&
-      propertyDto.status !== PropertyStatusType.AVAILABLE
+      propertyDto.status !== PropertyStatusType.AVAILABLE &&
+      dto.contactId != contactDto.contactId
     ) {
       throw new BadRequestException(
         'CREATE_PROPERTY_RECORD: The property is unavailable.',
