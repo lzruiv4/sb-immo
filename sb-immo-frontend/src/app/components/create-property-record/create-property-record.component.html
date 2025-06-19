@@ -42,7 +42,7 @@
         <p-datepicker
           [(ngModel)]="propertyRecord.startAt"
           [showIcon]="true"
-          inputId="buttondisplay"
+          inputId="startAt"
           [showOnFocus]="false"
           appendTo="body"
           [panelStyle]="{ 'z-index': 1000 }"
@@ -57,7 +57,7 @@
         <p-datepicker
           [(ngModel)]="propertyRecord.endAt"
           [showIcon]="true"
-          inputId="buttondisplay"
+          inputId="endAt"
           [showOnFocus]="false"
           appendTo="body"
           [panelStyle]="{ 'z-index': 999 }"
@@ -67,7 +67,10 @@
         />
       </div>
 
-      <div class="input-container">
+      <div
+        class="input-container"
+        *ngIf="propertyRecord.role === serviceProvider"
+      >
         <label for="notes">Notes</label>
         <textarea
           id="notes"
@@ -75,6 +78,7 @@
           [(ngModel)]="propertyRecord.notes"
           name="notes"
           rows="3"
+          required
         ></textarea>
       </div>
     </div>

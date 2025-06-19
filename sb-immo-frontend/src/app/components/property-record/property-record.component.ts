@@ -11,7 +11,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
-import { SearchPropertyComponent } from '../search-property/search-propery.component';
+import { SearchPropertyComponent } from '../search-property/search-property.component';
 import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
 import { RoleType, RoleTypeDescriptions } from '../../models/enums/role.enum';
 import { BasisCombosComponent } from '../../share/basis-components/basis-combos/basis-combos.component';

@@ -20,8 +20,6 @@ export class SearchContactsComponent implements OnChanges {
   @Input() name: string = '';
   @Output() selectedContact = new EventEmitter<IContactDto>();
 
-  // value: IContactDto | null = null;
-
   data: IContactDto[] = [];
 
   filterContacts = (contact: IContactDto, query: string) =>

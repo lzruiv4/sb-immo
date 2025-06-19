@@ -63,15 +63,6 @@ export class PropertyComponent implements OnInit {
   }
 
   onRowEditSave(property: IPropertyDto) {
-    console.log('产业在组件内====', property);
-    // Clone the property and its address to avoid mutating shared references
-    // const updatedProperty: IPropertyDto = {
-    //   ...property,
-    //   address: {
-    //     ...property.address,
-    //     addressId: this.addressId,
-    //   },
-    // };
     this.propertyService.updateProperty(property).subscribe();
   }
 
@@ -84,7 +75,6 @@ export class PropertyComponent implements OnInit {
   }
 
   onAddressChosen(address: IAddressDto, property: IPropertyDto) {
-    console.log('+', property, ',,,,', address);
     property.address = {
       addressId: property.address.addressId,
       street: address.street || '',
@@ -96,7 +86,5 @@ export class PropertyComponent implements OnInit {
       country: address.country || '',
       countryCode: address.countryCode || '',
     };
-    // Object.assign(property, address);
-    // property = { ...property, address };
   }
 }

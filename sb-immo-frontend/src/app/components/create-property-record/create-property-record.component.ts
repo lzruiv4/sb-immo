@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
 import { RoleType } from '../../models/enums/role.enum';
 import { PropertyRecordService } from '../../services/property-record.service';
-import { SearchPropertyComponent } from '../search-property/search-propery.component';
+import { SearchPropertyComponent } from '../search-property/search-property.component';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
@@ -37,7 +37,7 @@ export class CreatePropertyRecordComponent implements OnInit {
   @Output() closeDialog = new EventEmitter<void>();
 
   roles: string[] = [];
-  // filteredRoles: string[] = [];
+  serviceProvider: RoleType = RoleType.ROLE_SERVICE_PROVIDER;
 
   propertyRecord: IPropertyRecordDto = {
     propertyId: '',
@@ -52,7 +52,6 @@ export class CreatePropertyRecordComponent implements OnInit {
 
   ngOnInit(): void {
     this.roles = Object.values(RoleType);
-    // this.filteredRoles = [...this.roles];
   }
 
   onStartDateSelect(date: Date) {

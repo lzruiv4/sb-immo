@@ -23,7 +23,6 @@ import { IContactDto } from '../../../models/dtos/contact.dto';
   selector: 'app-basis-data-combos',
   imports: [AutoCompleteModule, CommonModule, FormsModule, CommonModule],
   templateUrl: './basis-data-combos.component.html',
-  styleUrl: './basis-data-combos.component.scss',
 })
 export class BasisDataCombosComponent<T extends IPropertyDto | IContactDto>
   implements OnInit, OnChanges

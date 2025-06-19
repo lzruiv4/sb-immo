@@ -8,6 +8,8 @@
     [suggestions]="data"
     (completeMethod)="search($event)"
     (onSelect)="selected($event)"
+    [inputStyle]="{ width: '100%' }"
+    [style]="{ width: '100%' }"
     required
   >
     <ng-template *ngIf="itemTemplate" pTemplate="item" let-item>

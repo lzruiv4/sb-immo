@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SearchPropertyComponent } from './search-propery.component';
+import { SearchPropertyComponent } from './search-property.component';
 
-describe('SearchProperyComponent', () => {
+describe('SearchPropertyComponent', () => {
   let component: SearchPropertyComponent;
   let fixture: ComponentFixture<SearchPropertyComponent>;
 
