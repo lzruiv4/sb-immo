@@ -15,7 +15,6 @@
       [rows]="10"
       editMode="row"
       [scrollable]="true"
-      scrollHeight="90vh"
       [rowsPerPageOptions]="[5, 10, 15]"
       [paginator]="true"
       [tableStyle]="{ width: '100%' }"
@@ -62,7 +61,12 @@
         </tr>
       </ng-template>
 
-      <ng-template #body let-propertyRecord let-ri="rowIndex">
+      <ng-template
+        #body
+        let-propertyRecord
+        let-editing="editing"
+        let-ri="rowIndex"
+      >
         <tr [pEditableRow]="propertyRecord">
           <td>
             <p-cellEditor>
@@ -91,7 +95,7 @@
                 <app-search-contacts
                   [contact]="propertyRecord.contact"
                   (selectedContact)="contactSelected($event, propertyRecord)"
-                  name="contact"
+                  name="contactId"
                 />
               </ng-template>
               <ng-template #output>
@@ -184,6 +188,7 @@
                   pInputText
                   type="text"
                   [(ngModel)]="propertyRecord.notes"
+                  name="notes"
                 />
               </ng-template>
               <ng-template #output>
@@ -195,9 +200,7 @@
           <td>
             <div class="flex items-center justify-center gap-2">
               <button
-                *ngIf="
-                  propertyRecord.propertyRecordId !== currentPropertyRecordId
-                "
+                *ngIf="!editing"
                 pButton
                 pRipple
                 type="button"
@@ -209,22 +212,19 @@
                 severity="secondary"
               ></button>
               <button
-                *ngIf="
-                  propertyRecord.propertyRecordId === currentPropertyRecordId
-                "
+                *ngIf="editing"
                 pButton
                 pRipple
                 type="button"
                 icon="pi pi-check"
+                pSaveEditableRow
                 (click)="onRowEditSave(propertyRecord)"
                 text
                 rounded
                 severity="secondary"
               ></button>
               <button
-                *ngIf="
-                  propertyRecord.propertyRecordId === currentPropertyRecordId
-                "
+                *ngIf="editing"
                 pButton
                 pRipple
                 type="button"

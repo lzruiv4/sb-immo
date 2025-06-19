@@ -20,7 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { dateFormat } from '../../share/models/date.model';
 import { PropertyService } from '../../services/property.service';
 import { ContactService } from '../../services/contact.service';
-import { combineLatest, every, map, Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
 
@@ -47,9 +47,6 @@ import { IContactDto } from '../../models/dtos/contact.dto';
   styleUrl: './property-record.component.scss',
 })
 export class PropertyRecordComponent implements OnInit {
-  // controller for edit row
-  currentPropertyRecordId: string | null = null;
-
   loading: boolean = false;
   openCreateDialog: boolean = false;
 
@@ -97,21 +94,16 @@ export class PropertyRecordComponent implements OnInit {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit(propertyRecord: IPropertyRecordDto) {
-    this.currentPropertyRecordId = propertyRecord.propertyRecordId ?? null;
-  }
+  onRowEditInit(propertyRecord: any) {}
 
-  onRowEditSave(propertyRecord: IPropertyRecordDto) {
-    console.log('Update @@@@', propertyRecord);
+  onRowEditSave(propertyRecord: any) {
     this.propertyRecordService
       .saveNewPropertyRecord(propertyRecord)
-      .subscribe();
-    this.currentPropertyRecordId = null;
+      .subscribe(() => this.propertyRecordService.getPropertyRecords());
   }
 
   onRowEditCancel() {
     this.propertyRecordService.getPropertyRecords();
-    this.currentPropertyRecordId = null;
   }
 
   getStatusTag(status: RoleType): ITag {
@@ -119,10 +111,10 @@ export class PropertyRecordComponent implements OnInit {
   }
 
   contactSelected(contact: IContactDto, propertyRecord: any) {
-    console.log('@@@@', contact, propertyRecord.property.propertyName);
+    propertyRecord.contactId = contact.contactId;
   }
 
   propertySelected(property: IPropertyDto, propertyRecord: any) {
-    console.log('@@@@', event, propertyRecord.property.propertyName);
+    propertyRecord.propertyId = property.propertyId;
   }
 }
