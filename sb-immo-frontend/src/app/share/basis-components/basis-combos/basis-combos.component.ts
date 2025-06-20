@@ -8,7 +8,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AutoCompleteModule } from 'primeng/autocomplete';
+import {
+  AutoCompleteModule,
+  AutoCompleteSelectEvent,
+} from 'primeng/autocomplete';
 import { TagModule } from 'primeng/tag';
 import { ITag } from '../../models/tag.model';
 import { PropertyStatusType } from '../../../models/enums/property-status.enum';
@@ -25,7 +28,7 @@ export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
 {
   @Input() suggestions!: Record<T, ITag>;
   @Input() current: T | null = null;
-  @Output() statusSelected = new EventEmitter<any>();
+  @Output() statusSelected = new EventEmitter<T>();
 
   filteredStatuses: any[] = [];
   selectedStatus: T | null = null;
@@ -48,6 +51,11 @@ export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
 
   filterStatus(event: { query: string }): void {
     this.filteredStatuses = this.getFilteredStatuses(event.query);
+  }
+
+  selected(event: AutoCompleteSelectEvent): void {
+    const item: T = event.value as T;
+    this.statusSelected.emit(item);
   }
 
   private getFilteredStatuses(query: string) {

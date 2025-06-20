@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
-import { RoleType } from '../../models/enums/role.enum';
+import { RoleType, RoleTypeDescriptions } from '../../models/enums/role.enum';
 import { PropertyRecordService } from '../../services/property-record.service';
 import { SearchPropertyComponent } from '../search-property/search-property.component';
 import { IContactDto } from '../../models/dtos/contact.dto';
@@ -14,6 +14,7 @@ import { SearchContactsComponent } from '../search-contacts/search-contacts.comp
 import { DatePickerModule } from 'primeng/datepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TagModule } from 'primeng/tag';
+import { BasisCombosComponent } from '../../share/basis-components/basis-combos/basis-combos.component';
 
 @Component({
   selector: 'app-create-property-record',
@@ -28,16 +29,17 @@ import { TagModule } from 'primeng/tag';
     DatePickerModule,
     AutoCompleteModule,
     TagModule,
+    BasisCombosComponent,
   ],
   templateUrl: './create-property-record.component.html',
   styleUrl: './create-property-record.component.scss',
 })
-export class CreatePropertyRecordComponent implements OnInit {
+export class CreatePropertyRecordComponent {
   @Input() visible = false;
   @Output() closeDialog = new EventEmitter<void>();
 
-  roles: string[] = [];
-  serviceProvider: RoleType = RoleType.ROLE_SERVICE_PROVIDER;
+  roles = RoleTypeDescriptions;
+  serviceProvider: RoleType = RoleType.ROLE_SERVICE;
 
   propertyRecord: IPropertyRecordDto = {
     propertyId: '',
@@ -49,10 +51,6 @@ export class CreatePropertyRecordComponent implements OnInit {
   };
 
   constructor(private propertyRecordService: PropertyRecordService) {}
-
-  ngOnInit(): void {
-    this.roles = Object.values(RoleType);
-  }
 
   onStartDateSelect(date: Date) {
     // Make sure the date is what one select
@@ -87,10 +85,7 @@ export class CreatePropertyRecordComponent implements OnInit {
     this.propertyRecord.propertyId = property.propertyId ?? '';
   }
 
-  filterRoles(event: { query: string }) {
-    const query = event.query.toLowerCase();
-    this.roles = this.roles.filter((role) =>
-      role.toLowerCase().includes(query)
-    );
+  roleSelected(role: any): void {
+    this.propertyRecord.role = role.value;
   }
 }

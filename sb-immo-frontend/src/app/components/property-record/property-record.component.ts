@@ -90,19 +90,20 @@ export class PropertyRecordComponent implements OnInit {
     this.dataPlusPropertyAndContact$.subscribe();
   }
 
-  openDialog() {
+  openDialog(): void {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit(propertyRecord: any) {}
+  onRowEditInit(propertyRecord: any): void {
+  }
 
-  onRowEditSave(propertyRecord: any) {
+  onRowEditSave(propertyRecord: any): void {
     this.propertyRecordService
-      .saveNewPropertyRecord(propertyRecord)
+      .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
       .subscribe(() => this.propertyRecordService.getPropertyRecords());
   }
 
-  onRowEditCancel() {
+  onRowEditCancel(): void {
     this.propertyRecordService.getPropertyRecords();
   }
 
@@ -110,11 +111,15 @@ export class PropertyRecordComponent implements OnInit {
     return this.statuses[status];
   }
 
-  contactSelected(contact: IContactDto, propertyRecord: any) {
+  contactSelected(contact: IContactDto, propertyRecord: any): void {
     propertyRecord.contactId = contact.contactId;
   }
 
-  propertySelected(property: IPropertyDto, propertyRecord: any) {
+  propertySelected(property: IPropertyDto, propertyRecord: any): void {
     propertyRecord.propertyId = property.propertyId;
+  }
+
+  roleSelected(role: any, propertyRecord: any): void {
+    propertyRecord.role = role.value;
   }
 }

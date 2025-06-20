@@ -24,17 +24,12 @@
 
       <div class="input-container">
         <label for="role">Role</label>
-        <p-autoComplete
-          [(ngModel)]="propertyRecord.role"
+        <app-basis-combos
           [suggestions]="roles"
-          (completeMethod)="filterRoles($event)"
-          [dropdown]="true"
-          [forceSelection]="true"
-          placeholder="Select roles"
-          required
+          [current]="propertyRecord.role"
+          (statusSelected)="roleSelected($event)"
           name="role"
-        >
-        </p-autoComplete>
+        />
       </div>
 
       <div class="input-container">
@@ -43,6 +38,7 @@
           [(ngModel)]="propertyRecord.startAt"
           [showIcon]="true"
           inputId="startAt"
+          [showTime]="true"
           [showOnFocus]="false"
           appendTo="body"
           [panelStyle]="{ 'z-index': 1000 }"
@@ -58,6 +54,7 @@
           [(ngModel)]="propertyRecord.endAt"
           [showIcon]="true"
           inputId="endAt"
+          [showTime]="true"
           [showOnFocus]="false"
           appendTo="body"
           [panelStyle]="{ 'z-index': 999 }"

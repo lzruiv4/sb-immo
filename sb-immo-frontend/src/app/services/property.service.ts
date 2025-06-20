@@ -38,8 +38,6 @@ export class PropertyService {
         finalize(() => this.loadingSubject.next(false))
       )
       .subscribe();
-    // this.addressService.getAddresses();
-    // this.addressService.addresses$.subscribe();
   }
 
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {

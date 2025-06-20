@@ -84,7 +84,6 @@ export class PropertyRecordService {
             overlappingPropertyRecords.add(curr);
           }
         }
-        // console.log('@@@@', Array.from(overlappingPropertyRecords));
         return Array.from(overlappingPropertyRecords);
       })
     );

@@ -88,7 +88,7 @@ export class RelevantContactService {
             contactsWithSamePropertyRecord
               .filter(
                 (propertyRecord) =>
-                  propertyRecord.role === RoleType.ROLE_SERVICE_PROVIDER
+                  propertyRecord.role === RoleType.ROLE_SERVICE
               )
               .map((propertyRecord) => propertyRecord.contactId)
           )

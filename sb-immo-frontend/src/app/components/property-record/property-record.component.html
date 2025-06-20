@@ -17,6 +17,8 @@
       [scrollable]="true"
       [rowsPerPageOptions]="[5, 10, 15]"
       [paginator]="true"
+      [sortField]="'createdAt'"
+      [sortOrder]="-1"
       [tableStyle]="{ width: '100%' }"
     >
       <ng-template #header>
@@ -110,6 +112,7 @@
                 <app-basis-combos
                   [suggestions]="statuses"
                   [current]="propertyRecord.role"
+                  (statusSelected)="roleSelected($event, propertyRecord)"
                   name="role"
                 />
               </ng-template>
@@ -129,6 +132,7 @@
                   [(ngModel)]="propertyRecord.createdAt"
                   [showIcon]="true"
                   inputId="createdAt"
+                  [showTime]="true"
                   [showOnFocus]="false"
                   appendTo="body"
                   [panelStyle]="{ 'z-index': 1000 }"
@@ -148,6 +152,7 @@
                   [(ngModel)]="propertyRecord.startAt"
                   [showIcon]="true"
                   inputId="startAt"
+                  [showTime]="true"
                   [showOnFocus]="false"
                   appendTo="body"
                   [panelStyle]="{ 'z-index': 1000 }"
@@ -168,6 +173,7 @@
                   [(ngModel)]="propertyRecord.endAt"
                   [showIcon]="true"
                   inputId="endAt"
+                  [showTime]="true"
                   [showOnFocus]="false"
                   appendTo="body"
                   [panelStyle]="{ 'z-index': 1000 }"
