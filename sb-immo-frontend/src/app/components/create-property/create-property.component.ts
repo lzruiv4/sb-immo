@@ -15,6 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BasisCombosComponent } from '../../share/basis-components/basis-combos/basis-combos.component';
 import { IAddressDto } from '../../models/dtos/address.dto';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-create-property',
@@ -56,12 +57,29 @@ export class CreatePropertyComponent {
     status: PropertyStatusType.AVAILABLE,
   };
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private notificationService: NotificationService
+  ) {}
 
   onSubmit(ngForm: NgForm) {
-    this.propertyService.saveNewProperty(this.property).subscribe(() => {
-      this.closeDialog.emit();
-      ngForm.resetForm();
+    this.propertyService.saveNewProperty(this.property).subscribe({
+      next: (response) => {
+        this.closeDialog.emit();
+        ngForm.resetForm();
+        this.propertyService.getProperties();
+        this.notificationService.success(
+          'success',
+          'Create property successful'
+        );
+      },
+      error: (error) => {
+        this.notificationService.error(
+          'error',
+          'Create property failed',
+          error
+        );
+      },
     });
   }
 

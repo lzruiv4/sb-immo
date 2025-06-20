@@ -23,6 +23,7 @@ import { ContactService } from '../../services/contact.service';
 import { combineLatest, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-property-record',
@@ -58,7 +59,8 @@ export class PropertyRecordComponent implements OnInit {
   constructor(
     private propertyRecordService: PropertyRecordService,
     private propertyService: PropertyService,
-    private contactService: ContactService
+    private contactService: ContactService,
+    private notificationService: NotificationService
   ) {}
 
   get propertyRecords$() {
@@ -94,13 +96,27 @@ export class PropertyRecordComponent implements OnInit {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit(propertyRecord: any): void {
-  }
+  onRowEditInit(propertyRecord: any): void {}
 
   onRowEditSave(propertyRecord: any): void {
+    console.log('before ', propertyRecord);
     this.propertyRecordService
       .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
-      .subscribe(() => this.propertyRecordService.getPropertyRecords());
+      .subscribe({
+        next: (response) => {
+          this.propertyRecordService.getPropertyRecords();
+          this.notificationService.success(
+            'success',
+            'Update property record successful'
+          );
+        },
+        error: (error) => {
+          this.notificationService.error(
+            'error',
+            'Update property record failed'
+          );
+        },
+      });
   }
 
   onRowEditCancel(): void {

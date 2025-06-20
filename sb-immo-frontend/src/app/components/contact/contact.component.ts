@@ -13,6 +13,7 @@ import { CreateContactComponent } from '../create-contact/create-contact.compone
 import { Observable } from 'rxjs';
 import { ISearchRelevantContact } from '../../share/models/search-relevant-contacts';
 import { FindContactsComponent } from '../find-contacts/find-contacts.component';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-contact',
@@ -38,7 +39,10 @@ export class ContactComponent {
 
   currentContactId: string | null = null;
 
-  constructor(private contactService: ContactService) {}
+  constructor(
+    private contactService: ContactService,
+    private notificationService: NotificationService
+  ) {}
 
   get contact$() {
     return this.contactService.contacts$;
@@ -61,7 +65,18 @@ export class ContactComponent {
   }
 
   onRowEditSave(contactToBeEdit: IContactDto) {
-    this.contactService.updateContact(contactToBeEdit).subscribe();
+    this.contactService.updateContact(contactToBeEdit).subscribe({
+      next: (response) => {
+        this.contactService.getContacts();
+        this.notificationService.success(
+          'success',
+          'Update contact successful'
+        );
+      },
+      error: (error) => {
+        this.notificationService.error('error', 'Update contact failed', error);
+      },
+    });
   }
 
   onRowEditCancel() {

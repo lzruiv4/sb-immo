@@ -15,6 +15,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TagModule } from 'primeng/tag';
 import { BasisCombosComponent } from '../../share/basis-components/basis-combos/basis-combos.component';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-create-property-record',
@@ -50,7 +51,10 @@ export class CreatePropertyRecordComponent {
     notes: '',
   };
 
-  constructor(private propertyRecordService: PropertyRecordService) {}
+  constructor(
+    private propertyRecordService: PropertyRecordService,
+    private notificationService: NotificationService
+  ) {}
 
   onStartDateSelect(date: Date) {
     // Make sure the date is what one select
@@ -67,7 +71,20 @@ export class CreatePropertyRecordComponent {
   onSubmit(ngForm: NgForm) {
     this.propertyRecordService
       .saveNewPropertyRecord(this.propertyRecord)
-      .subscribe();
+      .subscribe({
+        next: (response) => {
+          this.notificationService.success(
+            'success',
+            'Create property record successful'
+          );
+        },
+        error: (error) => {
+          this.notificationService.error(
+            'error',
+            'Create property record failed'
+          );
+        },
+      });
     this.closeDialog.emit();
     ngForm.resetForm;
   }

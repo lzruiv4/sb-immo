@@ -18,6 +18,8 @@ import { CreatePropertyComponent } from '../create-property/create-property.comp
 import { AddressSearchComponent } from '../address-search/address-search.component';
 import { IAddressDto } from '../../models/dtos/address.dto';
 import { ITag } from '../../share/models/tag.model';
+import { NotificationService } from '../../services/notification.service';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-property',
@@ -33,6 +35,7 @@ import { ITag } from '../../share/models/tag.model';
     ButtonModule,
     CreatePropertyComponent,
     AddressSearchComponent,
+    ToastModule,
   ],
   templateUrl: './property.component.html',
   styleUrl: './property.component.scss',
@@ -44,7 +47,10 @@ export class PropertyComponent implements OnInit {
 
   setupStatus = PropertyStatusDescriptions;
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -63,7 +69,22 @@ export class PropertyComponent implements OnInit {
   }
 
   onRowEditSave(property: IPropertyDto) {
-    this.propertyService.updateProperty(property).subscribe();
+    this.propertyService.updateProperty(property).subscribe({
+      next: (response) => {
+        this.propertyService.getProperties();
+        this.notificationService.success(
+          'success',
+          'Update property successful'
+        );
+      },
+      error: (error) => {
+        this.notificationService.error(
+          'error',
+          'Update property failed',
+          error
+        );
+      },
+    });
   }
 
   onRowEditCancel(property: IPropertyDto) {

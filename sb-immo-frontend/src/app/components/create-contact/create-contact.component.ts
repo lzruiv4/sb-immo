@@ -6,6 +6,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-create-contact',
@@ -31,12 +32,25 @@ export class CreateContactComponent {
     notes: '',
   };
 
-  constructor(private contactService: ContactService) {}
+  constructor(
+    private contactService: ContactService,
+    private notificationService: NotificationService
+  ) {}
 
   onSubmit(form: NgForm) {
-    this.contactService.saveNewContact(this.contact).subscribe();
-    this.closeDialog.emit();
-    form.resetForm();
+    this.contactService.saveNewContact(this.contact).subscribe({
+      next: (response) => {
+        this.closeDialog.emit();
+        form.resetForm();
+        this.notificationService.success(
+          'success',
+          'Create contact successful'
+        );
+      },
+      error: (error) => {
+        this.notificationService.error('error', 'Create contact failed', error);
+      },
+    });
   }
 
   onCancel(form: NgForm): void {
