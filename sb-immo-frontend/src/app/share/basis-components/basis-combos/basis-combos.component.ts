@@ -21,7 +21,6 @@ import { RoleType } from '../../../models/enums/role.enum';
   selector: 'app-basis-combos',
   imports: [AutoCompleteModule, CommonModule, FormsModule, TagModule],
   templateUrl: './basis-combos.component.html',
-  styleUrls: ['./basis-combos.component.scss'],
 })
 export class BasisCombosComponent<T extends PropertyStatusType | RoleType>
   implements OnChanges, OnInit
