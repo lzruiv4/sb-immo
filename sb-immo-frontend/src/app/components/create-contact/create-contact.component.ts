@@ -38,19 +38,28 @@ export class CreateContactComponent {
   ) {}
 
   onSubmit(form: NgForm) {
-    this.contactService.saveNewContact(this.contact).subscribe({
-      next: (response) => {
-        this.closeDialog.emit();
-        form.resetForm();
-        this.notificationService.success(
-          'success',
-          'Create contact successful'
-        );
-      },
-      error: (error) => {
-        this.notificationService.error('error', 'Create contact failed', error);
-      },
-    });
+    if (this.contactService.isContactDuplicated(this.contact)) {
+      this.notificationService.warn('error', 'Create contact is duplicated');
+    } else {
+      this.contactService.saveNewContact(this.contact).subscribe({
+        next: (response) => {
+          this.closeDialog.emit();
+          form.resetForm();
+          this.notificationService.success(
+            'success',
+            'Create contact successful'
+          );
+        },
+        error: (error) => {
+          console.log(error);
+          this.notificationService.error(
+            'error',
+            'Create contact failed',
+            error
+          );
+        },
+      });
+    }
   }
 
   onCancel(form: NgForm): void {

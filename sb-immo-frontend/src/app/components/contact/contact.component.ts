@@ -65,18 +65,26 @@ export class ContactComponent {
   }
 
   onRowEditSave(contactToBeEdit: IContactDto) {
-    this.contactService.updateContact(contactToBeEdit).subscribe({
-      next: (response) => {
-        this.contactService.getContacts();
-        this.notificationService.success(
-          'success',
-          'Update contact successful'
-        );
-      },
-      error: (error) => {
-        this.notificationService.error('error', 'Update contact failed', error);
-      },
-    });
+    if (this.contactService.isContactDuplicated(contactToBeEdit)) {
+      this.notificationService.warn('error', 'Update contact is duplicated');
+    } else {
+      this.contactService.updateContact(contactToBeEdit).subscribe({
+        next: (response) => {
+          this.notificationService.success(
+            'success',
+            'Update contact successful'
+          );
+        },
+        error: (error) => {
+          this.notificationService.error(
+            'error',
+            'Update contact failed',
+            error
+          );
+        },
+      });
+    }
+    this.contactService.getContacts();
   }
 
   onRowEditCancel() {
