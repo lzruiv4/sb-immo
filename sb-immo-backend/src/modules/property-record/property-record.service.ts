@@ -53,6 +53,7 @@ export class PropertyRecordService {
       );
     } else {
       this.createPropertyRecordByRole(dto, propertyDto);
+      dto.createdAt = new Date();
       const newPropertyRecordEntity = this.propertyRecordRepository.create(dto);
       newPropertyRecordEntity.propertyEntity =
         PropertyDto.dtoToPropertyEntity(propertyDto);
@@ -75,22 +76,22 @@ export class PropertyRecordService {
       propertyDto.status = PropertyStatusType.RENTED;
     }
     if (
-      propertyRecordDto.role === RoleType.ROLE_SERVICE_PROVIDER &&
+      propertyRecordDto.role === RoleType.ROLE_SERVICE &&
       propertyDto.status === PropertyStatusType.AVAILABLE
     ) {
       // Only property in AVAILABLE can change the status to MAINTENANCE
       propertyDto.status = PropertyStatusType.MAINTENANCE;
     }
-    propertyRecordDto.createdAt = new Date();
   }
 
   /**
    * When setting the property status,
    * - As a service provider
-   *     -> can ignore whether there are tenants;
+   *     -> can ignore whether there are tenants;  --> PropertyStatusType.MAINTENANCE
    * - As an owner, the property status doesn't matter either.
+   *     --> PropertyStatusType.AVAILABLE
    * - Only as a renter is the property's availability relevant
-   *     —> only available properties can be rented.
+   *     --> PropertyStatusType.RENTED
    */
   async setupStatus(): Promise<void> {
     try {
@@ -116,24 +117,22 @@ export class PropertyRecordService {
           rightNow >= record.startAt &&
           (!record.endAt || rightNow <= record.endAt),
       );
-
-      // service provider can arrived, what ever the status
       if (
-        activeRecords.some(
-          (record) => record.role === RoleType.ROLE_SERVICE_PROVIDER,
-        )
+        activeRecords.length === 0 ||
+        activeRecords.every((record) => record.role == RoleType.ROLE_OWNER)
+      ) {
+        property.status = PropertyStatusType.AVAILABLE;
+      } else if (
+        activeRecords.some((record) => record.role == RoleType.ROLE_SERVICE)
       ) {
         property.status = PropertyStatusType.MAINTENANCE;
-      } else if (
-        activeRecords.some((record) => record.role === RoleType.ROLE_RENTER)
-      ) {
-        property.status = PropertyStatusType.RENTED;
       } else {
-        property.status = PropertyStatusType.AVAILABLE;
+        property.status = PropertyStatusType.RENTED;
       }
+      await this.propertyService.update(property.propertyId, property);
     } catch (error) {
       console.error(
-        `UPDATE_PROPERTY: Error updating property ${property.propertyId}:`,
+        `UPDATE_PROPERTY_STATUS: Error updating property ${property.propertyId}:`,
         error,
       );
       throw error;
@@ -187,7 +186,6 @@ export class PropertyRecordService {
     propertyRecordId: string,
     dto: PropertyRecordDto,
   ): Promise<PropertyRecordDto> {
-    await this.setupStatus();
     const propertyRecordEntity = await this.propertyRecordRepository.findOne({
       where: { propertyRecordId },
     });
