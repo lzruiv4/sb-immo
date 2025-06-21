@@ -66,19 +66,19 @@ export class ContactComponent {
 
   onRowEditSave(contactToBeEdit: IContactDto) {
     if (this.contactService.isContactDuplicated(contactToBeEdit)) {
-      this.notificationService.warn('error', 'Update contact is duplicated');
+      this.notificationService.warn('error', 'Update: Contact is duplicated');
     } else {
       this.contactService.updateContact(contactToBeEdit).subscribe({
         next: (response) => {
           this.notificationService.success(
             'success',
-            'Update contact successful'
+            'Update: Contact successful'
           );
         },
         error: (error) => {
           this.notificationService.error(
             'error',
-            'Update contact failed',
+            'Update: Contact failed',
             error
           );
         },

@@ -40,6 +40,17 @@ export class PropertyService {
       .subscribe();
   }
 
+  isPropertyDuplicated(dto: IPropertyDto): boolean {
+    const items = this.propertiesSubject.getValue();
+    return items.some(
+      (property) =>
+        dto.address.street == property.address.street &&
+        dto.address.houseNumber == property.address.houseNumber &&
+        dto.address.postcode == property.address.postcode &&
+        (dto.unit === property.unit || (!property.unit && dto.unit == ''))
+    );
+  }
+
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {
     this.loadingSubject.next(true);
     return this.propertyHttp

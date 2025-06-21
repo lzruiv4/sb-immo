@@ -9,6 +9,7 @@
       "
       [formControl]="searchControl"
       class="w-full"
+      appendTo="body"
     />
   </p-inputGroup>
   <div class="search-results-panel" *ngIf="showResultsPanel">
@@ -16,7 +17,7 @@
       header="Search Results"
       [toggleable]="false"
       [style]="{ width: '100%' }"
-      styleClass="results-panel"
+      styleClass="results-panel body"
     >
       <p-listbox
         [options]="addresses"

@@ -63,24 +63,31 @@ export class CreatePropertyComponent {
   ) {}
 
   onSubmit(ngForm: NgForm) {
-    this.propertyService.saveNewProperty(this.property).subscribe({
-      next: (response) => {
-        this.closeDialog.emit();
-        ngForm.resetForm();
-        this.propertyService.getProperties();
-        this.notificationService.success(
-          'success',
-          'Create property successful'
-        );
-      },
-      error: (error) => {
-        this.notificationService.error(
-          'error',
-          'Create property failed',
-          error
-        );
-      },
-    });
+    if (this.propertyService.isPropertyDuplicated(this.property)) {
+      this.notificationService.warn(
+        'warn',
+        'Create: Property can not be in the same address and unit'
+      );
+    } else {
+      this.propertyService.saveNewProperty(this.property).subscribe({
+        next: (response) => {
+          this.notificationService.success(
+            'success',
+            'Create: Property successful'
+          );
+        },
+        error: (error) => {
+          this.notificationService.error(
+            'error',
+            'Create: Property failed',
+            error
+          );
+        },
+      });
+      this.closeDialog.emit();
+      ngForm.resetForm();
+    }
+    this.propertyService.getProperties();
   }
 
   onCancel(ngForm: NgForm) {

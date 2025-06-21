@@ -69,22 +69,26 @@ export class PropertyComponent implements OnInit {
   }
 
   onRowEditSave(property: IPropertyDto) {
-    this.propertyService.updateProperty(property).subscribe({
-      next: (response) => {
-        this.propertyService.getProperties();
-        this.notificationService.success(
-          'success',
-          'Update property successful'
-        );
-      },
-      error: (error) => {
-        this.notificationService.error(
-          'error',
-          'Update property failed',
-          error
-        );
-      },
-    });
+    if (this.propertyService.isPropertyDuplicated(property)) {
+      this.notificationService.warn('error', 'Update: Property is duplicated');
+    } else {
+      this.propertyService.updateProperty(property).subscribe({
+        next: (response) => {
+          this.notificationService.success(
+            'success',
+            'Update: Property successful'
+          );
+        },
+        error: (error) => {
+          this.notificationService.error(
+            'error',
+            'Update: Property failed',
+            error
+          );
+        },
+      });
+    }
+    this.propertyService.getProperties();
   }
 
   onRowEditCancel(property: IPropertyDto) {
