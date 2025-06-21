@@ -12,6 +12,7 @@ import { IPropertyRecordDto } from '../models/dtos/property-record.dto';
 import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_RECORD_URL } from '../core/apis/backend.api';
 import { RoleType } from '../models/enums/role.enum';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,10 @@ export class PropertyRecordService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  constructor(private propertyRecordHttp: HttpClient) {
+  constructor(
+    private propertyRecordHttp: HttpClient,
+    private notificationService: NotificationService
+  ) {
     this.getPropertyRecords();
   }
 
@@ -58,35 +62,80 @@ export class PropertyRecordService {
       .subscribe();
   }
 
-  getOverlappingPropertyRecordsByContactId(
-    contactId: string
-  ): Observable<IPropertyRecordDto[]> {
-    return this.propertyRecords$.pipe(
-      map((propertyRecords) => {
-        const propertyRecordsByContactId = propertyRecords
-          .filter(
-            (propertyRecord) =>
-              propertyRecord.contactId === contactId &&
-              propertyRecord.role === RoleType.ROLE_RENTER
-          )
-          .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+  checkPropertyRecord(propertyRecord: IPropertyRecordDto): boolean {
+    if (propertyRecord.role !== RoleType.ROLE_SERVICE) {
+      const filterPropertyRecords =
+        this.getPropertyRecordByRole(propertyRecord);
+      const startAt = this.getPropertyAvailabilityDate(
+        propertyRecord,
+        filterPropertyRecords
+      );
+      if (!startAt) {
+        this.notificationService.warn('warn', 'The property is not available');
+        return false;
+      }
+      if (startAt !== propertyRecord.startAt) {
+        this.notificationService.warn(
+          'warn',
+          `The earliest available date is ${startAt.toLocaleString()}`
+        );
+        return false;
+      }
+      return true;
+    } else {
+      return true;
+    }
+  }
 
-        const overlappingPropertyRecords: Set<IPropertyRecordDto> = new Set();
-
-        // TODO
-        for (let i = 1; i < propertyRecordsByContactId.length; i++) {
-          const prev = propertyRecordsByContactId[i - 1];
-          const curr = propertyRecordsByContactId[i];
-          const prevEnd = prev.endAt ?? new Date(8640000000000000);
-
-          if (curr.startAt < prevEnd) {
-            overlappingPropertyRecords.add(prev);
-            overlappingPropertyRecords.add(curr);
-          }
-        }
-        return Array.from(overlappingPropertyRecords);
-      })
+  private getPropertyRecordByRole(
+    propertyRecord: IPropertyRecordDto
+  ): IPropertyRecordDto[] {
+    var filterPropertyRecords = this.propertyRecordsSubject.getValue();
+    if (propertyRecord.propertyRecordId) {
+      filterPropertyRecords = filterPropertyRecords.filter(
+        (item) => propertyRecord.propertyRecordId != item.propertyRecordId
+      );
+    }
+    return filterPropertyRecords.filter(
+      (item) =>
+        item.role == propertyRecord.role &&
+        item.propertyId == propertyRecord.propertyId
     );
+  }
+
+  // Because property record service will be used, so the function is here
+  getPropertyAvailabilityDate(
+    propertyRecord: IPropertyRecordDto,
+    propertyRecords: IPropertyRecordDto[]
+  ): Date | null {
+    const MAX_DATE = new Date(8640000000000000);
+
+    const endAt = propertyRecord.endAt ?? MAX_DATE;
+
+    const sortedPropertyRecords = propertyRecords
+      .filter((item) => !item.endAt || item.endAt >= propertyRecord.startAt)
+      .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+
+    let mark = propertyRecord.startAt;
+
+    for (const item of sortedPropertyRecords) {
+      const itemEndAt = item.endAt ?? MAX_DATE;
+
+      // 如果当前 cursor 到 requestedEnd 这段，不与 booking 冲突，就说明可以入住
+      const noOverlap = endAt <= item.startAt || mark >= itemEndAt;
+
+      if (mark < item.startAt && endAt <= item.startAt) {
+        // 整段都在 booking 前面
+        return mark;
+      }
+
+      if (!noOverlap) {
+        // 有重叠，就往后挪 mark
+        mark = itemEndAt;
+      }
+    }
+
+    return mark <= endAt ? mark : null;
   }
 
   saveNewPropertyRecord(

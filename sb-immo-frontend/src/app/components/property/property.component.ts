@@ -70,7 +70,7 @@ export class PropertyComponent implements OnInit {
 
   onRowEditSave(property: IPropertyDto) {
     if (this.propertyService.isPropertyDuplicated(property)) {
-      this.notificationService.warn('error', 'Update: Property is duplicated');
+      this.notificationService.warn('warn', 'Update: Property is duplicated');
     } else {
       this.propertyService.updateProperty(property).subscribe({
         next: (response) => {

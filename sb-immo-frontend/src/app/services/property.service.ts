@@ -32,7 +32,7 @@ export class PropertyService {
       .pipe(
         tap((properties) => this.propertiesSubject.next(properties)),
         catchError((error) => {
-          console.error('There is an error in the request data.', error);
+          console.error('Error occurred during fetch properties.', error);
           return throwError(() => error);
         }),
         finalize(() => this.loadingSubject.next(false))
@@ -42,13 +42,22 @@ export class PropertyService {
 
   isPropertyDuplicated(dto: IPropertyDto): boolean {
     const items = this.propertiesSubject.getValue();
-    return items.some(
-      (property) =>
-        dto.address.street == property.address.street &&
-        dto.address.houseNumber == property.address.houseNumber &&
-        dto.address.postcode == property.address.postcode &&
-        (dto.unit === property.unit || (!property.unit && dto.unit == ''))
-    );
+    return items.some((property) => {
+      if (property.propertyId == dto.propertyId) {
+        return false;
+      }
+      const sameStreet = dto.address.street === property.address.street;
+      const sameHouseNumber =
+        dto.address.houseNumber === property.address.houseNumber;
+      const samePostcode = dto.address.postcode === property.address.postcode;
+
+      const dtoUnit = dto.unit ?? '';
+      const propertyUnit = property.unit ?? '';
+
+      const sameUnit = dtoUnit === propertyUnit;
+
+      return sameStreet && sameHouseNumber && samePostcode && sameUnit;
+    });
   }
 
   saveNewProperty(newPropertyDto: IPropertyDto): Observable<IPropertyDto> {

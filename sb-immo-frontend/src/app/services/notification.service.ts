@@ -25,7 +25,7 @@ export class NotificationService {
     });
   }
 
-  info(summary: string, detail?: string, life: number = 3000) {
+  info(summary: string, detail?: string, life: number = 10000) {
     this.messageService.add({
       severity: 'info',
       summary,
@@ -34,7 +34,7 @@ export class NotificationService {
     });
   }
 
-  warn(summary: string, detail?: string, life: number = 4000) {
+  warn(summary: string, detail?: string, life: number = 5000) {
     this.messageService.add({
       severity: 'warn',
       summary,

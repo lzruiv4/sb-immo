@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ContactService } from '../../services/contact.service';
 import { CommonModule } from '@angular/common';
@@ -66,7 +66,7 @@ export class ContactComponent {
 
   onRowEditSave(contactToBeEdit: IContactDto) {
     if (this.contactService.isContactDuplicated(contactToBeEdit)) {
-      this.notificationService.warn('error', 'Update: Contact is duplicated');
+      this.notificationService.warn('warn', 'Update: Contact is duplicated');
     } else {
       this.contactService.updateContact(contactToBeEdit).subscribe({
         next: (response) => {

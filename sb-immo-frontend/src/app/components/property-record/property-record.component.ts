@@ -99,24 +99,25 @@ export class PropertyRecordComponent implements OnInit {
   onRowEditInit(propertyRecord: any): void {}
 
   onRowEditSave(propertyRecord: any): void {
-    console.log('before ', propertyRecord);
-    this.propertyRecordService
-      .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
-      .subscribe({
-        next: (response) => {
-          this.propertyRecordService.getPropertyRecords();
-          this.notificationService.success(
-            'success',
-            'Update property record successful'
-          );
-        },
-        error: (error) => {
-          this.notificationService.error(
-            'error',
-            'Update property record failed'
-          );
-        },
-      });
+    if (this.propertyRecordService.checkPropertyRecord(propertyRecord)) {
+      this.propertyRecordService
+        .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
+        .subscribe({
+          next: (response) => {
+            this.notificationService.success(
+              'success',
+              'Update property record successful'
+            );
+          },
+          error: (error) => {
+            this.notificationService.error(
+              'error',
+              'Update property record failed'
+            );
+          },
+        });
+    }
+    this.propertyRecordService.getPropertyRecords();
   }
 
   onRowEditCancel(): void {

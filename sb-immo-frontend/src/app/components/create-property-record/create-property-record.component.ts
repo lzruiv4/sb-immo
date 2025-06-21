@@ -69,22 +69,24 @@ export class CreatePropertyRecordComponent {
   }
 
   onSubmit(ngForm: NgForm) {
-    this.propertyRecordService
-      .saveNewPropertyRecord(this.propertyRecord)
-      .subscribe({
-        next: (response) => {
-          this.notificationService.success(
-            'success',
-            'Create property record successful'
-          );
-        },
-        error: (error) => {
-          this.notificationService.error(
-            'error',
-            'Create property record failed'
-          );
-        },
-      });
+    if (this.propertyRecordService.checkPropertyRecord(this.propertyRecord)) {
+      this.propertyRecordService
+        .saveNewPropertyRecord(this.propertyRecord)
+        .subscribe({
+          next: (response) => {
+            this.notificationService.success(
+              'success',
+              'Create property record successful'
+            );
+          },
+          error: (error) => {
+            this.notificationService.error(
+              error,
+              'Create property record failed'
+            );
+          },
+        });
+    }
     this.closeDialog.emit();
     ngForm.resetForm;
   }

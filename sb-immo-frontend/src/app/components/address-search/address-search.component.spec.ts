@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddressSearchComponent } from './address-search.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('InputComponent', () => {
   let component: AddressSearchComponent;
@@ -7,7 +8,7 @@ describe('InputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddressSearchComponent],
+      imports: [AddressSearchComponent, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddressSearchComponent);
