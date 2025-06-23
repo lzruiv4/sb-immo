@@ -9,10 +9,11 @@ import {
 import { ContactService } from '../../services/contact.service';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { BasisDataCombosComponent } from '../../share/basis-components/basis-data-combos/basis-data-combos.component';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-search-contacts',
-  imports: [BasisDataCombosComponent],
+  imports: [BasisDataCombosComponent, AvatarModule],
   templateUrl: './search-contacts.component.html',
 })
 export class SearchContactsComponent implements OnChanges {

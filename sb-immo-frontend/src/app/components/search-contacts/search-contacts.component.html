@@ -6,6 +6,18 @@
   (selectedItem)="selectContact($event)"
 >
   <ng-template #item let-item pTemplate="item">
-    {{ item.firstname }} {{ item.lastname }} <br />&lt;{{ item.email }}&gt;
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      "
+    >
+      <p-avatar icon="pi pi-address-book" class="mr-1" />
+      <div>
+        {{ item.firstname }} {{ item.lastname }} <br />&lt;{{ item.email }}&gt;
+      </div>
+    </div>
   </ng-template>
 </app-basis-data-combos>
