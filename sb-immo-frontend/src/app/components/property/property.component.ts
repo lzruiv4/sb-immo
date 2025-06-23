@@ -19,7 +19,8 @@ import { AddressSearchComponent } from '../address-search/address-search.compone
 import { IAddressDto } from '../../models/dtos/address.dto';
 import { ITag } from '../../share/models/tag.model';
 import { NotificationService } from '../../services/notification.service';
-import { ToastModule } from 'primeng/toast';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-property',
@@ -35,10 +36,11 @@ import { ToastModule } from 'primeng/toast';
     ButtonModule,
     CreatePropertyComponent,
     AddressSearchComponent,
-    ToastModule,
+    ConfirmDialog,
   ],
   templateUrl: './property.component.html',
   styleUrl: './property.component.scss',
+  providers: [ConfirmationService],
 })
 export class PropertyComponent implements OnInit {
   loading: boolean = false;
@@ -49,7 +51,8 @@ export class PropertyComponent implements OnInit {
 
   constructor(
     private propertyService: PropertyService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService // service from primeng, show message for delete
   ) {}
 
   ngOnInit(): void {}
@@ -111,5 +114,31 @@ export class PropertyComponent implements OnInit {
       country: address.country || '',
       countryCode: address.countryCode || '',
     };
+  }
+
+  onRowDelete(property: IPropertyDto) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete ${property.propertyName}?`,
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.propertyService.deleteProperty(property.propertyId!).subscribe({
+          next: () => {
+            this.notificationService.success(
+              'success',
+              'Delete: Contact successful deleted'
+            );
+          },
+          error: (error) => {
+            this.notificationService.error(
+              'error',
+              'Delete: Contact failed',
+              error
+            );
+          },
+        });
+      },
+    });
+    this.propertyService.getProperties();
   }
 }

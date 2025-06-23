@@ -4,10 +4,8 @@ import {
   BehaviorSubject,
   catchError,
   finalize,
-  map,
   Observable,
   tap,
-  throwError,
 } from 'rxjs';
 import { IContactDto } from '../models/dtos/contact.dto';
 import { BACKEND_API_CONTACT_URL } from '../core/apis/backend.api';

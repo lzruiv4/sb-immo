@@ -160,6 +160,17 @@
                 rounded
                 severity="secondary"
               ></button>
+              <button
+                *ngIf="!editing"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-trash"
+                (click)="onRowDelete(contact)"
+                text
+                rounded
+                severity="secondary"
+              ></button>
             </div>
           </td>
           <td>
@@ -187,4 +198,6 @@
       (closeDialog)="closeContactsDialog()"
     />
   </div>
+
+  <p-confirmDialog [style]="{ width: '450px' }" />
 </div>

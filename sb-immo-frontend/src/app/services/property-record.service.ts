@@ -81,10 +81,11 @@ export class PropertyRecordService {
         );
         return false;
       }
-      return true;
-    } else {
-      return true;
+      // return true;
     }
+    // else {
+    return true;
+    // }
   }
 
   private getPropertyRecordByRole(
@@ -189,7 +190,23 @@ export class PropertyRecordService {
       );
   }
 
-  /**
-   * property record will not be deleted
-   */
+  deletePropertyRecord(propertyRecordId: string): Observable<void> {
+      this.loadingSubject.next(true);
+      return this.propertyRecordHttp
+        .delete<void>(`${BACKEND_API_PROPERTY_RECORD_URL}/${propertyRecordId}`)
+        .pipe(
+          tap(() => {
+            const currentList = this.propertyRecordsSubject.value;
+            const updateList = currentList.filter(
+              (propertyRecord) => propertyRecord.propertyRecordId !== propertyRecordId
+            );
+            this.propertyRecordsSubject.next(updateList);
+          }),
+          catchError((error) => {
+            console.error('Error occurred during delete a property record.');
+            return throwError(() => error);
+          }),
+          finalize(() => this.loadingSubject.next(false))
+        );
+    }
 }

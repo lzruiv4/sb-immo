@@ -58,8 +58,8 @@
           <th style="width: 12%">
             End at<p-columnFilter type="text" field="endAt" display="menu" />
           </th>
-          <th style="width: 27%">Notes</th>
-          <th style="width: 2%">Edit</th>
+          <th style="width: 22%">Notes</th>
+          <th style="width: 7%">Edit</th>
         </tr>
       </ng-template>
 
@@ -213,7 +213,18 @@
                 type="button"
                 pInitEditableRow
                 icon="pi pi-pencil"
-                (click)="onRowEditInit(propertyRecord)"
+                (click)="onRowEditInit()"
+                text
+                rounded
+                severity="secondary"
+              ></button>
+              <button
+                *ngIf="!editing"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-trash"
+                (click)="onRowDelete(propertyRecord)"
                 text
                 rounded
                 severity="secondary"
@@ -254,4 +265,5 @@
       </ng-template>
     </p-table>
   </div>
+  <p-confirmDialog [style]="{ width: '450px' }" />
 </div>

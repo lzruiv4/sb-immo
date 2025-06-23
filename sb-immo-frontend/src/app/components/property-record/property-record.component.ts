@@ -24,6 +24,8 @@ import { combineLatest, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { NotificationService } from '../../services/notification.service';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-property-record',
@@ -42,10 +44,12 @@ import { NotificationService } from '../../services/notification.service';
     SearchContactsComponent,
     BasisCombosComponent,
     DatePickerModule,
+    ConfirmDialog,
   ],
   standalone: true,
   templateUrl: './property-record.component.html',
   styleUrl: './property-record.component.scss',
+  providers: [ConfirmationService],
 })
 export class PropertyRecordComponent implements OnInit {
   loading: boolean = false;
@@ -60,7 +64,8 @@ export class PropertyRecordComponent implements OnInit {
     private propertyRecordService: PropertyRecordService,
     private propertyService: PropertyService,
     private contactService: ContactService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService // service from primeng, show message for delete
   ) {}
 
   get propertyRecords$() {
@@ -96,20 +101,20 @@ export class PropertyRecordComponent implements OnInit {
     this.openCreateDialog = true;
   }
 
-  onRowEditInit(propertyRecord: any): void {}
+  onRowEditInit(): void {}
 
   onRowEditSave(propertyRecord: any): void {
     if (this.propertyRecordService.checkPropertyRecord(propertyRecord)) {
       this.propertyRecordService
         .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.notificationService.success(
               'success',
               'Update property record successful'
             );
           },
-          error: (error) => {
+          error: () => {
             this.notificationService.error(
               'error',
               'Update property record failed'
@@ -138,5 +143,33 @@ export class PropertyRecordComponent implements OnInit {
 
   roleSelected(role: any, propertyRecord: any): void {
     propertyRecord.role = role.value;
+  }
+
+  onRowDelete(propertyRecord: any) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete this property record in ${propertyRecord.property.propertyName}?`,
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.propertyRecordService
+          .deletePropertyRecord(propertyRecord.propertyRecordId!)
+          .subscribe({
+            next: () => {
+              this.notificationService.success(
+                'success',
+                'Delete: Property record successful deleted'
+              );
+            },
+            error: (error) => {
+              this.notificationService.error(
+                'error',
+                'Delete: Property record failed',
+                error
+              );
+            },
+          });
+      },
+    });
+    this.propertyRecordService.getPropertyRecords();
   }
 }

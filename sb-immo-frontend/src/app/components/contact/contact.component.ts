@@ -14,6 +14,8 @@ import { Observable } from 'rxjs';
 import { ISearchRelevantContact } from '../../share/models/search-relevant-contacts';
 import { FindContactsComponent } from '../find-contacts/find-contacts.component';
 import { NotificationService } from '../../services/notification.service';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-contact',
@@ -28,9 +30,11 @@ import { NotificationService } from '../../services/notification.service';
     ButtonModule,
     CreateContactComponent,
     FindContactsComponent,
+    ConfirmDialog,
   ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
+  providers: [ConfirmationService],
 })
 export class ContactComponent {
   loading: boolean = false;
@@ -41,7 +45,8 @@ export class ContactComponent {
 
   constructor(
     private contactService: ContactService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService  // service from primeng, show message for delete
   ) {}
 
   get contact$() {
@@ -69,7 +74,7 @@ export class ContactComponent {
       this.notificationService.warn('warn', 'Update: Contact is duplicated');
     } else {
       this.contactService.updateContact(contactToBeEdit).subscribe({
-        next: (response) => {
+        next: () => {
           this.notificationService.success(
             'success',
             'Update: Contact successful'
@@ -88,6 +93,32 @@ export class ContactComponent {
   }
 
   onRowEditCancel() {
+    this.contactService.getContacts();
+  }
+
+  onRowDelete(contact: IContactDto) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete ${contact.firstname} ${contact.lastname}?`,
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.contactService.deleteContact(contact.contactId!).subscribe({
+          next: () => {
+            this.notificationService.success(
+              'success',
+              'Delete: Contact successful deleted'
+            );
+          },
+          error: (error) => {
+            this.notificationService.error(
+              'error',
+              'Delete: Contact failed',
+              error
+            );
+          },
+        });
+      },
+    });
     this.contactService.getContacts();
   }
 }

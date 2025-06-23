@@ -45,7 +45,7 @@
             <p-columnFilter type="text" field="propertyName" display="menu" />
           </div>
         </th>
-        <th style="width: 15%">
+        <th style="width: 12%">
           <div class="flex items-center">
             Street
             <p-columnFilter type="text" field="street" display="menu" />
@@ -60,7 +60,7 @@
         <th style="width: 10%">
           <div class="flex items-center">City</div>
         </th>
-        <th style="width: 12%">
+        <th style="width: 10%">
           <div class="flex items-center">Unit</div>
         </th>
         <th style="width: 5%">
@@ -69,8 +69,8 @@
         <th style="width: 5%">
           <div class="flex items-center">Build year</div>
         </th>
-        <th style="width: 7%">Status</th>
-        <th style="width: 3%">Edit</th>
+        <th style="width: 5%">Status</th>
+        <th style="width: 10%">Edit</th>
       </tr>
     </ng-template>
     <ng-template
@@ -225,6 +225,17 @@
               severity="secondary"
             ></button>
             <button
+              *ngIf="!editing"
+              pButton
+              pRipple
+              type="button"
+              icon="pi pi-trash"
+              (click)="onRowDelete(property)"
+              text
+              rounded
+              severity="secondary"
+            ></button>
+            <button
               *ngIf="editing"
               pButton
               pRipple
@@ -259,4 +270,6 @@
       </tr>
     </ng-template>
   </p-table>
+
+  <p-confirmDialog [style]="{ width: '450px' }" />
 </div>
