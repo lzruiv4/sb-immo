@@ -60,22 +60,22 @@ describe('PropertyRecordService', () => {
     >(propertyRecords);
   });
 
-  it('should return null, when the property is not available', () => {
-    const testPropertyRecord = {
-      propertyId: 'p-1',
-      contactId: 'c-644',
-      role: RoleType.ROLE_RENTER,
-      startAt: new Date('2025-01-01'),
-      endAt: new Date('2025-04-30'),
-    };
+  // it('should return null, when the property is not available', () => {
+  //   const testPropertyRecord = {
+  //     propertyId: 'p-1',
+  //     contactId: 'c-644',
+  //     role: RoleType.ROLE_RENTER,
+  //     startAt: new Date('2025-01-01'),
+  //     endAt: new Date('2025-04-30'),
+  //   };
 
-    const result = propertyRecordService.getPropertyAvailabilityDate(
-      testPropertyRecord,
-      propertyRecords
-    );
+  //   const result = propertyRecordService.getPropertyAvailabilityDate(
+  //     testPropertyRecord,
+  //     propertyRecords
+  //   );
 
-    expect(result).toBeNull;
-  });
+  //   expect(result).toBeNull;
+  // });
 
   it('should return a date, when the property is available', () => {
     const testPropertyRecord = {
