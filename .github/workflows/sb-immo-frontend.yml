@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "sb-immo-frontend/**"
+      - ".github/workflows/sb-immo-frontend.yml"
 
 jobs:
   angular-tests:
@@ -31,4 +32,4 @@ jobs:
           sudo apt-get install -y google-chrome-stable
 
       - name: Run tests
-        run: npm test-in-github
+        run: cd sb-immo-frontend && npm run test-in-github
