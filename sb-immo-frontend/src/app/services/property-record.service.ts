@@ -102,6 +102,7 @@ export class PropertyRecordService {
   }
 
   // Because property record service will be used, so the function is here
+  // Make sure parameter propertyRecords is filtered by the same role
   getPropertyAvailabilityDate(
     propertyRecord: IPropertyRecordDto,
     propertyRecords: IPropertyRecordDto[]
@@ -147,7 +148,7 @@ export class PropertyRecordService {
       )
       .pipe(
         tap((propertyRecord) => {
-          const currentList = this.propertyRecordsSubject.getValue() ?? [];
+          const currentList = this.propertyRecordsSubject.getValue();
           this.propertyRecordsSubject.next([propertyRecord, ...currentList]);
         }),
         catchError((error) => {
@@ -188,22 +189,23 @@ export class PropertyRecordService {
   }
 
   deletePropertyRecord(propertyRecordId: string): Observable<void> {
-      this.loadingSubject.next(true);
-      return this.propertyRecordHttp
-        .delete<void>(`${BACKEND_API_PROPERTY_RECORD_URL}/${propertyRecordId}`)
-        .pipe(
-          tap(() => {
-            const currentList = this.propertyRecordsSubject.value;
-            const updateList = currentList.filter(
-              (propertyRecord) => propertyRecord.propertyRecordId !== propertyRecordId
-            );
-            this.propertyRecordsSubject.next(updateList);
-          }),
-          catchError((error) => {
-            console.error('Error occurred during delete a property record.');
-            return throwError(() => error);
-          }),
-          finalize(() => this.loadingSubject.next(false))
-        );
-    }
+    this.loadingSubject.next(true);
+    return this.propertyRecordHttp
+      .delete<void>(`${BACKEND_API_PROPERTY_RECORD_URL}/${propertyRecordId}`)
+      .pipe(
+        tap(() => {
+          const currentList = this.propertyRecordsSubject.value;
+          const updateList = currentList.filter(
+            (propertyRecord) =>
+              propertyRecord.propertyRecordId !== propertyRecordId
+          );
+          this.propertyRecordsSubject.next(updateList);
+        }),
+        catchError((error) => {
+          console.error('Error occurred during delete a property record.');
+          return throwError(() => error);
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 }

@@ -232,7 +232,7 @@ describe('ContactService', () => {
 
     let receivedError: any;
     contactService.deleteContact('4').subscribe({
-      next: () => fail('应该失败'),
+      next: () => fail('should failed'),
       error: (err) => (receivedError = err),
     });
 
@@ -243,7 +243,7 @@ describe('ContactService', () => {
       { status: 404, statusText: 'Contact not found' }
     );
 
-    expect(console.error).toHaveBeenCalledWith(
+    expect(consoleSpy).toHaveBeenCalledWith(
       'Error occurred during delete a contact.'
     );
   }));

@@ -51,8 +51,8 @@ export class PropertyService {
         dto.address.houseNumber === property.address.houseNumber;
       const samePostcode = dto.address.postcode === property.address.postcode;
 
-      const dtoUnit = dto.unit ?? '';
-      const propertyUnit = property.unit ?? '';
+      const dtoUnit = dto.unit;
+      const propertyUnit = property.unit;
 
       const sameUnit = dtoUnit === propertyUnit;
 
@@ -66,7 +66,7 @@ export class PropertyService {
       .post<IPropertyDto>(BACKEND_API_PROPERTY_URL, newPropertyDto)
       .pipe(
         tap((property) => {
-          const currentList = this.propertiesSubject.getValue() ?? [];
+          const currentList = this.propertiesSubject.getValue();
           this.propertiesSubject.next([property, ...currentList]);
         }),
         catchError((error) => {

@@ -159,7 +159,7 @@ describe('PropertyService', () => {
     });
   }));
 
-  it('should handle error when update property failed', fakeAsync(() => {
+  it('should handle error when save property failed', fakeAsync(() => {
     const initReq = httpMock.expectOne(BACKEND_API_PROPERTY_URL);
     expect(initReq.request.method).toBe('GET');
     initReq.flush(mockProperties);

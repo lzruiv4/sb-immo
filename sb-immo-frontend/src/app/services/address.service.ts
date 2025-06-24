@@ -71,7 +71,7 @@ export class AddressService {
       .pipe(
         tap((addresses) => this.addressesSubject.next(addresses)),
         catchError((error) => {
-          console.error('Get addresses from backend wrong', error);
+          console.error('Get addresses from backend wrong');
           return throwError(() => error);
         }),
         finalize(() => {

@@ -26,8 +26,27 @@ describe('AddressService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('should handel error when server is offline', () => {
+    const inputValue = 'Berlin';
+    const consoleSpy = spyOn(console, 'error');
+    let mockError: any;
+    service.getAddressesForInput(inputValue).subscribe({
+      next: () => fail('should failed'),
+      error: (error) => (mockError = error),
+    });
+    const req = httpMock.expectOne(
+      `${GEO_API_URL}?q=${inputValue}&limit=${GEO_RESPONSE_LIMIT}`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(
+      { message: 'Server Unreachable' },
+      { status: 500, statusText: 'Server Unreachable' }
+    );
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'There is an error in the request data.',
+      mockError
+    );
   });
 
   it('should get addresses for input from external API', () => {
@@ -88,6 +107,25 @@ describe('AddressService', () => {
       expect(addresses[0].city).toBe('Berlin');
     });
   });
+
+  // it('should handel error when backend server is offline', () => {
+  //   // const inputValue = 'Berlin';
+  //   const consoleSpy = spyOn(console, 'error');
+  //   let mockError: any;
+  //   service.getAddresses();
+  //   const req = httpMock.expectOne(BACKEND_API_ADDRESS_URL);
+  //   // expect(req.request.method).toBe('GET');
+  //   service.addresses$.subscribe({
+  //     next: () => fail('should failed'),
+  //     error: (error) => (mockError = error),
+  //   });
+  //   req.flush(
+  //     { message: 'Server Unreachable' },
+  //     { status: 500, statusText: 'Server Unreachable' }
+  //   );
+
+  //   expect(consoleSpy).toHaveBeenCalledWith('Get addresses from backend wrong');
+  // });
 
   it('should save a new address', () => {
     const newAddress: IAddressDto = {

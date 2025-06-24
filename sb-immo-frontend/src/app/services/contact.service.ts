@@ -48,7 +48,7 @@ export class ContactService {
       .post<IContactDto>(BACKEND_API_CONTACT_URL, newContactDto)
       .pipe(
         tap((contact) => {
-          const contacts = this.contactsSubject.getValue() ?? [];
+          const contacts = this.contactsSubject.getValue();
           this.contactsSubject.next([contact, ...contacts]);
         }),
         catchError((error) => {
