@@ -85,8 +85,7 @@ export class PropertyService {
   }
 
   private setupPropertyName(dto: BasisPropertyDto): string {
-    return (dto.propertyName = `${dto.address.street} ${dto.address.houseNumber},
-    ${dto.unit === '' ? '' : ' ' + dto.unit + ','} ${dto.address.postcode}, ${dto.address.city}`);
+    return (dto.propertyName = `${dto.address.street} ${dto.address.houseNumber},${dto.unit === '' || !dto.unit ? '' : ' ' + dto.unit + ','} ${dto.address.postcode}, ${dto.address.city}`);
   }
 
   async findAll(): Promise<PropertyDto[]> {
