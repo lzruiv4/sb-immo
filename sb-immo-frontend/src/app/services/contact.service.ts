@@ -1,12 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  catchError,
-  finalize,
-  Observable,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, catchError, finalize, Observable, tap } from 'rxjs';
 import { IContactDto } from '../models/dtos/contact.dto';
 import { BACKEND_API_CONTACT_URL } from '../core/apis/backend.api';
 
@@ -31,7 +25,7 @@ export class ContactService {
       .pipe(
         tap((contacts) => this.contactsSubject.next(contacts)),
         catchError((error) => {
-          console.error('There is an error in the request data.', error);
+          console.error('There is an error in the request data.');
           throw error;
         }),
         finalize(() => this.loadingSubject.next(false))
@@ -43,7 +37,9 @@ export class ContactService {
   isContactDuplicated(dto: IContactDto): boolean {
     const items = this.contactsSubject.getValue();
     return items.some(
-      (contact) => dto.email === contact.email && dto.phone === contact.phone
+      (contact) =>
+        (dto.email == contact.email || dto.phone == contact.phone) &&
+        dto.contactId !== contact.contactId
     );
   }
 

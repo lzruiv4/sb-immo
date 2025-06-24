@@ -26,6 +26,15 @@ export class RelevantContactService {
     private propertyRecordService: PropertyRecordService
   ) {}
 
+  /**
+   * Retrieves relevant contact information for a given contact ID.
+   *
+   * This method first fetches the relevant contact IDs by provided `contactId`,
+   * then retrieves the corresponding contact details. e.g. `propertyId`
+   *
+   * @param contactId - The unique identifier of the contact to search for.
+   * @returns An Observable that emits the relevant contact information (`ISearchRelevantContact`).
+   */
   getRelevantContactByContactId(
     contactId: string
   ): Observable<ISearchRelevantContact> {
@@ -40,6 +49,18 @@ export class RelevantContactService {
     );
   }
 
+  /**
+   * Retrieves relevant contact IDs with the same property records as the given contact ID,
+   * grouped by their roles (owner, renter, service provider).
+   *
+   * This method fetches all property records, finds those linked to the specified contact ID,
+   * and then identifies other contacts associated with the same properties, categorizing them
+   * by their roles.
+   *
+   * @param contactId - The ID of the contact for whom to find relevant contacts.
+   * @returns An Observable emitting an object containing the original contact ID and arrays of contact IDs
+   *          for owners, renters, and service providers associated with the same properties.
+   */
   getRelevantContactIdsByContactId(
     contactId: string
   ): Observable<ISearchRelevantContactID> {

@@ -1,5 +1,5 @@
 /**
- * Thanks for using our code!
+ * Thanks for using!
  * And thanks for https://photon.komoot.io/api.
  */
 

@@ -70,7 +70,7 @@ export class CreatePropertyComponent {
       );
     } else {
       this.propertyService.saveNewProperty(this.property).subscribe({
-        next: (response) => {
+        next: () => {
           this.notificationService.success(
             'success',
             'Create: Property successful'
@@ -96,10 +96,10 @@ export class CreatePropertyComponent {
   }
 
   onAddressChosen(address: IAddressDto): void {
-    // 合并新旧地址（避免破坏表单绑定）
+    // merge with new address
     this.property.address = {
-      ...this.property.address, // 保留原有字段
-      ...address, // 覆盖新字段
+      ...this.property.address, // keep old information
+      ...address, // new address
     };
   }
 }

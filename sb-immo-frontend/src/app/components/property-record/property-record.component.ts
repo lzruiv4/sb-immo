@@ -72,6 +72,8 @@ export class PropertyRecordComponent implements OnInit {
     return this.propertyRecordService.propertyRecords$;
   }
 
+  // 这里我用 combineLatest 把三个服务里的 observable（房产记录、房产列表、联系人列表）组合成一个新的数据流。
+  // 通过 map 操作，我使用 Map 来快速查找对应的房产和联系人，把原始记录补全成包含完整信息的对象，最后用于展示或进一步处理。
   ngOnInit(): void {
     this.dataPlusPropertyAndContact$ = combineLatest([
       this.propertyRecordService.propertyRecords$,

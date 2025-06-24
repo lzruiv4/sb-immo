@@ -81,11 +81,8 @@ export class PropertyRecordService {
         );
         return false;
       }
-      // return true;
     }
-    // else {
     return true;
-    // }
   }
 
   private getPropertyRecordByRole(

@@ -46,7 +46,7 @@ export class ContactComponent {
   constructor(
     private contactService: ContactService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService  // service from primeng, show message for delete
+    private confirmationService: ConfirmationService // service from primeng, show message for delete
   ) {}
 
   get contact$() {
