@@ -277,7 +277,7 @@ describe('PropertyRecordService', () => {
     expect(result).toEqual(new Date('2025-04-30'));
   });
 
-  it('should return a date, when the property is available', () => {
+  it('should return a date, when the property is available', fakeAsync(() => {
     const initReq = httpMock.expectOne(BACKEND_API_PROPERTY_RECORD_URL);
     expect(initReq.request.method).toBe('GET');
     initReq.flush(mockPropertyRecords);
@@ -295,5 +295,41 @@ describe('PropertyRecordService', () => {
     );
 
     expect(result).toEqual(new Date('2025-05-01'));
+  }));
+
+  it('should return return true, when a property is available for a renter', () => {
+    const initReq = httpMock.expectOne(BACKEND_API_PROPERTY_RECORD_URL);
+    expect(initReq.request.method).toBe('GET');
+    initReq.flush(mockPropertyRecords);
+
+    const testPropertyRecord = {
+      propertyRecordId: 'pr-5',
+      propertyId: 'p-1',
+      contactId: 'c-1',
+      role: RoleType.ROLE_RENTER,
+      startAt: new Date('2026-01-01'),
+      endAt: new Date('2026-05-31'),
+    };
+    expect(
+      propertyRecordService.checkPropertyRecord(testPropertyRecord)
+    ).toBeTrue();
+  });
+
+  it('should return return false, when a property is not available for a renter', () => {
+    const initReq = httpMock.expectOne(BACKEND_API_PROPERTY_RECORD_URL);
+    expect(initReq.request.method).toBe('GET');
+    initReq.flush(mockPropertyRecords);
+
+    const testPropertyRecord = {
+      propertyRecordId: 'pr-5',
+      propertyId: 'p-1',
+      contactId: 'c-1',
+      role: RoleType.ROLE_RENTER,
+      startAt: new Date('2026-06-01'),
+      endAt: new Date('2026-07-31'),
+    };
+    expect(
+      propertyRecordService.checkPropertyRecord(testPropertyRecord)
+    ).toBeFalse();
   });
 });

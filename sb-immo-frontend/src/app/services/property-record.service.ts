@@ -85,6 +85,16 @@ export class PropertyRecordService {
     return true;
   }
 
+  /**
+   * Retrieves an array of property records that match the specified role and property ID,
+   * excluding the record with the same propertyRecordId
+   *
+   * @param propertyRecord - The property record DTO used as a reference for filtering.
+   *   Its `role` and `propertyId` are used to match records, and its `propertyRecordId`
+   *   (if present) is used to exclude a specific record from the results. Because one can
+   *  rent the property again
+   * @returns An array of `IPropertyRecordDto` objects that have the same role and propertyId
+   */
   private getPropertyRecordByRole(
     propertyRecord: IPropertyRecordDto
   ): IPropertyRecordDto[] {
@@ -101,8 +111,16 @@ export class PropertyRecordService {
     );
   }
 
-  // Because property record service will be used, so the function is here
-  // Make sure parameter propertyRecords is filtered by the same role
+  /**
+   * Calculates the earliest available date for a property, given a specific property record and a list of all property records.
+   *
+   * The function checks for overlaps between the given property record and other property records,
+   * and determines the earliest date from which the property can be made available without conflicts.
+   *
+   * @param propertyRecord - The property record for which to determine the availability date.
+   * @param propertyRecords - The list of all property records to check for overlaps.
+   * @returns The earliest available date as a `Date` object, or `null` if no availability is found within the given range.
+   */
   getPropertyAvailabilityDate(
     propertyRecord: IPropertyRecordDto,
     propertyRecords: IPropertyRecordDto[]
