@@ -1,5 +1,4 @@
 <div class="property-container">
-  <!-- <p-toast /> -->
   <div class="title-container">
     <button
       pButton
@@ -23,17 +22,6 @@
     [paginator]="true"
     [sortField]="'propertyName'"
     [sortOrder]="1"
-    [globalFilterFields]="[
-      'propertyName',
-      'address.street',
-      'address.houseNumber',
-      'address.postcode',
-      'address.city',
-      'unit',
-      'area',
-      'buildYear',
-      'status'
-    ]"
     [tableStyle]="{ width: '100%' }"
   >
     <ng-template pTemplate="header">
@@ -48,7 +36,7 @@
         <th style="width: 12%">
           <div class="flex items-center">
             Street
-            <p-columnFilter type="text" field="street" display="menu" />
+            <p-columnFilter type="text" field="address.street" display="menu" />
           </div>
         </th>
         <th style="width: 5%">
@@ -69,7 +57,9 @@
         <th style="width: 5%">
           <div class="flex items-center">Build year</div>
         </th>
-        <th style="width: 5%">Status</th>
+        <th style="width: 5%">
+          Status<p-columnFilter type="text" field="status" display="menu" />
+        </th>
         <th style="width: 10%">Edit</th>
       </tr>
     </ng-template>
