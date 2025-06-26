@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { IPropertyRecord } from '../../models/property-record.model';
 import { CardModule } from 'primeng/card';
+import { dateFormatYMD } from '../../share/models/date.model';
 
 @Component({
   selector: 'app-find-contacts',
@@ -27,6 +28,7 @@ export class FindContactsComponent implements OnInit {
   @Input() visible = false;
   @Input() contactId: string = '';
   @Output() closeDialog = new EventEmitter<void>();
+  defaultDateForm: string = dateFormatYMD;
 
   constructor(private relevantContactService: RelevantContactService) {}
 

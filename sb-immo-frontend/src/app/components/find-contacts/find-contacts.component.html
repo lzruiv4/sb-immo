@@ -19,6 +19,11 @@
             </ng-template>
             <ng-template #subtitle>
               <span>{{ pr.contact.firstname }}, {{ pr.contact.lastname }}</span>
+              <br />
+              <span
+                >{{ pr.startAt | date : defaultDateForm }} -
+                {{ pr.endAt | date : defaultDateForm }}</span
+              >
             </ng-template>
           </p-card>
         </div>

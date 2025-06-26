@@ -3,6 +3,7 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { AvatarModule } from 'primeng/avatar';
 import { CommonModule } from '@angular/common';
 import { IPropertyRecord } from '../../../models/property-record.model';
+import { dateFormatYMD } from '../../models/date.model';
 
 @Component({
   selector: 'app-card-show',
@@ -12,6 +13,7 @@ import { IPropertyRecord } from '../../../models/property-record.model';
 })
 export class CardShowComponent {
   @Input() propertyRecord!: IPropertyRecord;
+  defaultDateForm: string = dateFormatYMD;
 
   getFirstLetterAsImage(firstname: string): string {
     return (firstname.charAt(0) || '').toUpperCase();

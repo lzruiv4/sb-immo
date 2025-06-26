@@ -27,5 +27,12 @@
       <i class="pi pi-envelope"></i>
       <span>{{ propertyRecord.contact.email || "empty" }}</span>
     </div>
+    <div class="detail-item">
+      <i class="pi pi-stopwatch"></i>
+      <span
+        >{{ propertyRecord.startAt | date : defaultDateForm }} -
+        {{ propertyRecord.endAt | date : defaultDateForm }}</span
+      >
+    </div>
   </div>
 </p-fieldset>

@@ -1,4 +1,5 @@
 export const dateFormat = 'dd.MM.yyyy HH:mm';
+export const dateFormatYMD = 'dd.MM.yyyy';
 export function getFormatDate(date: Date): string {
   const year = date.getFullYear();
   const month = date.getMonth() + 1; // Month
