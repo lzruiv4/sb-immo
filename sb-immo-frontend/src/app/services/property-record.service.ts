@@ -19,8 +19,6 @@ import { NotificationService } from './notification.service';
 import { PropertyService } from './property.service';
 import { ContactService } from './contact.service';
 import { IPropertyRecord } from '../models/property-record.model';
-import { IContactDto } from '../models/dtos/contact.dto';
-import { IPropertyDto } from '../models/dtos/property.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +41,6 @@ export class PropertyRecordService {
     private contactService: ContactService
   ) {
     this.getPropertyRecordsFromDB();
-    // this.getPropertyRecords();
 
     this.propertyRecords$ = combineLatest([
       this.propertyRecordsFromDB$,
@@ -70,7 +67,6 @@ export class PropertyRecordService {
           } as IPropertyRecord;
         });
       }),
-      tap(() => this.loadingSubject.next(false)),
       startWith([]), // 初始化为空数组，避免UI空白
       shareReplay(1)
     );
@@ -252,22 +248,6 @@ export class PropertyRecordService {
         }),
         finalize(() => this.loadingSubject.next(false))
       );
-  }
-
-  findContact(contactId: string): Observable<IContactDto | undefined> {
-    return this.contactService.contacts$.pipe(
-      map((contacts) =>
-        contacts.find((contact) => contact.contactId === contactId)
-      )
-    );
-  }
-
-  findProperty(propertyId: string): Observable<IPropertyDto | undefined> {
-    return this.propertyService.properties$.pipe(
-      map((properties) =>
-        properties.find((property) => property.propertyId === propertyId)
-      )
-    );
   }
 
   deletePropertyRecord(propertyRecordId: string): Observable<void> {
