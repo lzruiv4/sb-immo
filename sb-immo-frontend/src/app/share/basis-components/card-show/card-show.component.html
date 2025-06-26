@@ -3,14 +3,17 @@
     <div class="contact-header">
       <div class="avatar">
         <p-avatar
-          [label]="getFirstABC(contact?.firstname ?? '^_^')"
+          [label]="getFirstLetterAsImage(propertyRecord.contact.firstname)"
           styleClass="mr-2"
           size="large"
           shape="circle"
         />
       </div>
       <div class="contact-name">
-        <h3>{{ contact?.firstname }} {{ contact?.lastname }}</h3>
+        <h3>
+          {{ propertyRecord.contact.firstname }}
+          {{ propertyRecord.contact.lastname }}
+        </h3>
       </div>
     </div>
   </ng-template>
@@ -18,11 +21,11 @@
   <div class="contact-details">
     <div class="detail-item">
       <i class="pi pi-phone"></i>
-      <span>{{ contact?.phone || "empty" }}</span>
+      <span>{{ propertyRecord.contact.phone || "empty" }}</span>
     </div>
     <div class="detail-item">
       <i class="pi pi-envelope"></i>
-      <span>{{ contact?.email || "empty" }}</span>
+      <span>{{ propertyRecord.contact.email || "empty" }}</span>
     </div>
   </div>
 </p-fieldset>

@@ -6,25 +6,54 @@
   [style]="{ width: '90%' }"
 >
   <div class="dialog-upper-section">
-    <div class="three-column-layout" *ngIf="contacts$ | async as contacts">
+    <div class="three-column-layout">
+      <div class="contact-column">
+        <p-tag value="Relevant property record" />
+        <div *ngFor="let pr of relevantPropertyRecord$ | async">
+          <p-card (click)="onSelectRecord(pr)">
+            <ng-template #header>
+              <h4>{{ pr.role }}</h4>
+            </ng-template>
+            <ng-template #title>
+              <span>{{ pr.property.propertyName }}</span>
+            </ng-template>
+            <ng-template #subtitle>
+              <span>{{ pr.contact.firstname }}, {{ pr.contact.lastname }}</span>
+            </ng-template>
+          </p-card>
+        </div>
+      </div>
+
       <div class="contact-column">
         <p-tag value="OWNER" severity="success" />
-        <div *ngFor="let contact of contacts.owners">
-          <app-card-show [contact]="contact" />
+        <div
+          *ngFor="
+            let contact of (selectedContactDetails$ | async)?.owners || []
+          "
+        >
+          <app-card-show [propertyRecord]="contact" />
         </div>
       </div>
 
       <div class="contact-column">
         <p-tag value="RENTER" severity="info" />
-        <div *ngFor="let contact of contacts.renters">
-          <app-card-show [contact]="contact" />
+        <div
+          *ngFor="
+            let contact of (selectedContactDetails$ | async)?.renters || []
+          "
+        >
+          <app-card-show [propertyRecord]="contact" />
         </div>
       </div>
 
       <div class="contact-column">
         <p-tag value="SERVICE" severity="warn" />
-        <div *ngFor="let contact of contacts.serviceProviders">
-          <app-card-show [contact]="contact" />
+        <div
+          *ngFor="
+            let contact of (selectedContactDetails$ | async)?.serviceProviders
+          "
+        >
+          <app-card-show [propertyRecord]="contact" />
         </div>
       </div>
     </div>

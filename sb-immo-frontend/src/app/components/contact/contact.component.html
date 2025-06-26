@@ -16,9 +16,9 @@
     <p-table
       [value]="(contact$ | async) ?? []"
       dataKey="contactId"
-      [rows]="5"
+      [rows]="10"
       editMode="row"
-      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [rowsPerPageOptions]="[10, 20, 50]"
       [loading]="loading"
       [paginator]="true"
       [sortField]="'firstname'"

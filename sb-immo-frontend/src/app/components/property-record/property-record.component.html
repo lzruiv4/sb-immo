@@ -10,7 +10,7 @@
 
   <div class="table-container">
     <p-table
-      [value]="(dataPlusPropertyAndContact$ | async) || []"
+      [value]="(propertyRecords$ | async) || []"
       dataKey="propertyRecordId"
       [rows]="10"
       editMode="row"
@@ -85,7 +85,9 @@
                     icon="pi pi-home"
                     class="w-[15px] mr-[5px]"
                   ></p-avatar>
-                  <span>{{ propertyRecord.property.propertyName }}</span>
+                  <span>{{
+                    propertyRecord.property?.propertyName ?? "please refresh"
+                  }}</span>
                 </div>
               </ng-template>
             </p-cellEditor>
@@ -101,8 +103,8 @@
                 />
               </ng-template>
               <ng-template #output>
-                {{ propertyRecord.contact.lastname }},
-                {{ propertyRecord.contact.firstname }}
+                {{ propertyRecord.contact?.lastname ?? "please refresh" }},
+                {{ propertyRecord.contact?.firstname ?? "please refresh" }}
               </ng-template>
             </p-cellEditor>
           </td>

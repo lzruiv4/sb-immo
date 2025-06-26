@@ -1,15 +1,7 @@
-import { IContactDto } from '../../models/dtos/contact.dto';
+import { IPropertyRecord } from '../../models/property-record.model';
 
 export interface ISearchRelevantContact {
-  contact: IContactDto;
-  owners: IContactDto[];
-  renters: IContactDto[];
-  serviceProviders: IContactDto[];
-}
-
-export interface ISearchRelevantContactID {
-  contactId: string;
-  ownerIds: string[];
-  renterIds: string[];
-  serviceProviderIds: string[];
+  owners: IPropertyRecord[];
+  renters: IPropertyRecord[];
+  serviceProviders: IPropertyRecord[];
 }

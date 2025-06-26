@@ -18,14 +18,16 @@ import {
 } from 'primeng/autocomplete';
 import { IPropertyDto } from '../../../models/dtos/property.dto';
 import { IContactDto } from '../../../models/dtos/contact.dto';
+import { IPropertyRecord } from '../../../models/property-record.model';
 
 @Component({
   selector: 'app-basis-data-combos',
   imports: [AutoCompleteModule, CommonModule, FormsModule, CommonModule],
   templateUrl: './basis-data-combos.component.html',
 })
-export class BasisDataCombosComponent<T extends IPropertyDto | IContactDto>
-  implements OnInit, OnChanges
+export class BasisDataCombosComponent<
+  T extends IPropertyDto | IContactDto | IPropertyRecord
+> implements OnInit, OnChanges
 {
   @ContentChild('item', { static: false, read: TemplateRef })
   itemTemplate!: TemplateRef<any>;

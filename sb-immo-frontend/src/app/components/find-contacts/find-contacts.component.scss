@@ -30,3 +30,15 @@
   display: flex;
   flex-direction: column;
 }
+
+::ng-deep .p-card {
+  width: 95%;
+  overflow: auto;
+  padding: 0 10px;
+  margin: 10px;
+  &:hover {
+    background-color: #a3ffea;
+    box-shadow: 0 4px 10px rgba(195, 195, 195, 0.1);
+    transform: translateY(-2px);
+  }
+}

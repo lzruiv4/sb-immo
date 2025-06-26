@@ -2,9 +2,12 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
+  combineLatest,
   finalize,
   map,
   Observable,
+  shareReplay,
+  startWith,
   tap,
   throwError,
 } from 'rxjs';
@@ -13,27 +16,67 @@ import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_RECORD_URL } from '../core/apis/backend.api';
 import { RoleType } from '../models/enums/role.enum';
 import { NotificationService } from './notification.service';
+import { PropertyService } from './property.service';
+import { ContactService } from './contact.service';
+import { IPropertyRecord } from '../models/property-record.model';
+import { IContactDto } from '../models/dtos/contact.dto';
+import { IPropertyDto } from '../models/dtos/property.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PropertyRecordService {
-  private propertyRecordsSubject = new BehaviorSubject<IPropertyRecordDto[]>(
-    []
-  );
-  propertyRecords$ = this.propertyRecordsSubject.asObservable();
+  private propertyRecordsFromDBSubject = new BehaviorSubject<
+    IPropertyRecordDto[]
+  >([]);
+  propertyRecordsFromDB$ = this.propertyRecordsFromDBSubject.asObservable();
+
+  propertyRecords$: Observable<IPropertyRecord[]>;
 
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
   constructor(
     private propertyRecordHttp: HttpClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private propertyService: PropertyService,
+    private contactService: ContactService
   ) {
-    this.getPropertyRecords();
+    this.getPropertyRecordsFromDB();
+    // this.getPropertyRecords();
+
+    this.propertyRecords$ = combineLatest([
+      this.propertyRecordsFromDB$,
+      this.propertyService.properties$,
+      this.contactService.contacts$,
+    ]).pipe(
+      map(([propertyRecords, properties, contacts]) => {
+        const propertyMap = new Map(properties.map((p) => [p.propertyId, p]));
+        const contactMap = new Map(contacts.map((c) => [c.contactId, c]));
+
+        return propertyRecords.map((record) => {
+          const property = propertyMap.get(record.propertyId);
+          const contact = contactMap.get(record.contactId);
+
+          return {
+            propertyRecordId: record.propertyRecordId,
+            property,
+            contact,
+            role: record.role,
+            startAt: record.startAt,
+            endAt: record.endAt,
+            notes: record.notes,
+            createdAt: record.createdAt,
+          } as IPropertyRecord;
+        });
+      }),
+      tap(() => this.loadingSubject.next(false)),
+      startWith([]), // 初始化为空数组，避免UI空白
+      shareReplay(1)
+    );
   }
 
-  getPropertyRecords(): void {
+  getPropertyRecordsFromDB(): void {
     this.loadingSubject.next(true);
     this.propertyRecordHttp
       .get<IPropertyRecordDto[]>(BACKEND_API_PROPERTY_RECORD_URL)
@@ -49,7 +92,7 @@ export class PropertyRecordService {
           }))
         ),
         tap((propertyRecords) =>
-          this.propertyRecordsSubject.next(propertyRecords)
+          this.propertyRecordsFromDBSubject.next(propertyRecords)
         ),
         catchError((error) => {
           console.error('There is an error in the request data.', error);
@@ -98,7 +141,7 @@ export class PropertyRecordService {
   private getPropertyRecordByRole(
     propertyRecord: IPropertyRecordDto
   ): IPropertyRecordDto[] {
-    var filterPropertyRecords = this.propertyRecordsSubject.getValue();
+    var filterPropertyRecords = this.propertyRecordsFromDBSubject.getValue();
     if (propertyRecord.propertyRecordId) {
       filterPropertyRecords = filterPropertyRecords.filter(
         (item) => propertyRecord.propertyRecordId != item.propertyRecordId
@@ -166,8 +209,11 @@ export class PropertyRecordService {
       )
       .pipe(
         tap((propertyRecord) => {
-          const currentList = this.propertyRecordsSubject.getValue();
-          this.propertyRecordsSubject.next([propertyRecord, ...currentList]);
+          const currentList = this.propertyRecordsFromDBSubject.getValue();
+          this.propertyRecordsFromDBSubject.next([
+            propertyRecord,
+            ...currentList,
+          ]);
         }),
         catchError((error) => {
           console.error('Error occurred during create new property record.');
@@ -189,14 +235,16 @@ export class PropertyRecordService {
       )
       .pipe(
         tap((propertyRecord) => {
-          const currentList = this.propertyRecordsSubject.value;
+          const currentList = this.propertyRecordsFromDBSubject.value;
           const updateList = currentList.map((item) =>
             // update info in list
             item.propertyRecordId === propertyRecordId
               ? { ...item, ...propertyRecord }
               : item
           );
-          this.propertyRecordsSubject.next(updateList);
+
+          this.propertyRecordsFromDBSubject.next(updateList);
+          this.propertyRecords$.subscribe();
         }),
         catchError((error) => {
           console.error('Error occurred during update a property record.');
@@ -206,18 +254,34 @@ export class PropertyRecordService {
       );
   }
 
+  findContact(contactId: string): Observable<IContactDto | undefined> {
+    return this.contactService.contacts$.pipe(
+      map((contacts) =>
+        contacts.find((contact) => contact.contactId === contactId)
+      )
+    );
+  }
+
+  findProperty(propertyId: string): Observable<IPropertyDto | undefined> {
+    return this.propertyService.properties$.pipe(
+      map((properties) =>
+        properties.find((property) => property.propertyId === propertyId)
+      )
+    );
+  }
+
   deletePropertyRecord(propertyRecordId: string): Observable<void> {
     this.loadingSubject.next(true);
     return this.propertyRecordHttp
       .delete<void>(`${BACKEND_API_PROPERTY_RECORD_URL}/${propertyRecordId}`)
       .pipe(
         tap(() => {
-          const currentList = this.propertyRecordsSubject.value;
+          const currentList = this.propertyRecordsFromDBSubject.value;
           const updateList = currentList.filter(
             (propertyRecord) =>
               propertyRecord.propertyRecordId !== propertyRecordId
           );
-          this.propertyRecordsSubject.next(updateList);
+          this.propertyRecordsFromDBSubject.next(updateList);
         }),
         catchError((error) => {
           console.error('Error occurred during delete a property record.');

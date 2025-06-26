@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { PropertyRecordService } from '../../services/property-record.service';
 import { CreatePropertyRecordComponent } from '../create-property-record/create-property-record.component';
 import { ButtonModule } from 'primeng/button';
@@ -10,7 +10,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
-import { IPropertyRecordDto } from '../../models/dtos/property-record.dto';
 import { SearchPropertyComponent } from '../search-property/search-property.component';
 import { SearchContactsComponent } from '../search-contacts/search-contacts.component';
 import { RoleType, RoleTypeDescriptions } from '../../models/enums/role.enum';
@@ -18,14 +17,15 @@ import { BasisCombosComponent } from '../../share/basis-components/basis-combos/
 import { ITag } from '../../share/models/tag.model';
 import { DatePickerModule } from 'primeng/datepicker';
 import { dateFormat } from '../../share/models/date.model';
-import { PropertyService } from '../../services/property.service';
-import { ContactService } from '../../services/contact.service';
-import { combineLatest, map, Observable } from 'rxjs';
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { IContactDto } from '../../models/dtos/contact.dto';
 import { NotificationService } from '../../services/notification.service';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import {
+  IPropertyRecord,
+  modelToDto,
+} from '../../models/property-record.model';
 
 @Component({
   selector: 'app-property-record',
@@ -51,19 +51,15 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
   styleUrl: './property-record.component.scss',
   providers: [ConfirmationService],
 })
-export class PropertyRecordComponent implements OnInit {
+export class PropertyRecordComponent {
   loading: boolean = false;
   openCreateDialog: boolean = false;
 
   statuses = RoleTypeDescriptions;
   defaultDateForm: string = dateFormat;
 
-  dataPlusPropertyAndContact$!: Observable<IPropertyRecordDto[]>;
-
   constructor(
     private propertyRecordService: PropertyRecordService,
-    private propertyService: PropertyService,
-    private contactService: ContactService,
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService // service from primeng, show message for delete
   ) {}
@@ -72,43 +68,21 @@ export class PropertyRecordComponent implements OnInit {
     return this.propertyRecordService.propertyRecords$;
   }
 
-  // 这里我用 combineLatest 把三个服务里的 observable（房产记录、房产列表、联系人列表）组合成一个新的数据流。
-  // 通过 map 操作，我使用 Map 来快速查找对应的房产和联系人，把原始记录补全成包含完整信息的对象，最后用于展示或进一步处理。
-  ngOnInit(): void {
-    this.dataPlusPropertyAndContact$ = combineLatest([
-      this.propertyRecordService.propertyRecords$,
-      this.propertyService.properties$,
-      this.contactService.contacts$,
-    ]).pipe(
-      map(([propertyRecords, properties, contacts]) => {
-        const propertyMap = new Map(
-          properties.map((property) => [property.propertyId, property])
-        );
-
-        const contactMap = new Map(
-          contacts.map((contact) => [contact.contactId, contact])
-        );
-
-        return propertyRecords.map((record) => ({
-          ...record,
-          property: propertyMap.get(record.propertyId),
-          contact: contactMap.get(record.contactId),
-        }));
-      })
-    );
-    this.dataPlusPropertyAndContact$.subscribe();
-  }
-
   openDialog(): void {
     this.openCreateDialog = true;
   }
 
   onRowEditInit(): void {}
 
-  onRowEditSave(propertyRecord: any): void {
-    if (this.propertyRecordService.checkPropertyRecord(propertyRecord)) {
+  onRowEditSave(propertyRecord: IPropertyRecord): void {
+    if (
+      this.propertyRecordService.checkPropertyRecord(modelToDto(propertyRecord))
+    ) {
       this.propertyRecordService
-        .updatePropertyRecord(propertyRecord.propertyRecordId, propertyRecord)
+        .updatePropertyRecord(
+          propertyRecord.propertyRecordId!,
+          modelToDto(propertyRecord)
+        )
         .subscribe({
           next: () => {
             this.notificationService.success(
@@ -124,30 +98,33 @@ export class PropertyRecordComponent implements OnInit {
           },
         });
     }
-    this.propertyRecordService.getPropertyRecords();
+    this.onRowEditCancel();
   }
 
   onRowEditCancel(): void {
-    this.propertyRecordService.getPropertyRecords();
+    this.propertyRecordService.getPropertyRecordsFromDB();
   }
 
   getStatusTag(status: RoleType): ITag {
     return this.statuses[status];
   }
 
-  contactSelected(contact: IContactDto, propertyRecord: any): void {
-    propertyRecord.contactId = contact.contactId;
+  contactSelected(contact: IContactDto, propertyRecord: IPropertyRecord): void {
+    propertyRecord.contact = contact;
   }
 
-  propertySelected(property: IPropertyDto, propertyRecord: any): void {
-    propertyRecord.propertyId = property.propertyId;
+  propertySelected(
+    property: IPropertyDto,
+    propertyRecord: IPropertyRecord
+  ): void {
+    propertyRecord.property = property;
   }
 
-  roleSelected(role: any, propertyRecord: any): void {
+  roleSelected(role: any, propertyRecord: IPropertyRecord): void {
     propertyRecord.role = role.value;
   }
 
-  onRowDelete(propertyRecord: any) {
+  onRowDelete(propertyRecord: IPropertyRecord) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete this property record in ${propertyRecord.property.propertyName}?`,
       header: 'Confirm',
@@ -172,6 +149,6 @@ export class PropertyRecordComponent implements OnInit {
           });
       },
     });
-    this.propertyRecordService.getPropertyRecords();
+    this.propertyRecordService.getPropertyRecordsFromDB();
   }
 }
