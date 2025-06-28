@@ -9,6 +9,7 @@ import {
 import { IPropertyDto } from '../../models/dtos/property.dto';
 import { PropertyService } from '../../services/property.service';
 import { BasisDataCombosComponent } from '../../share/basis-components/basis-data-combos/basis-data-combos.component';
+// import { ControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'app-search-property',

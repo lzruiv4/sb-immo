@@ -12,6 +12,7 @@
         <app-search-property
           (selectedProperty)="handlePropertySelected($event)"
           name="propertyId"
+
         />
       </div>
 
@@ -29,6 +30,7 @@
           [current]="propertyRecord.role"
           (statusSelected)="roleSelected($event)"
           name="role"
+          required
         />
       </div>
 

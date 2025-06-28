@@ -36,7 +36,7 @@ export class RelevantContactService {
               (propertyRecord.endAt ?? MAX_DATE) >= pr.startAt
           );
 
-          // find all contact with role owner id
+          // find all contact with role owner
           const owners = Array.from(
             new Set(
               propertyRecordWithSameProperty.filter(
@@ -45,7 +45,7 @@ export class RelevantContactService {
             )
           );
 
-          // find all contact with role renter id
+          // find all contact with role renter
           const renters = Array.from(
             new Set(
               propertyRecordWithSameProperty.filter(
@@ -54,7 +54,7 @@ export class RelevantContactService {
             )
           );
 
-          // find all contact with role serviceProvider id
+          // find all contact with role service
           const serviceProviders = Array.from(
             new Set(
               propertyRecordWithSameProperty.filter(

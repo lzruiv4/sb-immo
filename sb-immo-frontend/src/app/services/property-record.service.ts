@@ -6,7 +6,6 @@ import {
   finalize,
   map,
   Observable,
-  shareReplay,
   startWith,
   tap,
   throwError,
@@ -67,8 +66,8 @@ export class PropertyRecordService {
           } as IPropertyRecord;
         });
       }),
-      startWith([]), // 初始化为空数组，避免UI空白
-      shareReplay(1)
+      startWith([])
+      // shareReplay(1)
     );
   }
 
@@ -103,8 +102,10 @@ export class PropertyRecordService {
 
   checkPropertyRecord(propertyRecord: IPropertyRecordDto): boolean {
     if (propertyRecord.role !== RoleType.ROLE_SERVICE) {
+      // get the property records with the same role
       const filterPropertyRecords =
         this.getPropertyRecordByRole(propertyRecord);
+      // Check earliest start time availability
       const startAt = this.getPropertyAvailabilityDate(
         propertyRecord,
         filterPropertyRecords
@@ -126,18 +127,17 @@ export class PropertyRecordService {
 
   /**
    * Retrieves an array of property records that match the specified role and property ID,
-   * excluding the record with the same propertyRecordId
+   * excluding the record with the same propertyRecordId as the provided propertyRecord (if present).
    *
-   * @param propertyRecord - The property record DTO used as a reference for filtering.
-   *   Its `role` and `propertyId` are used to match records, and its `propertyRecordId`
-   *   (if present) is used to exclude a specific record from the results. Because one can
-   *  rent the property again
-   * @returns An array of `IPropertyRecordDto` objects that have the same role and propertyId
+   * @param propertyRecord - The IPropertyRecordDto used to filter by role and property ID.
+   *        If propertyRecordId is present, the record with this ID will be excluded from the results.
+   * @returns An array of property records matching the specified role
    */
   private getPropertyRecordByRole(
     propertyRecord: IPropertyRecordDto
   ): IPropertyRecordDto[] {
     var filterPropertyRecords = this.propertyRecordsFromDBSubject.getValue();
+    // For the update
     if (propertyRecord.propertyRecordId) {
       filterPropertyRecords = filterPropertyRecords.filter(
         (item) => propertyRecord.propertyRecordId != item.propertyRecordId
@@ -145,52 +145,47 @@ export class PropertyRecordService {
     }
     return filterPropertyRecords.filter(
       (item) =>
-        item.role == propertyRecord.role &&
-        item.propertyId == propertyRecord.propertyId
+        item.role === propertyRecord.role &&
+        item.propertyId === propertyRecord.propertyId
     );
   }
 
-  /**
-   * Calculates the earliest available date for a property, given a specific property record and a list of all property records.
-   *
-   * The function checks for overlaps between the given property record and other property records,
-   * and determines the earliest date from which the property can be made available without conflicts.
-   *
-   * @param propertyRecord - The property record for which to determine the availability date.
-   * @param propertyRecords - The list of all property records to check for overlaps.
-   * @returns The earliest available date as a `Date` object, or `null` if no availability is found within the given range.
-   */
   getPropertyAvailabilityDate(
-    propertyRecord: IPropertyRecordDto,
-    propertyRecords: IPropertyRecordDto[]
+    checkPropertyRecord: IPropertyRecordDto,
+    inputPropertyRecords: IPropertyRecordDto[]
   ): Date | null {
     const MAX_DATE = new Date(8640000000000000);
+    const endAt = checkPropertyRecord.endAt ?? MAX_DATE;
 
-    const endAt = propertyRecord.endAt ?? MAX_DATE;
-
-    const sortedPropertyRecords = propertyRecords
-      .filter((item) => !item.endAt || item.endAt >= propertyRecord.startAt)
+    /**
+     * Return property records can be check with the input and sort by date.
+     * Filter out any irrelevant or invalid records
+     * — for example, those that start after the target record's end time, or those with an undefined (infinite) end time.
+     * Iterate through the remaining records to determine the earliest possible start time.
+     * During this process, we also ensure that the corresponding end time remains valid.
+     * If a valid time window is found, return the suggested start time; otherwise, return null.
+     * */
+    const sortedPropertyRecords = inputPropertyRecords
+      .filter(
+        (propertyRecord) =>
+          !propertyRecord.endAt ||
+          propertyRecord.endAt >= checkPropertyRecord.startAt
+      )
       .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+    let mark = checkPropertyRecord.startAt;
 
-    let mark = propertyRecord.startAt;
+    for (const propertyRecord of sortedPropertyRecords) {
+      const itemEndAt = propertyRecord.endAt ?? MAX_DATE;
 
-    for (const item of sortedPropertyRecords) {
-      const itemEndAt = item.endAt ?? MAX_DATE;
-
-      // 如果当前 cursor 到 requestedEnd 这段，不与 booking 冲突，就说明可以入住
-      const noOverlap = endAt <= item.startAt || mark >= itemEndAt;
-
-      if (mark < item.startAt && endAt <= item.startAt) {
-        // 整段都在 booking 前面
+      const isOverlap = endAt <= propertyRecord.startAt || mark >= itemEndAt;
+      // endAt is before property start and the mark is also before property start
+      if (mark < propertyRecord.startAt && endAt <= propertyRecord.startAt) {
         return mark;
       }
-
-      if (!noOverlap) {
-        // 有重叠，就往后挪 mark
+      if (!isOverlap) {
         mark = itemEndAt;
       }
     }
-
     return mark <= endAt ? mark : null;
   }
 
