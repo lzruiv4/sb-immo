@@ -35,6 +35,7 @@ export class BasisDataCombosComponent<
   @Input() inputModel!: T;
   @Input() name: string = '';
   @Input() data: T[] = [];
+  // Function with 2 parameter, check the item with query string
   @Input() filterFn!: (item: T, query: string) => boolean;
   @Output() selectedItem = new EventEmitter<T>();
 

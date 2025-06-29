@@ -5,7 +5,6 @@ import {
   finalize,
   map,
   Observable,
-  of,
   tap,
   throwError,
 } from 'rxjs';
