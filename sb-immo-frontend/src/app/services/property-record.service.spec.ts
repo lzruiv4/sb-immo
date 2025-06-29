@@ -334,7 +334,7 @@ describe('PropertyRecordService', () => {
       endAt: new Date('2026-07-30'),
     };
 
-    const result = propertyRecordService.getPropertyAvailabilityDate(
+    const result = propertyRecordService.getPropertyAvailabilityStartDate(
       testPropertyRecord,
       mockPropertyRecordsFromDB
     );
@@ -356,7 +356,7 @@ describe('PropertyRecordService', () => {
       endAt: new Date('2025-04-30'),
     };
 
-    const result = propertyRecordService.getPropertyAvailabilityDate(
+    const result = propertyRecordService.getPropertyAvailabilityStartDate(
       testPropertyRecord,
       mockPropertyRecordsFromDB
     );
@@ -377,7 +377,7 @@ describe('PropertyRecordService', () => {
       endAt: new Date('2025-05-31'),
     };
 
-    const result = propertyRecordService.getPropertyAvailabilityDate(
+    const result = propertyRecordService.getPropertyAvailabilityStartDate(
       testPropertyRecord,
       mockPropertyRecordsFromDB
     );

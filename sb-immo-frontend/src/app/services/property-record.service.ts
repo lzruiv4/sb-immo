@@ -6,6 +6,7 @@ import {
   finalize,
   map,
   Observable,
+  shareReplay,
   startWith,
   tap,
   throwError,
@@ -66,8 +67,8 @@ export class PropertyRecordService {
           } as IPropertyRecord;
         });
       }),
-      startWith([])
-      // shareReplay(1)
+      startWith([]),
+      shareReplay(1)
     );
   }
 
@@ -102,11 +103,11 @@ export class PropertyRecordService {
 
   checkPropertyRecord(propertyRecord: IPropertyRecordDto): boolean {
     if (propertyRecord.role !== RoleType.ROLE_SERVICE) {
-      // get the property records with the same role
+      // get the property records with the same role and property
       const filterPropertyRecords =
-        this.getPropertyRecordByRole(propertyRecord);
+        this.getPropertyRecordByRoleAndPropertyId(propertyRecord);
       // Check earliest start time availability
-      const startAt = this.getPropertyAvailabilityDate(
+      const startAt = this.getPropertyAvailabilityStartDate(
         propertyRecord,
         filterPropertyRecords
       );
@@ -117,7 +118,9 @@ export class PropertyRecordService {
       if (startAt !== propertyRecord.startAt) {
         this.notificationService.warn(
           'warn',
-          `The earliest available date is ${startAt.toLocaleString()}`
+          `The earliest available date is ${new Date(
+            startAt.getTime() + 1000 // take the next sek.
+          ).toLocaleString()}`
         );
         return false;
       }
@@ -133,7 +136,7 @@ export class PropertyRecordService {
    *        If propertyRecordId is present, the record with this ID will be excluded from the results.
    * @returns An array of property records matching the specified role
    */
-  private getPropertyRecordByRole(
+  private getPropertyRecordByRoleAndPropertyId(
     propertyRecord: IPropertyRecordDto
   ): IPropertyRecordDto[] {
     var filterPropertyRecords = this.propertyRecordsFromDBSubject.getValue();
@@ -150,43 +153,50 @@ export class PropertyRecordService {
     );
   }
 
-  getPropertyAvailabilityDate(
+  /**
+   * Find the earlier start date, when no start date, return null
+   *
+   * @param checkPropertyRecord - The IPropertyRecordDto used to be checked.
+   * @param inputPropertyRecords - Data for traversal
+   * @returns An array of property records matching the specified role
+   */
+  getPropertyAvailabilityStartDate(
     checkPropertyRecord: IPropertyRecordDto,
     inputPropertyRecords: IPropertyRecordDto[]
   ): Date | null {
     const MAX_DATE = new Date(8640000000000000);
-    const endAt = checkPropertyRecord.endAt ?? MAX_DATE;
+    const targetEnd = checkPropertyRecord.endAt ?? MAX_DATE;
 
-    /**
-     * Return property records can be check with the input and sort by date.
-     * Filter out any irrelevant or invalid records
-     * — for example, those that start after the target record's end time, or those with an undefined (infinite) end time.
-     * Iterate through the remaining records to determine the earliest possible start time.
-     * During this process, we also ensure that the corresponding end time remains valid.
-     * If a valid time window is found, return the suggested start time; otherwise, return null.
-     * */
+    // Filter property records and return all records whose end time is after the start time. Used to check if there is overlap
     const sortedPropertyRecords = inputPropertyRecords
       .filter(
         (propertyRecord) =>
-          !propertyRecord.endAt ||
-          propertyRecord.endAt >= checkPropertyRecord.startAt
+          propertyRecord.endAt ?? MAX_DATE >= checkPropertyRecord.startAt
       )
       .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+    // Mark the first start date
     let mark = checkPropertyRecord.startAt;
 
-    for (const propertyRecord of sortedPropertyRecords) {
-      const itemEndAt = propertyRecord.endAt ?? MAX_DATE;
+    for (const record of sortedPropertyRecords) {
+      const recordStart = record.startAt;
+      const recordEnd = record.endAt ?? MAX_DATE;
 
-      const isOverlap = endAt <= propertyRecord.startAt || mark >= itemEndAt;
-      // endAt is before property start and the mark is also before property start
-      if (mark < propertyRecord.startAt && endAt <= propertyRecord.startAt) {
+      // check overlap
+      const hasOverlap = mark < recordEnd && targetEnd > recordStart;
+
+      // No overlap, but the start and end times are earlier than the record time
+      // ===> before the record.
+      if (!hasOverlap && mark < recordStart && targetEnd <= recordStart) {
         return mark;
       }
-      if (!isOverlap) {
-        mark = itemEndAt;
+
+      // Overlap, take the end date
+      if (hasOverlap) {
+        mark = recordEnd;
       }
     }
-    return mark <= endAt ? mark : null;
+
+    return mark <= targetEnd ? mark : null;
   }
 
   saveNewPropertyRecord(

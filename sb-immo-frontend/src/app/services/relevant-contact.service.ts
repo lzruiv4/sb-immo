@@ -11,6 +11,12 @@ import { IPropertyRecord } from '../models/property-record.model';
 export class RelevantContactService {
   constructor(private propertyRecordService: PropertyRecordService) {}
 
+  /**
+   * ISearchRelevantContact is a data structure categorized by roles.
+   * Return map contains all the keys representing the property record of a contact, with the corresponding contact as the value.
+   * One contact may have many records.
+   * View related contacts based on different records.
+   */
   getRelevantPropertyRecordsByContactId(
     contactId: string
   ): Observable<Map<IPropertyRecord, ISearchRelevantContact>> {
