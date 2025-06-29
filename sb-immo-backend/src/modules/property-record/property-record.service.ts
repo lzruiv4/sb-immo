@@ -117,15 +117,21 @@ export class PropertyRecordService {
           rightNow >= record.startAt &&
           (!record.endAt || rightNow <= record.endAt),
       );
+      // 在个数为0或者所有的记录都为Owner的时候，则设定为AVAILABLE
+      // Wenn es keine Einträge gibt oder alle Einträge „Owner“ sind, dann wird Immobilie den Status auf "AVAILABLE" gesetzt.
       if (
         activeRecords.length === 0 ||
         activeRecords.every((record) => record.role == RoleType.ROLE_OWNER)
       ) {
         property.status = PropertyStatusType.AVAILABLE;
+        // 当过滤的列表中有一个service的时候，则会自动设定为MAINTENANCE， 也就是说在我这里，Service roller有最高的优先权
+        // Wenn es einige Einträge von "Service" gibt, dann wird Immobilie den Status auf "MAINTENANCE" gesetzt.
       } else if (
         activeRecords.some((record) => record.role == RoleType.ROLE_SERVICE)
       ) {
         property.status = PropertyStatusType.MAINTENANCE;
+        // 其他情况，则就是租用
+        // Andere Fallen wird Immobilie den Status auf "RENTED" gesetzt.
       } else {
         property.status = PropertyStatusType.RENTED;
       }
