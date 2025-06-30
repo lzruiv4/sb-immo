@@ -2,9 +2,12 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
+  combineLatest,
   finalize,
   map,
   Observable,
+  shareReplay,
+  startWith,
   tap,
   throwError,
 } from 'rxjs';
@@ -13,27 +16,63 @@ import { HttpClient } from '@angular/common/http';
 import { BACKEND_API_PROPERTY_RECORD_URL } from '../core/apis/backend.api';
 import { RoleType } from '../models/enums/role.enum';
 import { NotificationService } from './notification.service';
+import { PropertyService } from './property.service';
+import { ContactService } from './contact.service';
+import { IPropertyRecord } from '../models/property-record.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PropertyRecordService {
-  private propertyRecordsSubject = new BehaviorSubject<IPropertyRecordDto[]>(
-    []
-  );
-  propertyRecords$ = this.propertyRecordsSubject.asObservable();
+  private propertyRecordsFromDBSubject = new BehaviorSubject<
+    IPropertyRecordDto[]
+  >([]);
+  propertyRecordsFromDB$ = this.propertyRecordsFromDBSubject.asObservable();
+
+  propertyRecords$: Observable<IPropertyRecord[]>;
 
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
   constructor(
     private propertyRecordHttp: HttpClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private propertyService: PropertyService,
+    private contactService: ContactService
   ) {
-    this.getPropertyRecords();
+    this.getPropertyRecordsFromDB();
+
+    this.propertyRecords$ = combineLatest([
+      this.propertyRecordsFromDB$,
+      this.propertyService.properties$,
+      this.contactService.contacts$,
+    ]).pipe(
+      map(([propertyRecords, properties, contacts]) => {
+        const propertyMap = new Map(properties.map((p) => [p.propertyId, p]));
+        const contactMap = new Map(contacts.map((c) => [c.contactId, c]));
+
+        return propertyRecords.map((record) => {
+          const property = propertyMap.get(record.propertyId);
+          const contact = contactMap.get(record.contactId);
+
+          return {
+            propertyRecordId: record.propertyRecordId,
+            property,
+            contact,
+            role: record.role,
+            startAt: record.startAt,
+            endAt: record.endAt,
+            notes: record.notes,
+            createdAt: record.createdAt,
+          } as IPropertyRecord;
+        });
+      }),
+      startWith([]),
+      shareReplay(1)
+    );
   }
 
-  getPropertyRecords(): void {
+  getPropertyRecordsFromDB(): void {
     this.loadingSubject.next(true);
     this.propertyRecordHttp
       .get<IPropertyRecordDto[]>(BACKEND_API_PROPERTY_RECORD_URL)
@@ -49,7 +88,7 @@ export class PropertyRecordService {
           }))
         ),
         tap((propertyRecords) =>
-          this.propertyRecordsSubject.next(propertyRecords)
+          this.propertyRecordsFromDBSubject.next(propertyRecords)
         ),
         catchError((error) => {
           console.error('There is an error in the request data.', error);
@@ -64,9 +103,11 @@ export class PropertyRecordService {
 
   checkPropertyRecord(propertyRecord: IPropertyRecordDto): boolean {
     if (propertyRecord.role !== RoleType.ROLE_SERVICE) {
+      // get the property records with the same role and property
       const filterPropertyRecords =
-        this.getPropertyRecordByRole(propertyRecord);
-      const startAt = this.getPropertyAvailabilityDate(
+        this.getPropertyRecordByRoleAndPropertyId(propertyRecord);
+      // Check earliest start time availability
+      const startAt = this.getPropertyAvailabilityStartDate(
         propertyRecord,
         filterPropertyRecords
       );
@@ -77,7 +118,9 @@ export class PropertyRecordService {
       if (startAt !== propertyRecord.startAt) {
         this.notificationService.warn(
           'warn',
-          `The earliest available date is ${startAt.toLocaleString()}`
+          `The earliest available date is ${new Date(
+            startAt.getTime() + 1000 // take the next sek.
+          ).toLocaleString()}`
         );
         return false;
       }
@@ -87,18 +130,17 @@ export class PropertyRecordService {
 
   /**
    * Retrieves an array of property records that match the specified role and property ID,
-   * excluding the record with the same propertyRecordId
+   * excluding the record with the same propertyRecordId as the provided propertyRecord (if present).
    *
-   * @param propertyRecord - The property record DTO used as a reference for filtering.
-   *   Its `role` and `propertyId` are used to match records, and its `propertyRecordId`
-   *   (if present) is used to exclude a specific record from the results. Because one can
-   *  rent the property again
-   * @returns An array of `IPropertyRecordDto` objects that have the same role and propertyId
+   * @param propertyRecord - The IPropertyRecordDto used to filter by role and property ID.
+   *        If propertyRecordId is present, the record with this ID will be excluded from the results.
+   * @returns An array of property records matching the specified role
    */
-  private getPropertyRecordByRole(
+  private getPropertyRecordByRoleAndPropertyId(
     propertyRecord: IPropertyRecordDto
   ): IPropertyRecordDto[] {
-    var filterPropertyRecords = this.propertyRecordsSubject.getValue();
+    var filterPropertyRecords = this.propertyRecordsFromDBSubject.getValue();
+    // For the update
     if (propertyRecord.propertyRecordId) {
       filterPropertyRecords = filterPropertyRecords.filter(
         (item) => propertyRecord.propertyRecordId != item.propertyRecordId
@@ -106,53 +148,55 @@ export class PropertyRecordService {
     }
     return filterPropertyRecords.filter(
       (item) =>
-        item.role == propertyRecord.role &&
-        item.propertyId == propertyRecord.propertyId
+        item.role === propertyRecord.role &&
+        item.propertyId === propertyRecord.propertyId
     );
   }
 
   /**
-   * Calculates the earliest available date for a property, given a specific property record and a list of all property records.
+   * Find the earlier start date, when no start date, return null
    *
-   * The function checks for overlaps between the given property record and other property records,
-   * and determines the earliest date from which the property can be made available without conflicts.
-   *
-   * @param propertyRecord - The property record for which to determine the availability date.
-   * @param propertyRecords - The list of all property records to check for overlaps.
-   * @returns The earliest available date as a `Date` object, or `null` if no availability is found within the given range.
+   * @param checkPropertyRecord - The IPropertyRecordDto used to be checked.
+   * @param inputPropertyRecords - Data for traversal
+   * @returns An array of property records matching the specified role
    */
-  getPropertyAvailabilityDate(
-    propertyRecord: IPropertyRecordDto,
-    propertyRecords: IPropertyRecordDto[]
+  getPropertyAvailabilityStartDate(
+    checkPropertyRecord: IPropertyRecordDto,
+    inputPropertyRecords: IPropertyRecordDto[]
   ): Date | null {
     const MAX_DATE = new Date(8640000000000000);
+    const targetEnd = checkPropertyRecord.endAt ?? MAX_DATE;
 
-    const endAt = propertyRecord.endAt ?? MAX_DATE;
-
-    const sortedPropertyRecords = propertyRecords
-      .filter((item) => !item.endAt || item.endAt >= propertyRecord.startAt)
+    // Filter property records and return all records whose end time is after the start time. Used to check if there is overlap
+    const sortedPropertyRecords = inputPropertyRecords
+      .filter(
+        (propertyRecord) =>
+          propertyRecord.endAt ?? MAX_DATE >= checkPropertyRecord.startAt
+      )
       .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+    // Mark the first start date
+    let mark = checkPropertyRecord.startAt;
 
-    let mark = propertyRecord.startAt;
+    for (const record of sortedPropertyRecords) {
+      const recordStart = record.startAt;
+      const recordEnd = record.endAt ?? MAX_DATE;
 
-    for (const item of sortedPropertyRecords) {
-      const itemEndAt = item.endAt ?? MAX_DATE;
+      // check overlap
+      const hasOverlap = mark < recordEnd && targetEnd > recordStart;
 
-      // 如果当前 cursor 到 requestedEnd 这段，不与 booking 冲突，就说明可以入住
-      const noOverlap = endAt <= item.startAt || mark >= itemEndAt;
-
-      if (mark < item.startAt && endAt <= item.startAt) {
-        // 整段都在 booking 前面
+      // No overlap, but the start and end times are earlier than the record time
+      // ===> before the record.
+      if (!hasOverlap && mark < recordStart && targetEnd <= recordStart) {
         return mark;
       }
 
-      if (!noOverlap) {
-        // 有重叠，就往后挪 mark
-        mark = itemEndAt;
+      // Overlap, take the end date
+      if (hasOverlap) {
+        mark = recordEnd;
       }
     }
 
-    return mark <= endAt ? mark : null;
+    return mark <= targetEnd ? mark : null;
   }
 
   saveNewPropertyRecord(
@@ -166,8 +210,11 @@ export class PropertyRecordService {
       )
       .pipe(
         tap((propertyRecord) => {
-          const currentList = this.propertyRecordsSubject.getValue();
-          this.propertyRecordsSubject.next([propertyRecord, ...currentList]);
+          const currentList = this.propertyRecordsFromDBSubject.getValue();
+          this.propertyRecordsFromDBSubject.next([
+            propertyRecord,
+            ...currentList,
+          ]);
         }),
         catchError((error) => {
           console.error('Error occurred during create new property record.');
@@ -189,14 +236,16 @@ export class PropertyRecordService {
       )
       .pipe(
         tap((propertyRecord) => {
-          const currentList = this.propertyRecordsSubject.value;
+          const currentList = this.propertyRecordsFromDBSubject.value;
           const updateList = currentList.map((item) =>
             // update info in list
             item.propertyRecordId === propertyRecordId
               ? { ...item, ...propertyRecord }
               : item
           );
-          this.propertyRecordsSubject.next(updateList);
+
+          this.propertyRecordsFromDBSubject.next(updateList);
+          this.propertyRecords$.subscribe();
         }),
         catchError((error) => {
           console.error('Error occurred during update a property record.');
@@ -212,12 +261,12 @@ export class PropertyRecordService {
       .delete<void>(`${BACKEND_API_PROPERTY_RECORD_URL}/${propertyRecordId}`)
       .pipe(
         tap(() => {
-          const currentList = this.propertyRecordsSubject.value;
+          const currentList = this.propertyRecordsFromDBSubject.value;
           const updateList = currentList.filter(
             (propertyRecord) =>
               propertyRecord.propertyRecordId !== propertyRecordId
           );
-          this.propertyRecordsSubject.next(updateList);
+          this.propertyRecordsFromDBSubject.next(updateList);
         }),
         catchError((error) => {
           console.error('Error occurred during delete a property record.');

@@ -18,14 +18,16 @@ import {
 } from 'primeng/autocomplete';
 import { IPropertyDto } from '../../../models/dtos/property.dto';
 import { IContactDto } from '../../../models/dtos/contact.dto';
+import { IPropertyRecord } from '../../../models/property-record.model';
 
 @Component({
   selector: 'app-basis-data-combos',
   imports: [AutoCompleteModule, CommonModule, FormsModule, CommonModule],
   templateUrl: './basis-data-combos.component.html',
 })
-export class BasisDataCombosComponent<T extends IPropertyDto | IContactDto>
-  implements OnInit, OnChanges
+export class BasisDataCombosComponent<
+  T extends IPropertyDto | IContactDto | IPropertyRecord
+> implements OnInit, OnChanges
 {
   @ContentChild('item', { static: false, read: TemplateRef })
   itemTemplate!: TemplateRef<any>;
@@ -33,6 +35,7 @@ export class BasisDataCombosComponent<T extends IPropertyDto | IContactDto>
   @Input() inputModel!: T;
   @Input() name: string = '';
   @Input() data: T[] = [];
+  // Function with 2 parameter, check the item with query string
   @Input() filterFn!: (item: T, query: string) => boolean;
   @Output() selectedItem = new EventEmitter<T>();
 

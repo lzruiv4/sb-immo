@@ -10,7 +10,7 @@
 
   <div class="table-container">
     <p-table
-      [value]="(dataPlusPropertyAndContact$ | async) || []"
+      [value]="(propertyRecords$ | async) || []"
       dataKey="propertyRecordId"
       [rows]="10"
       editMode="row"
@@ -24,40 +24,26 @@
       <ng-template #header>
         <tr>
           <th style="width: 20%">
-            Property
+            Property name
             <p-columnFilter
               type="text"
-              field="propertyRecordId"
+              field="property.propertyName"
               display="menu"
             />
           </th>
           <th style="width: 10%">
             Contact<p-columnFilter
               type="text"
-              field="contactId"
+              field="contact.lastname"
               display="menu"
             />
           </th>
           <th style="width: 5%">
             Role<p-columnFilter type="text" field="role" display="menu" />
           </th>
-          <th style="width: 12%">
-            Created at<p-columnFilter
-              type="text"
-              field="createdAt"
-              display="menu"
-            />
-          </th>
-          <th style="width: 12%">
-            Start at<p-columnFilter
-              type="text"
-              field="startAt"
-              display="menu"
-            />
-          </th>
-          <th style="width: 12%">
-            End at<p-columnFilter type="text" field="endAt" display="menu" />
-          </th>
+          <th style="width: 12%">Created at</th>
+          <th style="width: 12%">Start at</th>
+          <th style="width: 12%">End at</th>
           <th style="width: 22%">Notes</th>
           <th style="width: 7%">Edit</th>
         </tr>
@@ -76,7 +62,7 @@
                 <app-search-property
                   [property]="propertyRecord.property"
                   (selectedProperty)="propertySelected($event, propertyRecord)"
-                  name="propertyId"
+                  name="property"
                 />
               </ng-template>
               <ng-template #output>
@@ -85,7 +71,9 @@
                     icon="pi pi-home"
                     class="w-[15px] mr-[5px]"
                   ></p-avatar>
-                  <span>{{ propertyRecord.property.propertyName }}</span>
+                  <span>{{
+                    propertyRecord.property?.propertyName ?? "please refresh"
+                  }}</span>
                 </div>
               </ng-template>
             </p-cellEditor>
@@ -101,8 +89,8 @@
                 />
               </ng-template>
               <ng-template #output>
-                {{ propertyRecord.contact.lastname }},
-                {{ propertyRecord.contact.firstname }}
+                {{ propertyRecord.contact?.lastname ?? "please refresh" }},
+                {{ propertyRecord.contact?.firstname ?? "please refresh" }}
               </ng-template>
             </p-cellEditor>
           </td>

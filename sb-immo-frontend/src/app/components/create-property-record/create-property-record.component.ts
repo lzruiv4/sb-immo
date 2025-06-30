@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -73,7 +73,7 @@ export class CreatePropertyRecordComponent {
       this.propertyRecordService
         .saveNewPropertyRecord(this.propertyRecord)
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.notificationService.success(
               'success',
               'Create property record successful'

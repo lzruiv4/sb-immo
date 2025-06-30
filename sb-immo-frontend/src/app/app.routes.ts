@@ -17,12 +17,12 @@ export const routes: Routes = [
     children: [
       { path: '', component: HeroComponent },
       {
-        path: 'property',
-        component: PropertyComponent,
-      },
-      {
         path: 'contact',
         component: ContactComponent,
+      },
+      {
+        path: 'property',
+        component: PropertyComponent,
       },
       {
         path: 'propertyRecord',

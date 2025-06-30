@@ -16,20 +16,13 @@
     <p-table
       [value]="(contact$ | async) ?? []"
       dataKey="contactId"
-      [rows]="5"
+      [rows]="10"
       editMode="row"
-      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [rowsPerPageOptions]="[10, 20, 50]"
       [loading]="loading"
       [paginator]="true"
       [sortField]="'firstname'"
       [sortOrder]="1"
-      [globalFilterFields]="[
-        'firstname',
-        'lastname',
-        'email',
-        'phone',
-        'notes'
-      ]"
       [tableStyle]="{ width: '100%' }"
     >
       <ng-template pTemplate="header">
@@ -54,10 +47,7 @@
             Phone
             <p-columnFilter type="text" field="phone" display="menu" />
           </th>
-          <th>
-            Notes
-            <p-columnFilter type="text" field="notes" display="menu" />
-          </th>
+          <th>Notes</th>
           <th>Edit</th>
           <th>Show contacts</th>
         </tr>
